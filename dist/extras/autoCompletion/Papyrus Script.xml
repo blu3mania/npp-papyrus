@@ -1,0 +1,4627 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<!-- Content of this file is from https://www.creationkit.com/index.php?title=Papyrus_Autocomplete -->
+<!-- Be careful of XML formatters that remove \n line endings from attributes -->
+<!--
+Includes events and functions, up to the stated version, from:
+Skyrim 1.9.32.0.8
+SKSE 1.6.16
+SkyUI SDK 4.1
+ 
+Events/functions that require anything beyond Skyrim state the additional
+requirements explicitly in their descriptions.
+ 
+Some events/functions may be missing descriptions.
+-->
+<NotepadPlus>
+	<AutoComplete language="Papyrus Script">
+		<Environment ignoreCase="yes"/>
+		<KeyWord name="Abs" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Math Script
+ 
+Calculates the absolute value of the number it is given.
+ 
+afValue: The value to get the absolute value of.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Acos" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Math Script
+ 
+Calculates the arccosine of the value it is given. The returned value is in degrees.
+ 
+afValue: The value to get the arccosine of. This value must be no greater than 1, and no less then -1.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Activate" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: ObjectReference Script
+ 
+Activates this item with the specified reference as the activator.
+ 
+akActivator: Who will activate this object.
+ 
+abDefaultProcessingOnly: If true, no OnActivate event will be sent to any scripts and the object will
+ignore the blocked flag. Default: False">
+				<Param name="ObjectReference akActivator"/>
+				<Param name="bool abDefaultProcessingOnly = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Activator"/>
+		<KeyWord name="Actor"/>
+		<KeyWord name="ActorBase"/>
+		<KeyWord name="Add" func="yes">
+			<Overload retVal="Function" descr="Member of: Topic Script
+ 
+Adds this topic to the player's list of known topics."/>
+			<Overload retVal="Function" descr="Member of: MusicType Script
+ 
+Adds this music type to the music stack, causing it to start playing if it's the highest priority item.
+If the music type is flagged as &quot;Plays One Selection&quot;, it will automatically be removed when it
+finishes, and a call to Remove() will not be required.
+Otherwise it will play until removed, or until something else is added to the music stack."/>
+		</KeyWord>
+		<KeyWord name="AddAchievement" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Adds the specified achievement/trophy to the player's gamer profile.
+ 
+aiAchievementID: The ID of the achievement/trophy to award.">
+				<Param name="int aiAchievementID"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddColorOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds an option that opens a color swatch dialog when selected.
+ 
+Return value: The option ID.
+ 
+text: The option text.
+color: The initial color value (0xRRGGBB).
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="Int color"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddColorOptionST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a state option that opens a color swatch dialog when selected.
+ 
+stateName: The state option name.
+text: The option text.
+color: The initial color value (0xRRGGBB).
+flags: See SetOptionFlags.">
+				<Param name="String stateName"/>
+				<Param name="String text"/>
+				<Param name="Int color"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddDependentAnimatedObjectReference"/>
+		<KeyWord name="AddEmptyOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds an empty option, which can be used for padding instead of manually re-positioning the cursor.
+ 
+Return value: The option ID">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddForm" func="yes">
+			<Overload retVal="Function" descr="Member of: FormList Script
+ 
+Adds the given form to the form list.
+ 
+apForm: Form to add to the list.">
+				<Param name="Form apForm"/>
+			</Overload>
+			<Overload retVal="Function" descr="Member of: LeveledActor Script
+ 
+Adds the given form to the leveled list.
+ 
+apForm: Form to add to the leveled list. 
+ 
+auiLevel: Level to add form under.">
+				<Param name="Form apForm"/>
+				<Param name="int auiLevel"/>
+			</Overload>
+			<Overload retVal="Function" descr="Member of: LeveledItem Script
+ 
+Adds the given form to the leveled list.
+ 
+apForm: Form to add to the leveled list. 
+ 
+auiLevel: Level to add form under.
+ 
+auiCount: Number of items to add.">
+				<Param name="Form apForm"/>
+				<Param name="int auiLevel"/>
+				<Param name="int auiCount"/>
+			</Overload>
+			<Overload retVal="Function" descr="Member of: LeveledSpell Script
+ 
+Adds the given form to the leveled list.
+ 
+apForm: Form to add to the leveled list. 
+ 
+auiLevel: Level to add form under.">
+				<Param name="Form apForm"/>
+				<Param name="int auiLevel"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddHavokBallAndSocketConstraint" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Game Script
+ 
+Adds a constraint between two rigid bodies of two references.
+ 
+arRefA: The first reference.
+ 
+arRefANode: The rigid body name on the first reference for the constraint.
+ 
+arRefB: The second reference.
+ 
+arRefBNode: The rigid body name on the second reference for the constraint.
+ 
+afRefALocalOffsetX: The offset of the constraint in the first body's space, X. Default: 0.0 
+ 
+afRefALocalOffsetY: The offset of the constraint in the first body's space, Y. Default: 0.0 
+ 
+afRefALocalOffsetZ: The offset of the constraint in the first body's space, Z. Default: 0.0 
+ 
+afRefBLocalOffsetX: The offset of the constraint in the second body's space, X. Default: 0.0 
+ 
+afRefBLocalOffsetY: The offset of the constraint in the second body's space, Y. Default: 0.0 
+ 
+afRefBLocalOffsetZ: The offset of the constraint in the second body's space, Z. Default: 0.0">
+				<Param name="ObjectReference arRefA"/>
+				<Param name="string arRefANode"/>
+				<Param name="ObjectReference arRefB"/>
+				<Param name="string arRefBNode"/>
+				<Param name="float arRefALocalOffsetX"/>
+				<Param name="float afRefALocalOffsetY"/>
+				<Param name="float afRefALocalOffsetZ"/>
+				<Param name="float arRefBLocalOffsetX"/>
+				<Param name="float afRefBLocalOffsetY"/>
+				<Param name="float afRefBLocalOffsetZ"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddHeaderOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a header option to group several options together.
+ 
+Return value: The option ID.
+ 
+text: The header text.
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddInventoryEventFilter" func="yes">
+			<Overload retVal="Function" descr="Member of: ActiveMagicEffect Script, ReferenceAlias Script,
+ObjectReference Script
+ 
+Adds a form as a &quot;filter&quot; for OnItemAdded and OnItemRemoved events sent to this object.
+The filter is applied separately to the reference, any aliases, and any magic effects on the reference,
+so each will need to add filters to themselves independently.
+ 
+akFilter: The item to filter with. If a base object or reference, this object will only be notified of
+references or base objects matching exactly. If a form list, it will filter using all of the forms in
+the form list (only items in the form list will be allowed through).">
+				<Param name="Form akFilter"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddItem" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Adds X of the specified item to this reference's inventory, possibly silently.
+ 
+akItemToAdd: The base form add to this reference's inventory. If this is a base object,
+it will add a newly-created item. If it is a reference, it will move/remove it from own
+place/container to this container. If a form list, then it will add aiCount of each item
+in the list. 
+ 
+aiCount: How many references to add. Note that this must be one if you are passing in an
+object reference. Default: 1 
+ 
+abSilent: If true, no message will be printed to the screen. Default: false">
+				<Param name="Form akItemToAdd"/>
+				<Param name="int aiCount = 1"/>
+				<Param name="bool abSilent = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddKeyIfNeeded" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Checks this object's inventory for a key used by the parameter ObjectWithNeededKey.
+If this object does not have the key, it creates it and adds it to its inventory.
+ 
+ObjectWithNeededKey: The reference that is locked with a key. It will create a key
+to this object and add it to the calling object if the calling object doesn't already have one.">
+				<Param name="ObjectReference ObjectWithNeededKey"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddKeyMapOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a key mapping option.
+ 
+Return value: The option ID.
+ 
+text: The option text.
+keyCode: The initial SKSE keycode. Will be shown as an image depicting the button.
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="Int keyCode"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddKeyMapOptionST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a key mapping state option.
+ 
+stateName: The state option name.
+text: The option text.
+keyCode: The initial SKSE keycode. Will be shown as an image depicting the button.
+flags: See SetOptionFlags.">
+				<Param name="String stateName"/>
+				<Param name="String text"/>
+				<Param name="Int keyCode"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddMenuOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds an option that opens a menu dialog when selected.
+ 
+Return value: The option ID.
+ 
+text: The option text.
+value: The initial displayed option value.
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="String value"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddMenuOptionST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a state option that opens a menu dialog when selected.
+ 
+stateName: The state option name.
+text: The option text.
+value: The initial displayed option value.
+flags: See SetOptionFlags.">
+				<Param name="String stateName"/>
+				<Param name="String text"/>
+				<Param name="String value"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddPerk" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Adds the specified Perk to this actor.
+ 
+akPerk: The Perk to add to this actor.">
+				<Param name="Perk akPerk"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddPerkPoints" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Adds the specified number of perk points to the player. The result is clamped at 255.
+This will enable the player to choose additional perks.
+ 
+aiPerkPoints: The number of perk points to add.">
+				<Param name="int aiPerkPoints"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddShout" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Adds the specified shout to this actor. Does not teach or unlock any of the words in the shout.
+This function is also silent -- there are no Story Manager or statistics tracking events fired.
+ 
+akShout: The Shout to add to this actor.">
+				<Param name="Shout akShout"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddSliderOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds an option that opens a slider dialog when selected.
+ 
+Return value: The option ID.
+ 
+text: The option text.
+value: The initial value of the slider.
+formatString: If a non-empty format string is passed, it will be used to format the value instead of just
+displaying a raw number. {N} in the format string is substited for the value rounded to N decimal places.
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="Float value"/>
+				<Param name="String formatString = &quot;{0}&quot;"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddSliderOptionST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a state option that opens a slider dialog when selected.
+ 
+stateName: The state option name.
+text: The option text.
+value: The initial value of the slider.
+formatString: If a non-empty format string is passed, it will be used to format the value instead of just
+displaying a raw number. {N} in the format string is substited for the value rounded to N decimal places.
+flags: See SetOptionFlags.">
+				<Param name="String stateName"/>
+				<Param name="String text"/>
+				<Param name="Float value"/>
+				<Param name="String formatString = &quot;{0}&quot;"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddSlotToMask" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Armor Script
+Requires SKSE
+ 
+Adds the specified slot mask to the armor and returns the new slot mask for the armor.
+ 
+slotMask: The slot mask to add to the armor.">
+			<Param name="int slotMask"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddSpell" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Adds the specified spell to this actor.
+ 
+akSpell: The spell to add to this actor.
+ 
+abVerbose: Pass false to suppress UI messages for spells added to the player.
+Spells added to NPCs never result in a UI message. Default: True">
+				<Param name="Spell akSpell"/>
+				<Param name="bool abVerbose = true"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddTextOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a generic text/value option.
+ 
+Return value: The option ID.
+ 
+text: The option text.
+value: The option value.
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="String value"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddTextOptionST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a generic text/value state option.
+ 
+stateName: The state option name.
+text: The option text.
+value: The option value.
+flags: See SetOptionFlags.">
+				<Param name="String stateName"/>
+				<Param name="String text"/>
+				<Param name="String value"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddToFaction" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Adds the Actor to a specified faction at rank 0. If the Actor is already in the faction, this function
+does nothing.
+ 
+akFaction: The faction to which the Actor should be added.">
+				<Param name="Faction akFaction"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddToggleOption" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a check box option that can be toggled on and off.
+ 
+Return value: The option ID.
+ 
+text: The option text.
+checked: The initial state of the check box.
+flags: See SetOptionFlags.">
+				<Param name="String text"/>
+				<Param name="Bool checked"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddToggleOptionST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Adds a check box state option that can be toggled on and off.
+ 
+stateName: The state option name.
+text: The option text.
+checked: The initial state of the check box.
+flags: See SetOptionFlags.">
+				<Param name="String stateName"/>
+				<Param name="String text"/>
+				<Param name="Bool checked"/>
+				<Param name="Int flags = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AddToMap" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Adds this reference (which must be a map marker) to the player's map, optionally making it available for
+fast-travel.
+ 
+abFastTravel: Whether the player can fast-travel to this marker or not. Default: False">
+				<Param name="bool abFastTravel = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AdvanceSkill" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Advances the progress of the provided Skill by the given amount (for the player only).
+ 
+asSkillName: The Skill to progress.
+ 
+afMagnitude: The amount by which the skill progress will be advanced. This is in Skill
+Usage amounts, so it will count towards skill progression but won't necessarily change
+the Skill itself. The amount must be positive. If the new amount exceeds the skill's level
+threshold, the skill will advance, and possibly level up.">
+				<Param name="string asSkillName"/>
+				<Param name="float afMagnitude"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Alias"/>
+		<KeyWord name="AllowBleedoutDialogue" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Allows this essential actor to speak with the player during bleedout (normally they can't).
+ 
+abCanTalk: True to allow the essential actor to speak to the player during bleedout and false
+to turn the behavior back to default.">
+				<Param name="bool abCanTalk"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AllowPCDialogue" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Flags this actor as being able to talk to the player or not (overrides the race flag).
+ 
+abTalk: Whether the actor can talk to the PC or not.">
+				<Param name="bool abTalk"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Ammo"/>
+		<KeyWord name="Apply" func="yes">
+			<Overload retVal="Function" descr="Member of: ImageSpaceModifier Script
+ 
+Applies this image-space modifier to the screen with the specified strength.
+ 
+afStrength: How &quot;strong&quot; the effect will be. 0 is no effect, 1 is full effect,
+though the strength is not clamped to this range. Numbers outside this range may provide...
+interesting results. Default: 1.0">
+				<Param name="float afStrength = 1.0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ApplyCrossFade" func="yes">
+			<Overload retVal="Function" descr="Member of: ImageSpaceModifier Script
+ 
+Applies this image-space modifier to the cross-fade modifier chain, fading between the last one on the
+chain and this one over the specified duration.
+ 
+afFadeDuration: How long the crossfade should take, in seconds. Default: 1.0">
+				<Param name="float afFadeDuration = 1.0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ApplyHavokImpulse" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Applies a Havok impulse force to this object of the specified direction and magnitude.
+ 
+afX: X component of the force vector.
+ 
+afY: Y component of the force vector.
+ 
+afZ: Z component of the force vector.
+ 
+afMagnitude: The magnitude of the force vector - how hard to hit this object.">
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afMagnitude"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Armor"/>
+		<KeyWord name="As"/>
+		<KeyWord name="AsChar"/>
+		<KeyWord name="Asin" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Math Script
+ 
+Calculates the arcsine of the value it is given. The returned value is in degrees.
+ 
+afValue: The value to get the arcsine of. This value must be no greater than 1, and no less then -1.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AsOrd"/>
+		<KeyWord name="AssociationType"/>
+		<KeyWord name="Atan" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Math Script
+ 
+Calculates the arctangent of the value it is given. The returned value is in degrees.
+ 
+afValue: The value to get the arctangent of.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="AttachAshPile" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Attaches an &quot;ash pile&quot; to the actor using the specified base object.
+Basically it's an object dropped at the actor's feet which cannot be picked up or moved by the player and,
+when activated, passes the activation onto the actor.
+ 
+akAshPileBase: The base object or leveled item list to use for the ash pile. If None is passed, it will
+use the default ash pile base object. Default: None">
+				<Param name="Form akAshPileBase"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Auto"/>
+		<KeyWord name="AutoReadOnly"/>
+		<KeyWord name="BlockActivation" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Blocks normal activation processing for this reference.
+References with blocked activation will still send OnActivate events to scripts attached to them.">
+				<Param name="bool abBlocked = true" />
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Book"/>
+		<KeyWord name="Bool"/>
+		<KeyWord name="CalculateEncounterLevel" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Calculates the reference's encounter level, based on the player's level, the area's level, and the
+passed-in difficulty.">
+				<Param name="int aiDifficulty = 4"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="CalculateFavorCost" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Game Script
+ 
+Calculates how many favor points the player would have to spend to pay for a favor with the specified price.">
+				<Param name="int aiFavorPrice"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="CanFastTravelToMarker" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: ObjectReference Script
+ 
+Checks if the player can fast travel to this map marker."/>
+		</KeyWord>
+		<KeyWord name="CanFlyHere" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Can this actor fly here?"/>
+		</KeyWord>
+		<KeyWord name="CanPayCrimeGold" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Faction Script
+ 
+Checks to see if the player can pay the crime gold for this faction."/>
+		</KeyWord>
+		<KeyWord name="CaptureFrameRate"/>
+		<KeyWord name="Cast" func="yes">
+			<Overload retVal="Function" descr="Member of: Spell Script
+ 
+Casts this spell from the specified object reference, optionally toward a target object reference.">
+				<Param name="ObjectReference akSource"/>
+				<Param name="ObjectReference akTarget = None"/>
+			</Overload>
+			<Overload retVal="Function" descr="Member of: Scroll Script
+ 
+Casts this scroll from the specified object reference, optionally toward a target object reference.">
+				<Param name="ObjectReference akSource"/>
+				<Param name="ObjectReference akTarget = None"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Ceiling" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Math Script
+ 
+Calculates the smallest integer greater than or equal to the passed in value.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Cell" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Math Script
+ 
+Calculates the smallest integer greater than or equal to the passed in value.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="CenterOnCell" funct="yes">
+			<Overload retVal="Function" descr="Member of: Debug Script
+ 
+Teleports the player to the specified cell. (Same as the CenterOnCell console command)">
+				<Param name="string asCellName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="CenterOnCellAndWait" func="yes">
+			<Overload retVal="Function" descr="Member of: Debug Script
+ 
+Teleports the player to the specified cell and does not return until they arrive.">
+				<Param name="string asCellName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ChangeHeadPart" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Requires SKSE
+ 
+Adds a headpart, if the type exists it will replace, must not be misc type.
+ 
+hpart: The head part to change to.">
+				<Param name="HeadPart hpart"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Class"/>
+		<KeyWord name="Clear" func="yes">
+			<Overload retVal="Function" descr="Member of: ReferenceAlias Script
+ 
+Clears any reference out of this alias. Will error if this alias is not optional."/>
+			<Overload retVal="Function" descr="Member of: LocationAlias Script
+ 
+Clears any location out of this alias. Will error if this alias is not optional."/>
+		</KeyWord>
+		<KeyWord name="ClearArrested" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Clears this actor's arrested state."/>
+		</KeyWord>
+		<KeyWord name="ClearDestruction" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Clears all effects of destruction from the object. Will NOT fire off destruction stage changed events."/>
+		</KeyWord>
+		<KeyWord name="ClearExpressionOverride" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Clears any expression override on this actor, letting the dialogue, AI, and other systems
+manage this actor's expression again."/>
+		</KeyWord>
+		<KeyWord name="ClearExtraArrows" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Clear any extra arrow 3D from an actor that occurred from being shot with arrows."/>
+		</KeyWord>
+		<KeyWord name="ClearForcedLandingMarker" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Clears an actor's obligation (set by SetForcedLandingMarker) to use a
+particular marker when this actor has to land. Just an alternate way of
+setting the forced landing marker to None."/>
+		</KeyWord>
+		<KeyWord name="ClearForcedMovement"/>
+		<KeyWord name="ClearKeepOffsetFromActor" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Clears any 'keep offset' from the actor. (They'll no longer try to stay a certain distance from another actor)"/>
+		</KeyWord>
+		<KeyWord name="ClearLookAt" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Clears this actor's script-forced look-at target."/>
+		</KeyWord>
+		<KeyWord name="ClearPrison" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Clears all prison variables on the player character so the game will know he is out of prison."/>
+		</KeyWord>
+		<KeyWord name="ClearRaceFlag">
+			<Overload retVal="Function" descr="Member of: Race Script
+ 
+Requires SKSE
+ 
+Clears the specified race flag.
+ 
+n: The Nth Race Flag">
+				<Param name="Int n"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ClearTempEffects" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Clears all temp effects (such as terrain effects) in the game."/>
+		</KeyWord>
+		<KeyWord name="CloseUserLog" func="yes">
+			<Overload retVal="Function" descr="Member of: Debug Script
+ 
+Closes the specified user log. If the log isn't open, it doesn't do anything.
+A subsequent call to OpenUserLog will cycle the logs on disk (so log 0 becomes 1, 1 becomes 2, etc).">
+				<Param name="string asLogName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="CompleteAllObjectives" func="yes">
+			<Overload retVal="Function" descr="Member of: Quest Script
+ 
+Flags all objectives on this quest as complete."/>
+		</KeyWord>
+		<KeyWord name="CompleteQuest" func="yes">
+			<Overload retVal="Function" descr="Member of: Quest Script
+ 
+Flags this quest as completed."/>
+		</KeyWord>
+		<KeyWord name="Conditional"/>
+		<KeyWord name="Cos" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Math Script
+ 
+Calculates the cosine of the value (in degrees) it is given.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="CreateDetectionEvent" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Creates a detection event at this object's location.">
+				<Param name="Actor akOwner"/>
+				<Param name="int aiSoundLevel = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DamageActorValue" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Applies damage to the specified actor value on this actor.">
+				<Param name="string asValueName"/>
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DamageAV" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Applies damage to the specified actor value on this actor.">
+				<Param name="string asValueName"/>
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DamageObject" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Damages this object, which may fire off OnDestructionStageChanged events.">
+				<Param name="float afDamage"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DBSendPlayerPosition"/>
+		<KeyWord name="Debug"/>
+		<KeyWord name="DebugChannelNotify"/>
+		<KeyWord name="DegreesToRadians" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Math Script
+ 
+Converts from degrees to radians.">
+				<Param name="float afDegrees"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Delete" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Flags this object reference as wanting to be deleted. A reference that is flagged for delete will be deleted as soon as:
+- It is no longer in a script property
+- It is no longer registered for updates
+- It is no longer being watched for Anim Events
+- It is no longer held in a quest Alias
+Only references created in game can actually be deleted."/>
+		</KeyWord>
+		<KeyWord name="DeleteWhenAble" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Waits for this reference to lose its parent cell, or for its parent cell to become detached, then deletes it."/>
+		</KeyWord>
+		<KeyWord name="Disable" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Disables this reference, fading it out of necessary.
+This function is latent and will wait for the fade out and/or disable to happen.">
+				<Param name="bool abFadeOut = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DisableLinkChain" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+This function disables all the linked refs, linked in a chain, from this reference."/>
+		</KeyWord>
+		<KeyWord name="DisableNoWait" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Disables this reference, fading it out of necessary.
+This function will not wait for the fade or the disable to happen before returning.">
+				<Param name="bool abFadeOut = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DisablePlayerControls" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Selectively disables the player's controls.">
+				<Param name="bool abMovement = true"/>
+				<Param name="bool abFighting = true"/>
+				<Param name="bool abCamSwitch = false"/>
+				<Param name="bool abLooking = false"/>
+				<Param name="bool abSneaking = false"/>
+				<Param name="bool abMenu = true"/>
+				<Param name="bool abActivate = true"/>
+				<Param name="bool abJournalTabs = false"/>
+				<Param name="int aiDisablePOVType = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Dismount" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Forces the actor to dismount."/>
+		</KeyWord>
+		<KeyWord name="Dispel" func="yes">
+			<Overload retVal="Function" descr="Member of: ActiveMagicEffect Script
+ 
+Will dispel this active magic effect."/>
+		</KeyWord>
+		<KeyWord name="DispelAllSpells" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Will dispel all spells affecting this actor with the exception of Abilities, Diseases, worn or
+constant effect enchantments, or addictions."/>
+		</KeyWord>
+		<KeyWord name="DispelSpell" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Will dispel all magic effects from this actor that came from the given spell.">
+				<Param name="Spell akSpell"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DoCombatSpellApply" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Adds the specified spell to the target actor from this one as the caster.
+Use this instead of AddSpell to apply a spell in combat so that die rolls and other appropriate events can
+occur (such as applying a disease through a spell).">
+				<Param name="Spell akSpell"/>
+				<Param name="ObjectReference akTarget"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DrawWeapon" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces this actor to draw his weapon."/>
+		</KeyWord>
+		<KeyWord name="DropObject" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of: ObjectReference Script
+ 
+Drops the specified object from this object's inventory.">
+				<Param name="Form akObject"/>
+				<Param name="int aiCount = 1"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="DumpAliasData" func="yes">
+			<Overload retVal="Function" descr="Member of: Debug Script
+ 
+Dumps all alias fill information on the specified quest to the alias dump file.
+The dump files are stored in &quot;&lt;game folder&gt;/Logs/Script/AliasDump&quot;.">
+				<Param name="Quest akQuest"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EffectShader"/>
+		<KeyWord name="Else"/>
+		<KeyWord name="ElseIf"/>
+		<KeyWord name="Enable" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Enables this reference, popping it into existance.
+This function is latent and will wait for the enable to happen.">
+				<Param name="bool abFadeIn = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EnableAI" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Enables or disables this actor's AI.">
+				<Param name="bool abEnable = true"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EnableFastTravel" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Enables or disables the player's ability to fast travel.">
+				<Param name="abEnable = true"/>
+			</Overload>
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Enables or disables fast travel to this reference (which must be a map marker).">
+				<Param name="bool abEnable = true"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EnableLinkChain" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+This function enables all the linked refs, linked in a chain, from this reference."/>
+		</KeyWord>
+		<KeyWord name="EnableNoWait" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Enables this reference, popping it into existence.
+This function will return immediately and not wait for the object to be enabled or faded in.">
+				<Param name="bool abFadeIn = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EnablePlayerControls" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Selectively enables the player's controls.">
+				<Param name="bool abMovement = true"/>
+				<Param name="bool abFighting = true"/>
+				<Param name="bool abCamSwitch = true"/>
+				<Param name="bool abLooking = true"/>
+				<Param name="bool abSneaking = true"/>
+				<Param name="bool abMenu = true"/>
+				<Param name="bool abActivate = true"/>
+				<Param name="bool abJournalTabs = true"/>
+				<Param name="int aiDisablePOVType = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EncounterZone"/>
+		<KeyWord name="EndEvent"/>
+		<KeyWord name="EndFrameRateCapture"/>
+		<KeyWord name="EndFunction"/>
+		<KeyWord name="EndIf"/>
+		<KeyWord name="EndProperty"/>
+		<KeyWord name="EndState"/>
+		<KeyWord name="EndWhile"/>
+		<KeyWord name="EquipItem" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces this actor to equip the specified item, preventing removal if requested.">
+				<Param name="Form akItem"/>
+				<Param name="bool abPreventRemoval = false"/>
+				<Param name="bool abSilent = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EquipItemEx" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Requires SKSE
+ 
+Forces this actor to equip the specified item at the specified slot.
+ 
+item: The Form of the item to equip.
+equipSlot: The slot you wish to equip the item to.
+	Default Slot = 0
+	Right Hand Slot = 1
+	Left Hand Slot = 2
+preventUnequip: If true, will prevent unequipping of the item for the actor.
+equipSound: If true, no sound will be played on the equip.">
+				<Param name="Form item"/>
+				<Param name="Int equipSlot = 0"/>
+				<Param name="Bool preventUnequip = False"/>
+				<Param name="Bool equipSound = True"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EquipShout" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces this actor to equip the specified shout.">
+				<Param name="Shout akShout"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EquipSpell" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces the actor to equip the specified spell in the specified source.">
+				<Param name="Spell akSpell"/>
+				<Param name="int aiSource"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="EvaluatePackage" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces this actor's AI to re-evaluate its package stack."/>
+		</KeyWord>
+		<KeyWord name="Event"/>
+		<KeyWord name="Explosion"/>
+		<KeyWord name="Extends"/>
+		<KeyWord name="Faction"/>
+		<KeyWord name="FadeOutGame" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+FadeOutGame uses the in-game Fader menu to fade the game to black, or vice versa.">
+				<Param name="bool abFadingOut"/>
+				<Param name="bool abBlackFade"/>
+				<Param name="float afSecsBeforeFade"/>
+				<Param name="float afFadeDuration"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FailAllObjectives" func="yes">
+			<Overload retVal="Function" descr="Member of: Quest Script
+ 
+Flags all objectives on this quest as failed."/>
+		</KeyWord>
+		<KeyWord name="False"/>
+		<KeyWord name="FastTravel" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Fast-travels the player to the specified ObjectReference's location." >
+				<Param name="ObjectReference akDestination"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Find" func="yes">
+			<Overload retVal="Int Function" descr="Member of: FormList Script
+ 
+Finds the specified form in the form list and returns its index or returns -1 if it's not a member.
+ 
+apForm: The form whose index is to be returned.">
+				<Param name="Form apForm"/>
+			</Overload>
+			<Overload retVal="Int Function" descr="Member of: StringUtil Script
+ 
+Requires SKSE
+ 
+Returns the index of the first occurence of specified phrase inside given string, optionally starting on selected position.
+ 
+str: The string in which to search.
+toFind: The string to looking for.
+startIndex: An optional index at which the function should start looking.">
+				<Param name="String str"/>
+				<Param name="String toFind"/>
+				<Param name="Int startIndex = 0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindClosestActor" func="yes">
+			<Overload retVal="Actor Function" descr="Member of: Game Script
+ 
+Finds the closest actor within a given radius of a location.">
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindClosestActorFromRef" func="yes">
+			<Overload retVal="Actor Function" descr="Member of: Game Script
+ 
+Finds the closest actor within a given radius of a reference.
+ 
+arCenter: The reference to search around.
+afRadius: Maximum distance from center to look for an actor.">
+				<Param name="ObjectReference arCenter"/>
+				<Param name="Float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindClosestReferenceOfAnyTypeInList" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of: Game Script
+ 
+Finds the closest reference of any of the types in the list from the given location and within the given radius.">
+				<Param name="FormList arBaseObjectsA"/>
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindClosestReferenceOfAnyTypeInListFromRef" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of: Game Script
+ 
+Finds the closest reference of any of the types in the list around the target reference and within the given radius.
+ 
+arBaseObjectsA: The list of valid base objects to look for.
+arCenter: The reference to use as the center point of the search.
+afRadius: Maximum distance from center to look for a reference.">
+				<Param name="FormList arBaseObjects"/>
+				<Param name="ObjectReference arCenter"/>
+				<Param name="Float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindClosestReferenceOfType" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of: Game Script
+ 
+Finds the closest reference of the given type from the given location and within the given radius.">
+				<Param name="Form arBaseObject"/>
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindClosestReferenceOfTypeFromRef" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of:  Script
+ 
+Finds the closest reference of the given type from the location of the target reference and within the given radius.
+ 
+arBaseObject: The type of base object to look for.
+arCenter: Reference to use as a center to search from.
+afRadius: Maximum distance from center to look for a reference.">
+				<Param name="Form arBaseObject"/>
+				<Param name="ObjectReference arCenter"/>
+				<Param name="Float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindRandomActor" func="yes">
+			<Overload retVal="Actor Function" descr="Member of: Game Script
+ 
+Finds a random actor within a given radius of a location.">
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindRandomActorFromRef" func="yes">
+			<Overload retVal="Actor Function" descr="Member of: Game Script
+ 
+Finds a random actor within a given radius of a location.
+ 
+afX: center of the search, X component.
+afY: center of the search, Y component.
+afZ: center of the search, Z component.
+afRadius: Maximum distance from center to look for an actor.">
+				<Param name="Float afX"/>
+				<Param name="Float afY"/>
+				<Param name="Float afZ"/>
+				<Param name="Float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindRandomReferenceOfAnyTypeInList" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of: Game Script
+ 
+Finds a random reference of any of the types in the list from the given location and within the given radius.">
+				<Param name="FormList arBaseObjectsA"/>
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindRandomReferenceOfAnyTypeInListFromRef" func="yes">
+			<Overload retVal="ObjectReference" descr="Member of: Game Script
+ 
+Finds a random reference of any of the types in the list from the given reference location and within the given radius.
+ 
+arBaseObjectsA: The list of valid base objects to look for.
+arCenter: The reference to use as a center of the search.
+afRadius: Maximum distance from center to look for a reference. The unit of this parameter is comparatively much shorter
+than the radius of a cloak spell or the feet parameter given to &quot;target actor&quot; and &quot;target location&quot; spells.
+Try starting with a value of 400.">
+				<Param name="FormList arBaseObjects"/>
+				<Param name="ObjectReference arCenter"/>
+				<Param name="Float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindRandomReferenceOfType" func="yes">
+			<Overload retVal="ObjectReference Function" descr="Member of: Game Script
+ 
+Finds a random reference of the given type from the given location and within the given radius.">
+				<Param name="Form arBaseOBject"/>
+				<Param name="float afX"/>
+				<Param name="float afY"/>
+				<Param name="float afZ"/>
+				<Param name="float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindRandomReferenceOfTypeFromRef" func="yes">
+			<Overload retVal="" descr="Member of: Game Script
+ 
+Finds a random reference of the given type from the center of the target reference and within the given radius.
+ 
+arBaseObject: The type of base object to look for.
+arCenter: The reference to use as the center of the search.
+afRadius: Maximum distance from center to look for a reference.">
+				<Param name="Form arBaseObject"/>
+				<Param name="ObjectReference arCenter"/>
+				<Param name="Float afRadius"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="FindWeather" func="yes">
+			<Overload retVal="Weather Function" descr="Member of: Weather Script
+ 
+Finds a weather of the given type for the currently occupied region (if applicable) or climate.">
+				<Param name="int auiType"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Fire" func="yes">
+			<Overload retVal="Function" descr="Member of: Weapon Script
+ 
+Fires the weapon from the the specified object reference, using the specified ammo.">
+				<Param name="ObjectReference akSource"/>
+				<Param name="Ammo akAmmo = None"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Float"/>
+		<KeyWord name="Floor" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Math Script
+ 
+Calculates the largest integer less than or equal to the passed in value.">
+				<Param name="float afValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceActive" func="yes">
+			<Overload retVal="Function" descr="Member of: Weather Script
+ 
+Forces the active weather on the sky to be this weather.
+Weather will become fully transitioned immediately.
+To have the weather transition in normally, use SetActive instead.">
+				<Param name="bool abOverride = false"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceActorValue" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces the specified actor value to the passed-in value.">
+				<Param name="string asValueName"/>
+				<Param name="float afNewValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceAddRagdollToWorld" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Forcibly adds the reference's ragdoll to the world"/>
+		</KeyWord>
+		<KeyWord name="ForceAV" func="yes">
+			<Overload retVal="Function" descr="Member of: Actor Script
+ 
+Forces the specified actor value to the passed-in value.">
+				<Param name="string asValueName"/>
+				<Param name="float afNewValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceFirstPerson" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Force the player to go in to 1st person camera mode."/>
+		</KeyWord>
+		<KeyWord name="ForceLocationTo" func="yes">
+			<Overload retVal="Function" descr="Member of: LocationAlias Script
+ 
+Forces this alias to use the specified Location.">
+				<Param name="Location akNewLocation"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceMovementDirection"/>
+		<KeyWord name="ForceMovementDirectionRamp"/>
+		<KeyWord name="ForceMovementRotationSpeed"/>
+		<KeyWord name="ForceMovementRotationSpeedRamp"/>
+		<KeyWord name="ForceMovementSpeed"/>
+		<KeyWord name="ForceMovementSpeedRamp"/>
+		<KeyWord name="ForcePageReset" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Forces OnPageReset to be executed again after the current event has completed.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceRefIfEmpty" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: ReferenceAlias Script
+ 
+Forces this alias to use the specified reference, but only if the alias is currently empty.
+ 
+akNewRef: The ObjectReference to tell this alias to use, if empty.">
+				<Param name="ObjectReference akNewRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceRefTo" func="yes">
+			<Overload retVal="Function" descr="Member of: ReferenceAlias Script
+ 
+Forces this alias to use the specified reference.">
+				<Param name="ObjectReference akNewRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ForceRemoveRagdollFromWorld" func="yes">
+			<Overload retVal="Function" descr="Member of: ObjectReference Script
+ 
+Forcibly removes the reference's ragdoll from the world"/>
+		</KeyWord>
+		<KeyWord name="ForceStart" func="yes">
+			<Overload retVal="Function" descr="Member of: Scene Script
+ 
+Starts the scene and force stops all scene currently running on any actors in this scene."/>
+		</KeyWord>
+		<KeyWord name="ForceTargetAngle"/>
+		<KeyWord name="ForceTargetDirection"/>
+		<KeyWord name="ForceTargetSpeed"/>
+		<KeyWord name="ForceThirdPerson" func="yes">
+			<Overload retVal="Function" descr="Member of: Game Script
+ 
+Force the player to go in to 3rd person camera mode."/>
+		</KeyWord>
+		<KeyWord name="Form"/>
+		<KeyWord name="Function"/>
+		<KeyWord name="Game"/>
+		<KeyWord name="GameTimeToString" func="yes">
+			<Overload retVal="String Function" descr="Member of: Utility Script
+ 
+Converts the passed-in game time (in game days passed) to a string detailing the date and time it represents.
+The resulting format is: &quot;MM/DD/YYYY HH:MM&quot; and uses a 24-hour clock.
+ 
+afGameTime: The game time to convert to a string - in game days passed.
+ 
+Return value: A string representing the date and time that the game time represents.">
+				<Param name="Float afGameTime"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Get"/>
+		<KeyWord name="GetActorBase" func="yes">
+			<Overload retVal="ActorBase Function" descr="Member of: Actor Script
+ 
+Gets the ActorBase of the actor.
+ 
+Return value: The ActorBase for this actor.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetActorOwner" func="yes">
+			<Overload retVal="ActorBase Function" descr="Member of: Cell Script
+ 
+Gets the ActorBase that owns this cell. Will return None if the cell isn't owned by an actor.
+ 
+Return value: The ActorBase that owns this cell.">
+			</Overload>
+			<Overload retVal="ActorBase Function" descr="Member of: ObjectReference Script
+ 
+Gets the ActorBase that owns this object. Will return None if the object isn't owned by an actor.
+ 
+Return value: The ActorBase that owns this object.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetActorReference" func="yes">
+			<Overload retVal="Actor Function" descr="Member of: ReferenceAlias Script
+ 
+Attempts to retrieve the actor this alias is pointing at.
+If it has not been resolved to a reference, or the reference is not an Actor, it will return None.
+ 
+Return value: The Actor this alias is pointing at, or None if the alias has not been resolved or is not an Actor.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetActorValue" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Actor Script
+ 
+Gets the specified actor value from the actor.
+ 
+asValueName: The name of the actor value to get the value of. Actor Value List.
+ 
+Return value: The value of the requested actor value.">
+				<Param name="String asValueName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetActorValuePercentage" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Actor Script
+ 
+Gets the specified actor value from the actor as a percentage of its maximum value (from 0 to 1).
+ 
+asValueName: The name of the actor value to get the value of. Actor Value List.
+ 
+Return value: The value of the requested actor value as a percentage of its maximum value.
+If 0, then the actor value is at its minimum.
+If 1, then the actor value is at its maximum.">
+				<Param name="String asValueName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAlias" func="yes">
+			<Overload retVal="Alias Function" descr="Member of: Quest Script
+ 
+Obtains the alias with the specified ID that is attached to this quest.
+ 
+iAliasID: The ID number of the alias to retrieve (as shown in the hidden second column on the Quest Aliases tab).
+ 
+Return value: The Alias associated with the passed in ID, or None if the ID is invalid.">
+				<Param name="Int iAliasID"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAliasByName"/>
+		<KeyWord name="GetAllowDualWielding"/>
+		<KeyWord name="GetAngleX" func="yes">
+			<Overload retVal="Float Function" descr="Member of: ObjectReference Script
+ 
+Gets this object's rotation around the x axis.
+ 
+Return value: This object's rotation around the x axis, in degrees.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAngleY" func="yes">
+			<Overload retVal="Float Function" descr="Member of: ObjectReference Script
+ 
+Gets this object's rotation around the y axis.
+ 
+Return value: This object's rotation around the y axis, in degrees.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAngleZ" func="yes">
+			<Overload retVal="Float Function" descr="Member of: ObjectReference Script
+ 
+Gets this object's rotation around the z axis.
+ 
+Return value: This object's rotation around the Z axis, in degrees.
+Z angle is measured with the positive y-axis as 0 and increasing clockwise from there.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAnimationVariableBool" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: ObjectReference Script
+ 
+Gets the value of a variable on the reference's animation graph - Bool version.
+ 
+asVariableName: The name of the variable to read from the graph.
+ 
+Return value: The variable's current value.">
+				<Param name="String asVariableName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAnimationVariableFloat" func="yes">
+			<Overload retVal="Float Function" descr="Member of: ObjectReference Script
+ 
+Gets the value of a variable on the reference's animation graph - Float version.
+ 
+asVariableName: The name of the variable to read from the graph.
+ 
+Return value: The variable's current value.">
+				<Param name="String asVariableName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAnimationVariableInt" func="yes">
+			<Overload retVal="Int Function" descr="Member of: ObjectReference Script
+ 
+Gets the value of a variable on the reference's animation graph - Int version.
+ 
+asVariableName: The name of the variable to read from the graph.
+ 
+Return value: The variable's current value.">
+				<Param name="String asVariableName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetArmorRating" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Armor Script
+ 
+Requires SKSE
+ 
+Gets the armor rating of the armor.
+ 
+Return value: The armor rating of the armor.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAssociatedSkill" func="yes">
+			<Overload retVal="" descr="Member of: MagicEffect Script
+ 
+Obtains the skill that this magic effect is associated with.
+ 
+Return value: The name of the skill the effect is associated with.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAt" func="yes">
+			<Overload retVal="Form Function" descr="Member of: FormList Script
+ 
+Returns the form at a specified index in the list.
+ 
+aiIndex: The index in the list we want to fetch the form from.
+ 
+Return value: Returns the form at index aiIndex, none in case of error (such as wrong index value).">
+				<Param name="Int aiIndex"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAV" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Actor Script
+ 
+Gets the specified actor value from the actor.
+ 
+asValueName: The name of the actor value to get the value of. Actor Value List.
+ 
+Return value: The value of the requested actor value.">
+				<Param name="String asValueName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetAvoidThreatChance"/>
+		<KeyWord name="GetAverageFrameRate"/>
+		<KeyWord name="GetAVPercentage" func="yes">
+			<Overload retVal="Float Function" descr="Member of: Actor Script
+ 
+Gets the specified actor value from the actor as a percentage of its maximum value (from 0 to 1).
+ 
+asValueName: The name of the actor value to get the value of. Actor Value List.
+ 
+Return value: The value of the requested actor value as a percentage of its maximum value.
+If 0, then the actor value is at its minimum.
+If 1, then the actor value is at its maximum.">
+				<Param name="String asValueName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBaseActorValue">
+			<Overload retVal="Float Function" descr="Member of: Actor Script
+ 
+Gets the base value of the specified actor value from the actor.
+ 
+asValueName: The name of the actor value to get the base value of. Actor Value List.">
+				<Param name="String asValueName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBaseAV">
+			<Overload retVal="Float Function" descr="Member of: Actor Script
+ 
+Gets the base value of the specified actor value from the actor.
+ 
+asValueName: The name of the actor value to get the base value of. Actor Value List.">
+				<Param name="String asValueName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBaseDamage">
+			<Overload retVal="Int Function" descr="Member of: Weapon Script
+ 
+Requires SKSE
+ 
+Returns the base damage of this weapon.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBaseObject">
+			<Overload retVal="MagicEffect Function" descr="Member of: ActiveMagicEffect Script
+ 
+Obtains the MagicEffect this active magic effect is based on.">
+			</Overload>
+			<Overload retVal="Form Function" descr="Member of: ObjectReference Script
+ 
+Obtains the base object for this reference.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBlue">
+			<Overload retVal="Int Function" descr="Member of: ColorForm Script
+ 
+Requires SKSE
+ 
+Returns the blue component of this color form.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBribeAmount">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Returns the amount of gold required to bribe this actor.">
+				<Param name=""/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetBudgetCount"/>
+		<KeyWord name="GetBudgetName"/>
+		<KeyWord name="GetCameraState" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Game Script
+ 
+Returns an integer specific to one of 13 possible camera states.
+ 
+Return value:
+0 - First person
+1 - Auto vanity
+2 - VATS
+3 - Free
+4 - Iron sights
+5 - Furniture
+6 - Transition
+7 - Tween menu
+8 - Third person (1)
+9 - Third person (2)
+10 - Horse
+11 - Bleedout
+12 - Dragon.">
+			</Overload>
+		</KeyWord>	
+		<KeyWord name="GetCasterActor">
+			<Overload retVal="Actor Function" descr="Member of: ActiveMagicEffect Script
+ 
+Obtains the Actor that cast the spell this effect is from.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCastTime">
+			<Overload retVal="Float Function" descr="Member of: Scroll Script
+ 
+Requires SKSE
+ 
+Returns the time in seconds this scroll takes to cast.">
+			</Overload>
+			<Overload retVal="Float Function" descr="Member of: Spell Script
+ 
+Requires SKSE
+ 
+Returns the time in seconds this spell takes to cast.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetClass">
+			<Overload retVal="Class Function" descr="Member of: ActorBase Script
+ 
+Obtains this actor's Class.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetClassification">
+			<Overload retVal="Int Function" descr="Member of: Weather Script
+ 
+Gets this weather's classification, as specified in the editor.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCloseRangeDuelingCircleMult"/>
+		<KeyWord name="GetCloseRangeDuelingFallbackMult"/>
+		<KeyWord name="GetCloseRangeFlankingFlankMult"/>
+		<KeyWord name="GetCloseRangeFlankingStalkMult"/>
+		<KeyWord name="GetCombatState">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Gets the actor's current combat state.
+0 = Not in combat.
+1 = In combat.
+2 = Searching.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCombatStyle">
+			<Overload retVal="CombatStyle" descr="Member of: ActorBase Script
+ 
+Requires SKSE
+ 
+Get the combat style of this actor.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCombatTarget">
+			<Overload retVal="Actor Function" descr="Member of: Actor Script
+ 
+Obtains the actor this actor is currently in combat with.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetConfigName">
+			<Overload retVal="String Function" descr="Member of: Debug Script
+ 
+Obtains the game's build configuration.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCostliestEffectIndex">
+			<Overload retVal="Int Function" descr="Member of: Enchantment Script
+ 
+Requires SKSE
+ 
+Returns the index of the costliest effect on an enchantment.">
+			</Overload>
+			<Overload retVal="Int Function" descr="Member of: Ingredient Script
+ 
+Requires SKSE
+ 
+Returns the index of the costliest effect on an ingredient.">
+			</Overload>
+			<Overload retVal="Int Function" descr="Member of: Potion Script
+ 
+Requires SKSE
+ 
+Returns the index of the costliest effect on a potion.">
+			</Overload>
+			<Overload retVal="Int Function" descr="Member of: Scroll Script
+ 
+Requires SKSE
+ 
+Returns the index of the costliest effect on a scroll.">
+			</Overload>
+			<Overload retVal="Int Function" descr="Member of: Spell Script
+ 
+Requires SKSE
+ 
+Returns the index of the costliest effect on a spell.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCrimeFaction">
+			<Overload retVal="Faction Function" descr="Member of: Actor Script
+ 
+Obtains the Faction this actor reports it's crimes to.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCrimeGold">
+			<Overload retVal="Int Function" descr="Member of: Faction Script
+ 
+Get the amount of crime gold on this faction that the player needs to pay.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCrimeGoldNonViolent">
+			<Overload retVal="Int Function" descr="Member of: Faction Script
+ 
+Get the amount of crime gold on this faction that the player needs to pay for non-violent crimes.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCrimeGoldViolent">
+			<Overload retVal="Int Function" descr="Member of: Faction Script
+ 
+Get the amount of crime gold on this faction that the player needs to pay for violent crimes.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCritDamage">
+			<Overload retVal="Int Function" descr="Member of: Weapon Script
+ 
+Requires SKSE
+ 
+Returns the critical damage of this weapon.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentBudget"/>
+		<KeyWord name="GetCurrentDestructionStage">
+			<Overload retVal="Int Function" descr="Member of: ObjectReference Script
+ 
+Obtains the current destruction stage of the object.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentGameTime">
+			<Overload retVal="Float Function" descr="Member of: Utility Script
+ 
+Obtains the current game time in terms of game days passed (same as the global variable)">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentLocation">
+			<Overload retVal="Location Function" descr="Member of: ObjectReference Script
+ 
+Obtains this reference's current Location.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentMemory"/>
+		<KeyWord name="GetCurrentPackage">
+			<Overload retVal="Package Function" descr="Member of: Actor Script
+ 
+Gets the Package this actor is currently running.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentRealTime">
+			<Overload retVal="Float Function" descr="Member of: Utility Script
+ 
+Gets the number of real-world seconds that have elapsed since the game has launched.
+This time does not count time the game has been alt-tabbed, or other cases where the game has been frozen
+(i.e. during a save or load, time in a menu is counted). This function is most useful for timing a long operation.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentScene">
+			<Overload retVal="Scene Function" descr="Member of: ObjectReference Script
+ 
+Obtains the Scene this reference is currently in, if any. If the reference isn't participating in a scene, it will return None.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentStageID">
+			<Overload retVal="Int Function" descr="Member of: Quest Script
+ 
+Obtains the highest completed stage in this quest.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentWeather">
+			<Overload retVal="Weather Function" descr="Member of: Weather Script
+ 
+Gets the current weather.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCurrentWeatherTransition">
+			<Overload retVal="Float Function" descr="Member of: Weather Script
+ 
+Returns a value from 0.0 to 1.0 describing how far in the current weather has transitioned. If no transition is occurring,
+this function returns 1.0 and GetOutgoingWeather returns none. If this function returns any other value,
+GetOutgoingWeather returns the weather which is transitioning out and GetCurrentWeather returns the weather which is transitioning in.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetCustomControl" func="yes">
+			<Overload retVal="String Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Returns the control mapped to the given keycode.
+ 
+Override this function to check the given keycode against any custom controls you're using in your config menu.
+This enables other mods to react to keymap conflicts.
+ 
+Return value: The name of the mapped control, or &quot;&quot; if the keycode was unmapped.
+ 
+keyCode: The checked keycode.">
+				<Param name="Int keyCode"/>
+			</Overload>
+		</KeyWord>		
+		<KeyWord name="GetDeadCount">
+			<Overload retVal="Int Function" descr="Member of: ActorBase Script
+ 
+Obtains the number of actors using this actor base that are dead.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetDefensiveMult"/>
+		<KeyWord name="GetDialogueTarget">
+			<Overload retVal="Actor Function" descr="Member of: Actor Script
+ 
+Obtains the actor this actor is currently in dialogue with.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetDistance">
+			<Overload retVal="Float Function" descr="Member of: ObjectReference Script
+ 
+Calculates the distance in units between this object and the passed in one.
+ 
+akOther: The object to find the distance to.">
+				<Param name="ObjectReference akOther"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetDuration">
+			<Overload retVal="Float Function" descr="Member of: ActiveMagicEffect Script
+ 
+Returns the Duration of the Active Magic Effect.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEditorLocation">
+			<Overload retVal="Location Function" descr="Member of: ObjectReference Script
+ 
+Obtains this reference's editor Location.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEffectiveMagickaCost" func="yes">
+			<Overload retVal="Int Function" descr="Member of: Spell Script
+ 
+Requires SKSE
+ 
+Returns the effective magicka cost of the spell for the given caster.
+ 
+caster: The actor to calculate the cost for.">
+				<Param name="Actor caster"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEnchantment">
+			<Overload retVal="Enchantment Function" descr="Member of: Armor Script
+ 
+Requires SKSE
+ 
+Returns the enchantment associated with this armor. Note refers to the base object, not an object reference.">
+			</Overload>
+			<Overload retVal="Enchantment Function" descr="Member of: Weapon Script
+ 
+Requires SKSE
+ 
+Returns the enchantment associated with this armor. Note refers to the base object, not an object reference.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEquippedItemType">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Gets the type of item the actor currently has equipped in the specified hand.
+ 
+aiHand: The hand to get the type from.
+	0: Left hand.
+	1: Right hand.
+ 
+Return value:
+	0: Nothing.
+	1: One-handed sword
+	2: One-handed dagger
+	3: One-handed axe
+	4: One-handed mace
+	5: Two-handed sword
+	6: Two-handed axe/mace
+	7: Bow
+	8: Staff
+	9: Magic spell
+	10: Shield
+	11: Torch
+	12: Crossbow">
+				<Param name="Int aiHand"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEquippedObject" func="yes">
+			<Overload retVal="Form Function" descr="Member of: Actor Script
+ 
+Requires SKSE
+ 
+Returns the object currently equipped in the specified location.
+ 
+location: The slot to check.
+	0: Left Hand
+	1: Right Hand
+	2: Shout">
+				<Param name="Int Location"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEquippedShield">
+			<Overload retVal="Armor Function" descr="Member of: Actor Script
+ 
+Gets the actor's currently equipped shield.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEquippedShout">
+			<Overload retVal="Shout Function" descr="Member of: Actor Script
+ 
+Gets the actor's currently equipped shout.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEquippedSpell">
+			<Overload retVal="Spell Function" descr="Member of: Actor Script
+ 
+Gets the spell the actor currently has equipped in the specified source.
+ 
+aiSource: The source to get the spell from.
+	0: Left hand
+	1: Right hand
+	2: Other
+	3: Instant">
+				<Param name="Int aiSource"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetEquippedWeapon">
+			<Overload retVal="Weapon Function" descr="Member of: Actor Script
+ 
+Gets the actor's currently equipped weapon.
+ 
+abLeftHand: If true, will return the weapon equipped in the actor's left hand. If false, will return the right-hand weapon instead.">
+				<Param name="Bool abLeftHand = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFaceMorph"/>
+		<KeyWord name="GetFacePreset">
+			<Overload retVal="Int Function" descr="Member of: ActorBase Script
+ 
+Requires SKSE
+ 
+Returns the face morph preset of this actor base.
+ 
+index: the index of the face morph preset">
+				<Param name="Int index"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFactionOwner">
+			<Overload retVal="Faction Function" descr="Member of: Cell Script
+ 
+Gets the Faction that owns this cell. Will return None if the cell isn't owned by a faction.">
+			</Overload>
+			<Overload retVal="Faction Function" descr="Member of: ObjectReference Script
+ 
+Gets the Faction that owns this object. Will return None if the object isn't owned by a faction.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFactionRank">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Gets this actor's rank in the specified faction.
+ 
+akFaction: The Faction to get this actor's rank in.
+ 
+Return value:
+-2: If the Actor is not in the faction.
+-1: If the Actor is in the faction, with a rank set to -1. By convention, this means they may eventually become a member of this faction.
+Non-negative: The actor's rank in the faction.">
+				<Param name="Faction akFaction"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFactionReaction">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Get the faction-based reaction between this actor and another.
+ 
+akOther: The other actor to determine our faction-based reaction with.
+ 
+Return value:
+0: Neutral
+1: Enemy
+2: Ally
+3: Friend">
+				<Param name="Actor akOther"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFavorPoints"/>
+		<KeyWord name="GetFlightDiveBombChance"/>
+		<KeyWord name="GetFlightFlyingAttackChance"/>
+		<KeyWord name="GetFlightHoverChance"/>
+		<KeyWord name="GetFlyingState">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Gets the current flying state of this actor.
+ 
+Return value:
+	0: Not flying
+	1: Taking off
+	2: Cruising
+	3: Hovering
+	4: Landing">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetForcedLandingMarker">
+			<Overload retVal="ObjectReference Function" descr="Member of: Actor Script
+ 
+Returns the ref at which this actor is obliged to land, if one was set by SetForcedLandingMarker (or none, if none was set).">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetForm">
+			<Overload retVal="Form Function" descr="Member of: Game Script
+ 
+Obtains the form specified by its form ID number.
+ 
+aiFormID: The form ID number of the form we want. (FormID proceeded by 0x) For example Form ID &quot;0001DA07&quot; is given as: 0x0001DA07">
+				<Param name="Int aiFormID"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFormFromFile" func="yes">
+			<Overload retVal="Form Function" descr="Member of: Game Script
+ 
+Obtains the form specified by its form ID number which originated in the specified file.
+The ID for a form changes based on the load order of the file it loaded from.
+So a form which shows up as 0101ABCD in the editor may show up as
+0401ABCD in game depending on how many other files load before it.
+This function lets you blindly grab a form based on the lower bytes of its ID
+and the expected file which created the form.
+ 
+aiFormID: The form ID number of the form we want. (FormID proceeded by 0x).
+For example Form ID &quot;0001ABCD&quot; is given as: 0x0001ABCD
+asFilename: The name of the file we expect the form to have originated in.">
+				<Param name="Int aiFormID"/>
+				<Param name="String asFilename"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetFormID">
+			<Overload retVal="Int Function" descr="Member of: Form Script
+ 
+Returns this form's form ID.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGameSettingFloat">
+			<Overload retVal="Float Function" descr="Member of: Game Script
+ 
+Obtains the value of the specified float game setting
+ 
+asGameSetting: The name of the setting to get.">
+				<Param name="String asGameSetting"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGameSettingInt">
+			<Overload retVal="Int Function" descr="Member of: Game Script
+ 
+Obtains the value of the specified int game setting
+ 
+asGameSetting: The name of the setting to get.">
+				<Param name="String asGameSetting"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGameSettingString">
+			<Overload retVal="String Function" descr="Member of: Game Script
+ 
+Obtains the value of the specified string game setting
+ 
+asGameSetting: The name of the setting to get.">
+				<Param name="String asGameSetting"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGemSize"/>
+		<KeyWord name="GetGiftFilter">
+			<Overload retVal="FormList Function" descr="Member of: ActorBase Script
+ 
+Obtains this actor's FormList of keywords to use as a gift filter.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGoldAmount">
+			<Overload retVal="Int Function" descr="Member of: Actor Script
+ 
+Obtains the amount of gold on this actor's person.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGoldValue">
+			<Overload retVal="Int Function" descr="Member of: Form Script
+ 
+Returns the value of this form in gold. If called on a form that doesn't have a value (like a quest), it will return -1.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGreen">
+			<Overload retVal="Int Function" descr="Member of: ColorForm Script
+ 
+Requires SKSE
+ 
+Returns the green component of this color form.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetGroupOffensiveMult"/>
+		<KeyWord name="GetHairColor"/>
+		<KeyWord name="GetHeadingAngle"/>
+		<KeyWord name="GetHeight"/>
+		<KeyWord name="GetHighestRelationshipRank"/>
+		<KeyWord name="GetHue"/>
+		<KeyWord name="GetIconPath"/>
+		<KeyWord name="GetID"/>
+		<KeyWord name="GetIndexOfExtraPart"/>
+		<KeyWord name="GetInfamy"/>
+		<KeyWord name="GetInfamyNonViolent"/>
+		<KeyWord name="GetInfamyViolent"/>
+		<KeyWord name="GetINIBool"/>
+		<KeyWord name="GetINIFloat"/>
+		<KeyWord name="GetINIInt"/>
+		<KeyWord name="GetINIString"/>
+		<KeyWord name="GetItemCharge"/>
+		<KeyWord name="GetItemCount"/>
+		<KeyWord name="GetItemHealthPercent"/>
+		<KeyWord name="GetItemMaxCharge"/>
+		<KeyWord name="GetKey"/>
+		<KeyWord name="GetKeyword"/>
+		<KeyWord name="GetKeywordData"/>
+		<KeyWord name="GetKiller"/>
+		<KeyWord name="GetLength"/>
+		<KeyWord name="GetLevel"/>
+		<KeyWord name="GetLeveledActorBase"/>
+		<KeyWord name="GetLightLevel"/>
+		<KeyWord name="GetLinkedRef"/>
+		<KeyWord name="GetLocation"/>
+		<KeyWord name="GetLockLevel"/>
+		<KeyWord name="GetLongRangeStrafeMult"/>
+		<KeyWord name="GetLowestRelationshipRank"/>
+		<KeyWord name="GetLuminosity"/>
+		<KeyWord name="GetMappedKey" func="yes"/>
+		<KeyWord name="GetMaskForSlot"/>
+		<KeyWord name="GetMass"/>
+		<KeyWord name="GetMaxFrameRate"/>
+		<KeyWord name="GetMaxRange"/>
+		<KeyWord name="GetMeleeAttackStaggeredMult"/>
+		<KeyWord name="GetMeleeBashAttackMult"/>
+		<KeyWord name="GetMeleeBashMult"/>
+		<KeyWord name="GetMeleeBashPowerAttackMult"/>
+		<KeyWord name="GetMeleeBashRecoiledMult"/>
+		<KeyWord name="GetMeleeMult"/>
+		<KeyWord name="GetMeleePowerAttackBlockingMult"/>
+		<KeyWord name="GetMeleePowerAttackStaggeredMult"/>
+		<KeyWord name="GetMeleeSpecialAttackMult"/>
+		<KeyWord name="GetMessageIconPath"/>
+		<KeyWord name="GetMinFrameRate"/>
+		<KeyWord name="GetMinRange"/>
+		<KeyWord name="GetModAuthor"/>
+		<KeyWord name="GetModByName"/>
+		<KeyWord name="GetModCount"/>
+		<KeyWord name="GetModDependencyCount"/>
+		<KeyWord name="GetModDescription"/>
+		<KeyWord name="GetModelNumTextureSets"/>
+		<KeyWord name="GetModelNthTextureSet"/>
+		<KeyWord name="GetModelPath"/>
+		<KeyWord name="GetModName"/>
+		<KeyWord name="GetName"/>
+		<KeyWord name="GetNoBleedoutRecovery"/>
+		<KeyWord name="GetNthAdditionalRace"/>
+		<KeyWord name="GetNthAlias"/>
+		<KeyWord name="GetNthArmorAddon"/>
+		<KeyWord name="GetNthChar"/>
+		<KeyWord name="GetNthEffectArea"/>
+		<KeyWord name="GetNthEffectDuration"/>
+		<KeyWord name="GetNthEffectMagicEffect"/>
+		<KeyWord name="GetNthEffectMagnitude"/>
+		<KeyWord name="GetNthExtraPart"/>
+		<KeyWord name="GetNthForm"/>
+		<KeyWord name="GetNthHeadPart"/>
+		<KeyWord name="GetNthIngredient"/>
+		<KeyWord name="GetNthIngredientQuantity"/>
+		<KeyWord name="GetNthKeyPressed"/>
+		<KeyWord name="GetNthKeyword"/>
+		<KeyWord name="GetNthLinkedRef"/>
+		<KeyWord name="GetNthModDependency"/>
+		<KeyWord name="GetNthPart"/>
+		<KeyWord name="GetNthRecoveryTime"/>
+		<KeyWord name="GetNthRef"/>
+		<KeyWord name="GetNthSpell"/>
+		<KeyWord name="GetNthWordOfPower"/>
+		<KeyWord name="GetNumAdditionalRaces"/>
+		<KeyWord name="GetNumAliases"/>
+		<KeyWord name="GetNumArmorAddons"/>
+		<KeyWord name="GetNumEffects"/>
+		<KeyWord name="GetNumExtraParts"/>
+		<KeyWord name="GetNumHeadParts"/>
+		<KeyWord name="GetNumIngredients"/>
+		<KeyWord name="GetNumItems"/>
+		<KeyWord name="GetNumKeysPressed"/>
+		<KeyWord name="GetNumKeywords"/>
+		<KeyWord name="GetNumParts"/>
+		<KeyWord name="GetNumRefs"/>
+		<KeyWord name="GetOffensiveMult"/>
+		<KeyWord name="GetOpenState"/>
+		<KeyWord name="GetOutfit"/>
+		<KeyWord name="GetOutgoingWeather"/>
+		<KeyWord name="GetOwningQuest"/>
+		<KeyWord name="GetParentCell"/>
+		<KeyWord name="GetPerk"/>
+		<KeyWord name="GetPerkPoints"/>
+		<KeyWord name="GetPlatformName"/>
+		<KeyWord name="GetPlayer"/>
+		<KeyWord name="GetPlayerControls"/>
+		<KeyWord name="GetPlayerGrabbedRef"/>
+		<KeyWord name="GetPlayersLastRiddenHorse"/>
+		<KeyWord name="GetPositionX"/>
+		<KeyWord name="GetPositionY"/>
+		<KeyWord name="GetPositionZ"/>
+		<KeyWord name="GetPriority"/>
+		<KeyWord name="GetQuality"/>
+		<KeyWord name="GetQuest"/>
+		<KeyWord name="GetRace"/>
+		<KeyWord name="GetRangedMult"/>
+		<KeyWord name="GetReach"/>
+		<KeyWord name="GetReaction"/>
+		<KeyWord name="GetRealHoursPassed"/>
+		<KeyWord name="GetRed"/>
+		<KeyWord name="GetReference"/>
+		<KeyWord name="GetRefTypeAliveCount"/>
+		<KeyWord name="GetRefTypeDeadCount"/>
+		<KeyWord name="GetRegard"/>
+		<KeyWord name="GetRelationshipRank"/>
+		<KeyWord name="GetReputation"/>
+		<KeyWord name="GetResult"/>
+		<KeyWord name="GetResultQuantity"/>
+		<KeyWord name="GetSaturation"/>
+		<KeyWord name="GetScale"/>
+		<KeyWord name="GetSex"/>
+		<KeyWord name="GetShoutMult"/>
+		<KeyWord name="GetSitState"/>
+		<KeyWord name="GetSize"/>
+		<KeyWord name="GetSkyMode"/>
+		<KeyWord name="GetSleepState"/>
+		<KeyWord name="GetSlotMask"/>
+		<KeyWord name="GetSoulSize"/>
+		<KeyWord name="GetSpeed"/>
+		<KeyWord name="GetSpell"/>
+		<KeyWord name="GetSpellCount"/>
+		<KeyWord name="GetStaffMult"/>
+		<KeyWord name="GetStage">
+			<Overload retVal="Int Function" descr="Member of: Quest Script
+ 
+Obtains the highest completed stage in this quest.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetStageDone"/>
+		<KeyWord name="GetStagger"/>
+		<KeyWord name="GetState"/>
+		<KeyWord name="GetStolenItemValueCrime"/>
+		<KeyWord name="GetStolenItemValueNoCrime"/>
+		<KeyWord name="GetString"/>
+		<KeyWord name="GetSunPositionX" func="yes"/>
+		<KeyWord name="GetSunPositionY" func="yes"/>
+		<KeyWord name="GetSunPositionZ" func="yes"/>
+		<KeyWord name="GetTargetActor"/>
+		<KeyWord name="GetTemplate"/>
+		<KeyWord name="GetTimeElapsed"/>
+		<KeyWord name="GetTotalArmorWeight"/>
+		<KeyWord name="GetTotalItemWeight"/>
+		<KeyWord name="GetTriggerObjectCount"/>
+		<KeyWord name="GetType"/>
+		<KeyWord name="GetUnarmedMult"/>
+		<KeyWord name="GetValidRaces"/>
+		<KeyWord name="GetValue"/>
+		<KeyWord name="GetValueInt" func="yes"/>
+		<KeyWord name="GetVersion" func="yes">
+			<Overload retVal="Int Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Returns the static version of this script. Not to be mistaken for the mod version.
+ 
+Override this function to return the current revision of your script if you want to use the built-in updating mechanism.
+If an update has been detected, OnVersionUpdate is executed.
+ 
+Return value: The static version of this script.">
+			</Overload>
+			<Overload retVal="Int Function" descr="Member of: SKSE Script
+ 
+Requires SKSE">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="GetVersionBeta"/>
+		<KeyWord name="GetVersionMinor"/>
+		<KeyWord name="GetVersionNumber"/>
+		<KeyWord name="GetVersionRelease"/>
+		<KeyWord name="GetVoiceRecoveryTime"/>
+		<KeyWord name="GetVoiceType"/>
+		<KeyWord name="GetWeaponType"/>
+		<KeyWord name="GetWeight"/>
+		<KeyWord name="GetWeightClass"/>
+		<KeyWord name="GetWidth"/>
+		<KeyWord name="GetWorkbenchKeyword"/>
+		<KeyWord name="GetWorldSpace"/>
+		<KeyWord name="GetWornForm"/>
+		<KeyWord name="Global"/>
+		<KeyWord name="GlobalVariable"/>
+		<KeyWord name="GoToState"/>
+		<KeyWord name="HasAssociation"/>
+		<KeyWord name="HasCommonParent"/>
+		<KeyWord name="HasEffectKeyword"/>
+		<KeyWord name="HasExtraPart"/>
+		<KeyWord name="HasFamilyRelationship"/>
+		<KeyWord name="HasForm"/>
+		<KeyWord name="HasKeyword"/>
+		<KeyWord name="HasKeywordString"/>
+		<KeyWord name="HasLOS"/>
+		<KeyWord name="HasMagicEffect"/>
+		<KeyWord name="HasMagicEffectWithKeyword"/>
+		<KeyWord name="HasNode"/>
+		<KeyWord name="HasParentRelationship"/>
+		<KeyWord name="HasPerk"/>
+		<KeyWord name="HasRefType"/>
+		<KeyWord name="HasSpell"/>
+		<KeyWord name="Hidden"/>
+		<KeyWord name="HideTitleSequenceMenu"/>
+		<KeyWord name="HoldKey"/>
+		<KeyWord name="If"/>
+		<KeyWord name="IgnoreFriendlyHits"/>
+		<KeyWord name="ImageSpaceModifier"/>
+		<KeyWord name="Import"/>
+		<KeyWord name="IncrementSkill"/>
+		<KeyWord name="IncrementSkillBy"/>
+		<KeyWord name="IncrementStat"/>
+		<KeyWord name="Int"/>
+		<KeyWord name="InterruptCast"/>
+		<KeyWord name="Is3DLoaded"/>
+		<KeyWord name="IsActionComplete"/>
+		<KeyWord name="IsActivateChild"/>
+		<KeyWord name="IsActivateControlsEnabled"/>
+		<KeyWord name="IsActivationBlocked"/>
+		<KeyWord name="IsActive"/>
+		<KeyWord name="IsAlarmed"/>
+		<KeyWord name="IsAlerted"/>
+		<KeyWord name="IsAllowedToFly"/>
+		<KeyWord name="IsArrested"/>
+		<KeyWord name="IsArrestingTarget"/>
+		<KeyWord name="IsAttached"/>
+		<KeyWord name="IsBattleaxe"/>
+		<KeyWord name="IsBeingRidden" func="yes"/>
+		<KeyWord name="IsBleedingOut"/>
+		<KeyWord name="IsBoots"/>
+		<KeyWord name="IsBow"/>
+		<KeyWord name="IsBribed"/>
+		<KeyWord name="IsCamSwitchControlsEnabled"/>
+		<KeyWord name="IsChild"/>
+		<KeyWord name="IsCleared"/>
+		<KeyWord name="IsClothing"/>
+		<KeyWord name="IsClothingBody"/>
+		<KeyWord name="IsClothingFeet"/>
+		<KeyWord name="IsClothingHands"/>
+		<KeyWord name="IsClothingHead"/>
+		<KeyWord name="IsClothingPoor"/>
+		<KeyWord name="IsClothingRich"/>
+		<KeyWord name="IsClothingRing"/>
+		<KeyWord name="IsCommandedActor"/>
+		<KeyWord name="IsCompleted"/>
+		<KeyWord name="IsCuirass"/>
+		<KeyWord name="IsDagger"/>
+		<KeyWord name="IsDead"/>
+		<KeyWord name="IsDeleted" func="yes"/>
+		<KeyWord name="IsDetectedBy"/>
+		<KeyWord name="IsDigit"/>
+		<KeyWord name="IsDisabled"/>
+		<KeyWord name="IsDoingFavor"/>
+		<KeyWord name="IsEnabled" func="yes"/>
+		<KeyWord name="IsEquipped"/>
+		<KeyWord name="IsEssential"/>
+		<KeyWord name="IsFactionInCrimeGroup"/>
+		<KeyWord name="IsFastTravelEnabled"/>
+		<KeyWord name="IsFightingControlsEnabled"/>
+		<KeyWord name="IsFlying"/>
+		<KeyWord name="IsFood"/>
+		<KeyWord name="IsFurnitureInUse"/>
+		<KeyWord name="IsFurnitureMarkerInUse"/>
+		<KeyWord name="IsGauntlets"/>
+		<KeyWord name="IsGhost"/>
+		<KeyWord name="IsGreatsword"/>
+		<KeyWord name="IsGuard"/>
+		<KeyWord name="IsHarvested"/>
+		<KeyWord name="IsHeavyArmor"/>
+		<KeyWord name="IsHelmet"/>
+		<KeyWord name="IsHostile"/>
+		<KeyWord name="IsHostileToActor"/>
+		<KeyWord name="IsIgnoringFriendlyHits"/>
+		<KeyWord name="IsInCombat"/>
+		<KeyWord name="IsInDialogueWithPlayer"/>
+		<KeyWord name="IsInFaction"/>
+		<KeyWord name="IsInInterior"/>
+		<KeyWord name="IsInKillMove"/>
+		<KeyWord name="IsInLocation"/>
+		<KeyWord name="IsInMenuMode"/>
+		<KeyWord name="IsInterior"/>
+		<KeyWord name="IsIntimidated"/>
+		<KeyWord name="IsInvulnerable"/>
+		<KeyWord name="IsJewelry"/>
+		<KeyWord name="IsJournalControlsEnabled"/>
+		<KeyWord name="IsKeyPressed"/>
+		<KeyWord name="IsLetter"/>
+		<KeyWord name="IsLightArmor"/>
+		<KeyWord name="IsLoaded"/>
+		<KeyWord name="IsLockBroken"/>
+		<KeyWord name="IsLocked"/>
+		<KeyWord name="IsLookingControlsEnabled"/>
+		<KeyWord name="IsMace"/>
+		<KeyWord name="IsMapMarkerVisible"/>
+		<KeyWord name="IsMenuControlsEnabled"/>
+		<KeyWord name="IsMenuOpen"/>
+		<KeyWord name="IsMovementControlsEnabled"/>
+		<KeyWord name="IsNearPlayer" func="yes"/>
+		<KeyWord name="IsObjectiveCompleted"/>
+		<KeyWord name="IsObjectiveDisplayed"/>
+		<KeyWord name="IsObjectiveFailed"/>
+		<KeyWord name="IsOnMount" func="yes"/>
+		<KeyWord name="IsPlayerExpelled"/>
+		<KeyWord name="IsPlayersLastRiddenHorse"/>
+		<KeyWord name="IsPlayerSungazing" func="yes"/>
+		<KeyWord name="IsPlayerTeammate"/>
+		<KeyWord name="IsPlaying"/>
+		<KeyWord name="IsPrintable"/>
+		<KeyWord name="IsProtected"/>
+		<KeyWord name="IsPunctuation"/>
+		<KeyWord name="IsRaceFlagSet"/>
+		<KeyWord name="IsRunning"/>
+		<KeyWord name="IsSameLocation"/>
+		<KeyWord name="IsShield"/>
+		<KeyWord name="IsSneaking"/>
+		<KeyWord name="IsSneakingControlsEnabled"/>
+		<KeyWord name="IsSprinting"/>
+		<KeyWord name="IsStaff" func="yes"/>
+		<KeyWord name="IsStageDone"/>
+		<KeyWord name="IsStarting"/>
+		<KeyWord name="IsStopped"/>
+		<KeyWord name="IsStopping"/>
+		<KeyWord name="IsSword"/>
+		<KeyWord name="IsTrespassing"/>
+		<KeyWord name="IsUnconscious"/>
+		<KeyWord name="IsUnique"/>
+		<KeyWord name="IsWaraxe"/>
+		<KeyWord name="IsWarhammer"/>
+		<KeyWord name="IsWeaponDrawn"/>
+		<KeyWord name="IsWordUnlocked"/>
+		<KeyWord name="KeepOffsetFromActor"/>
+		<KeyWord name="Key"/>
+		<KeyWord name="Keyword"/>
+		<KeyWord name="Kill"/>
+		<KeyWord name="KillEssential" func="yes"/>
+		<KeyWord name="KillSilent"/>
+		<KeyWord name="KnockAreaEffect"/>
+		<KeyWord name="LearnAllEffects"/>
+		<KeyWord name="LearnEffect"/>
+		<KeyWord name="LearnNextEffect"/>
+		<KeyWord name="LeftShift"/>
+		<KeyWord name="Length"/>
+		<KeyWord name="LeveledItem"/>
+		<KeyWord name="LoadCustomContent" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Loads an external file.
+Once custom content has been loaded, it's shown in the option panel and the option list is hidden.
+To clear the custom content and show the option list again, use UnloadCustomContent.
+ 
+source: The path to the loaded file relative to Data/Interface/.
+Supported formats are .swf, for animated/interactive content, and .dds for images.
+x: The horizontal offset relative to the top-left corner of the option panel.
+y: The vertical offset relative to the top-left corner of the option panel.">
+				<Param name="String source"/>
+				<Param name="Float x = 0.0"/>
+				<Param name="Float y = 0.0"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Location"/>
+		<KeyWord name="LocationAlias"/>
+		<KeyWord name="LocationRefType"/>
+		<KeyWord name="Lock" func="yes"/>
+		<KeyWord name="LogicalAnd"/>
+		<KeyWord name="LogicalNot"/>
+		<KeyWord name="LogicalOr"/>
+		<KeyWord name="LogicalXor"/>
+		<KeyWord name="MagicEffect"/>
+		<KeyWord name="MakePlayerFriend" func="yes"/>
+		<KeyWord name="Message"/>
+		<KeyWord name="MessageBox" func="yes"/>
+		<KeyWord name="MiscObject"/>
+		<KeyWord name="Mod" func="yes"/>
+		<KeyWord name="ModActorValue"/>
+		<KeyWord name="ModArmorRating"/>
+		<KeyWord name="ModAV"/>
+		<KeyWord name="ModCrimeGold"/>
+		<KeyWord name="ModFactionRank"/>
+		<KeyWord name="ModFavorPoints"/>
+		<KeyWord name="ModFavorPointsWithGlobal"/>
+		<KeyWord name="ModObjectiveGlobal" func="yes"/>
+		<KeyWord name="ModPerkPoints"/>
+		<KeyWord name="ModReaction"/>
+		<KeyWord name="ModRegard"/>
+		<KeyWord name="MoveTo"/>
+		<KeyWord name="MoveToIfUnloaded" func="yes"/>
+		<KeyWord name="MoveToInteractionLocation"/>
+		<KeyWord name="MoveToMyEditorLocation"/>
+		<KeyWord name="MoveToNode"/>
+		<KeyWord name="MoveToPackageLocation"/>
+		<KeyWord name="MoveToWhenUnloaded"/>
+		<KeyWord name="MusicType"/>
+		<KeyWord name="Mute"/>
+		<KeyWord name="Native"/>
+		<KeyWord name="New"/>
+		<KeyWord name="None"/>
+		<KeyWord name="Notification" func="yes"/>
+		<KeyWord name="ObjectReference"/>
+		<KeyWord name="OnActivate" func="yes">
+			<Overload retVal="Event" descr="Member of: Any and all scripts.
+ 
+Event called when the script has been created and all its properties have been initialized.
+ 
+akActionRef: The ObjectReference that activated this reference.">
+				<Param name="ObjectReference akActionRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnAnimationEvent" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+ 
+Event called when the active magic effect/alias/form receives one of the animation events it was listening for.
+ 
+akSource: The ObjectReference that sent the event.
+asEventName: The event that was received.">
+				<Param name="ObjectReference akSource"/>
+				<Param name="String asEventName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnAnimationEventUnregistered" func="yes"/>
+		<KeyWord name="OnAttachedToCell" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when this reference moves from a detached cell to an attached one.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnBeginState" func="yes">
+			<Overload retVal="Event" descr="Member of: Any and all scripts.
+ 
+Event called when the state the event is in has just been switched to.
+Note that this block will NOT be called for an auto state when the object is initialized.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnCellAttach" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when this references parent cell is attached.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnCellDetach" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when this references parent cell is detached.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnCellLoad" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when every objects 3d in this objects parent cell loaded and ready.
+At this point you should be able to animate these objects, or manipulate them in other ways without issues.
+This event is sent every time the cell is loaded, which may happen multiple times in a single game session.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnClose" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object has finished closing. (Like a door that has finished animating shut)
+ 
+akActionRef: The reference that caused us to close.">
+				<Param name="ObjectReference akActionRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnColorAcceptT" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a new color has been accepted for this state option.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnColorOpenST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a color state option has been selected.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnCombatStateChanged" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when this actors combat state changes.
+ 
+akTarget: The Actor that this actor is targeting. May be None if this actor is leaving combat.
+aeCombatState: The combat state we just entered, which will be one of the following:
+0: Not in combat
+1: In combat
+2: Searching">
+				<Param name="Actor akTarget"/>
+				<Param name="Int aeCombatState"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnConfigClose" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when the config menu is closed.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnConfigInit" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when the config menu is initialized.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnConfigOpen" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when the config menu is opened.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnConfigRegister" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when the config menu registered successfully.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnContainerChanged" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object reference enters/leaves/moves between containers.
+ 
+akNewContainer: The container this object is entering. If this is None, the object was dropped.
+akOldContainer: The container this object just left. If this is None, the object was picked up.">
+				<Param name="ObjectReference akNewContainer"/>
+				<Param name="ObjectReference akOldContainer"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnDeath" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor finishes dying.
+ 
+akKiller: The Actor that killed this one.">
+				<Param name="Actor akKiller"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnDefaultST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when resetting a state option to its default value.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnDestructionStageChanged" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the objects destruction stage worsens.
+ 
+aiOldStage: The objects destruction stage before this event fired.
+Attached here because massive damage could cause an object to skip several destruction stages at once.
+aiCurrentStage: The objects current destruction stage.">
+				<Param name="Int aiOldStage"/>
+				<Param name="Int aiCurrentStage"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnDetachedFromCell" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when this reference moves from an attached cell to a detached one.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnDying" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor begins dying.
+ 
+akKiller: The Actor that killed this one.">
+				<Param name="Actor akKiller"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnEffectFinish" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script
+ 
+Event called when the active magic effect has just finished on the specified target.
+ 
+akTarget: The Actor this effect just finished on.
+akCaster: The Actor that cast the spell this effect is from.">
+				<Param name="Actor akTarget"/>
+				<Param name="Actor akCaster"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnEffectStart" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script
+ 
+Event called when the active magic effect has just started on the specified target.
+ 
+akTarget: The Actor this effect was applied to.
+akCaster: The Actor that cast the spell this effect was from.">
+				<Param name="Actor akTarget"/>
+				<Param name="Actor akCaster"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnEndState" func="yes">
+			<Overload retVal="Event" descr="Member of: Any and all scripts.
+ 
+Event called when the state the event is in about to be switched away from.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnEnterBleedout" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor has entered bleedout.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnEquipped" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object reference has been equipped by an actor.
+ 
+akActor: The actor that equipped this object.">
+				<Param name="Actor akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnGainLOS"><Overload descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+ 
+Event called when a viewer goes from not seeing the target, to seeing the target - if this active magic effect/alias/form is registered for it."/>
+		</KeyWord>
+		<KeyWord name="OnGetUp" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when this actor gets up from a piece of furniture.
+ 
+akFurniture: The furniture the actor just got up off of.">
+				<Param name="ObjectReference akFurniture"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnGrab" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object has has been grabbed by the player (z-keyed).">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnHighlightST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when highlighting a state option.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnHit" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object reference is hit by a weapon or projectile.
+ 
+akAggressor: The ObjectReference that attacked this reference.
+akSource: The Weapon, Spell, Explosion, Ingredient, Potion, or Enchantment that hit this reference.
+akProjectile: The Projectile that hit this reference.
+abPowerAttack: Was the hit caused by a power attack?
+abSneakAttack: Was the hit caused by a sneak attack?
+abBashAttack: Was the hit caused by a bash attack?
+abHitBlocked: Was the hit blocked?">
+				<Param name="ObjectReference akAggressor"/>
+				<Param name="Form akSource"/>
+				<Param name="Projectile akProjectile"/>
+				<Param name="Bool abPowerAttack"/>
+				<Param name="Bool abSneakAttack"/>
+				<Param name="Bool abBashAttack"/>
+				<Param name="Bool abHitBlocked"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnInit" func="yes">
+			<Overload retVal="Event" descr="Member of: Any and all scripts.
+ 
+Event called when the script has been created and all its properties have been initialized.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnItemAdded" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event received when an item is inserted into this objects container.
+ 
+akBaseItem: The base object for the item that was added to this container.
+aiItemCount: The number of items added to this container.
+akItemReference: The specific reference added to the container, if any. Will be None if a non-persistant object is added.
+akSourceContainer: The container that the object(s) came from. If None, then the object came from the world.">
+				<Param name="Form akBaseItem"/>
+				<Param name="Int aiItemCount"/>
+				<Param name="ObjectReference akItemReference"/>
+				<Param name="ObjectReference akSourceContainer"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnItemRemoved" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event received when an item is removed from this objects container.
+ 
+akBaseItem: The base object for the item that was removed from this container.
+aiItemCount: The number of items removed from this container.
+akItemReference: The specific reference removed from the container, if any. Will be None if a non-persistant object is removed.
+akDestContainer: The container that the object(s) went to. If None, then the object was dropped into the world.">
+				<Param name="Form akBaseItem"/>
+				<Param name="Int aiItemCount"/>
+				<Param name="ObjectReference akItemReference"/>
+				<Param name="ObjectReference akDestContainer"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnKeyDown" func="yes"/>
+		<KeyWord name="OnKeyMapChangeST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a key has been remapped for this state option.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnKeyUp" func="yes"/>
+		<KeyWord name="OnLoad" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the objects 3d is loaded and ready.
+At this point you should be able to animate the object, or manipulate it in other ways without issues.
+This event is sent every time the 3d is loaded, which may happen multiple times in a single game session.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnLocationChange" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when this actor moves from one location to another.
+ 
+akOldLoc: The Location that we left (may be None).
+akNewLoc: The Location that we entered (may be None).">
+				<Param name="Location akOldLoc"/>
+				<Param name="Location akNewLoc"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnLockStateChanged" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the lock on this objects state changes. (Locked, unlocked, level changed, etc)">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnLostLOS" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+ 
+Event called when a viewer goes from seeing the target, to not seeing the target - if this active magic effect/alias/form is registered for it.
+ 
+akViewer: The Actor that was viewing the target until LOS was lost.
+akTarget: The ObjectReference that the actor can no longer see.">
+				<Param name="Actor akViewer"/>
+				<Param name="ObjectReference akTarget"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnMagicEffectApply" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when a magic effect is about to be applied to the object reference.
+ 
+akCaster: The ObjectReference that is responsible for the spell.
+akEffect: The MagicEffect that is attempting to be applied.">
+				<Param name="ObjectReference akCaster"/>
+				<Param name="MagicEffect akEffect"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnMenuClose" func="yes"/>
+		<KeyWord name="OnMenuOpen" func="yes"/>
+		<KeyWord name="OnMenuAcceptST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a menu entry has been accepted for this state option.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnMenuOpenST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a menu state option has been selected.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnObjectEquipped" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor equips an object.
+ 
+akBaseObject: The base object the actor just equipped.
+akReference: The reference that the actor just equipped - if the reference is persistant. Otherwise, None.">
+				<Param name="Form akBaseObject"/>
+				<Param name="ObjectReference akReference"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnObjectUnequipped" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor unequips an object.
+ 
+akBaseObject: The base object the actor just unequipped.
+akReference: The reference the actor just unequipped, if the reference is persistent. Otherwise, None.">
+				<Param name="Form akBaseObject"/>
+				<Param name="ObjectReference akReference"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOpen" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object has finished opening. (Like a door that has finished animating open)
+ 
+akActionRef: The reference that caused us to open.">
+				<Param name="ObjectReference akActionRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionColorAccept" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a new color has been accepted.
+ 
+option: The option ID.
+color: The accepted color (0xRRGGBB).">
+				<Param name="Int option"/>
+				<Param name="Int color"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionColorOpen" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a color option has been selected.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionDefault" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when resetting an option to its default value.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionHighlight" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when highlighting an option.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>	
+		<KeyWord name="OnOptionKeyMapChange" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a key has been remapped.
+ 
+option: The option ID.
+keyCode: The new keycode.
+conflictControl: The conflicting control if the keycode was already in use; &quot;&quot; otherwise.
+conflictName: ModName of the conflicting mod, &quot;&quot; if the was no conflict or if conflicting with a vanilla control.">
+				<Param name="Int option"/>
+				<Param name="Int keyCode"/>
+				<Param name="String conflictControl"/>
+				<Param name="String conflictName"/>
+			</Overload>
+		</KeyWord>	
+		<KeyWord name="OnOptionMenuAccept" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a menu entry has been accepted.
+ 
+option: The option ID.
+index: The index of the accepted menu entry.">
+				<Param name="Int option"/>
+				<Param name="Int index"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionMenuOpen" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a menu option has been selected.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionSelect" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a non-interactive option has been selected.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>	
+		<KeyWord name="OnOptionSliderAccept" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a new slider value has been accepted.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnOptionSliderOpen" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called a slider option has been selected.
+ 
+option: The option ID.">
+				<Param name="Int option"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnPackageChange" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor changes away from a package.
+ 
+akOldPackage: The Package that the actor changed away from.">
+				<Param name="Package akOldPackage"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnPackageEnd" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor finishes a package.
+ 
+akOldPackage: The Package that just stopped running.">
+				<Param name="Package akOldPackage"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnPackageStart" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor starts running a new package.
+ 
+akNewPackage: The Package that just started running.">
+				<Param name="Package akNewPackage"/>
+			</Overload>
+		</KeyWord>	
+		<KeyWord name="OnPageReset" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a new page is selected, including the initial empty page.
+ 
+page: The name of the current page, or &quot;&quot; if no page is selected.">
+				<Param name="String page"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnPlayerBowShot" func="yes"/>
+		<KeyWord name="OnPlayerLoadGame" func="yes"/>
+		<KeyWord name="OnRaceSwitchComplete" func="yes">
+			<Overload retVal="Event" descr="Member of: Actor Script
+ 
+Event called when the actor has finished switching races.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnRead" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event received when this object (which is a book) has been read. In other words, it is sent when the book UI opens a book.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnRelease" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when the object has has been released by the player (un-z-keyed).">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnReset" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script, Alias Script, and Quest Script
+ 
+Event called when the object is reset.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSelectST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a non-interactive state option has been selected.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSell" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object has just been sold by someone.
+ 
+akSeller: The actor we were sold by.">
+				<Param name="Actor akSeller"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSit" func="yes"/>
+		<KeyWord name="OnSleepStart" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+ 
+Event called when the player goes to sleep - if this active magic effect/alias/form is registered for it.
+ 
+afSleepStartTime: The time the player went to sleep, in game days passed.
+afDesiredSleepEndTime: The time the player wants to wake up at, in game days passed.">
+				<Param name="Float afSleepStartTime"/>
+				<Param name="Float afDesiredSleepEndTime"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSleepStop" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+ 
+Event called when the player wakes up - if this active magic effect/alias/form is registered for it.
+ 
+abInterrupted: Whether sleep was interrupted or not.">
+				<Param name="Bool abInterrupted"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSliderAcceptST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a new slider state value has been accepted.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSliderOpenST" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a slider state option has been selected.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnSpellCast" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+ 
+Event called when a spell is cast by the object reference.
+ 
+akSpell: Spell that was cast.  Can be  Spell,  Enchantment,  Potion, or  Ingredient.">
+				<Param name="Form akSpell"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryActivateActor" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an activate actor story manager event.
+ 
+akLocation: The Lcation that the actor was activated at.
+akActor: The Actor that was activated.">
+				<Param name="Location akLocation"/>
+				<Param name="ObjectReference akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryAddToPlayer" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an add to player story manager event.
+ 
+akOwner: The ObjectReference that owned the object.
+akContainer: The ObjectReference that contained the object.
+akLocation: The Location where it happened.
+akItemBase: The base object of the item that was added to the players inventory.
+aiAcquireType: The type of acquire that was performed. Will be one of the following:
+0: None
+1: Steal
+2: Buy
+3: Pick-pocket
+4: Pick up
+5: Container
+6: Dead body">
+				<Param name="ObjectReference akOwner"/>
+				<Param name="ObjectReference akContainer"/>
+				<Param name="Location akLocation"/>
+				<Param name="Form akItemBase"/>
+				<Param name="Int aiAcquireType"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryArrest" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an arrest story manager event.
+ 
+akArrestingGuard: The ObjectReference of the guard that arrested the criminal.
+akCriminal: The ObjectReference that was arrested.
+akLocation: The Location where it happened.
+aiCrime: The type of crime that they were arrested for. Will be one of the following:
+-1: None
+0: Steal
+1: Pick-pocket
+2: Trespass
+3: Attack
+4: Murder">
+				<Param name="ObjectReference akArrestingGuard"/>
+				<Param name="ObjectReference akCriminal"/>
+				<Param name="Location akLocation"/>
+				<Param name="Int aiCrime"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryAssaultActor" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an assault actor story manager event.
+ 
+akVictim: The ObjectReference that was assaulted.
+akAttacker: The ObjectReference that attacked the victim.
+akLocation: The Location where it happened.
+aiCrime: This is actually a boolean (due to limitations in the story event system, it is sent as an integer)
+denoting whether a crime took place or not. 0 = false. Non-zero = true.
+Papyrus will correctly handle this if you cast it to a bool or use it in an if statement.">
+				<Param name="ObjectReference akVictim"/>
+				<Param name="ObjectReference akAttacker"/>
+				<Param name="Location akLocation"/>
+				<Param name="Int aiCrime"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryBribeNPC" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a bribe NPC story manager event.
+ 
+akActor: The ObjectReference that was bribed.">
+				<Param name="ObjectReference akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryCastMagic" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a case magic story manager event.
+ 
+akCastingActor: The ObjectReference that cast the spell.
+akSpellTarget: The ObjectReference that is targeted by the spell.
+akLocation: The Location the spell was cast.
+akSpell: The spell that was cast.">
+				<Param name="ObjectReference akCastingActor"/>
+				<Param name="ObjectReference akSpellTarget"/>
+				<Param name="Location akLocation"/>
+				<Param name="Form akSpell"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryChangeLocation" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a change location story manager event.
+ 
+akActor: The ObjectReference that changed locations.
+akOldLocation: The Location that the object left.
+akNewLocation: The Location that the object arrived at.">
+				<Param name="ObjectReference akActor"/>
+				<Param name="Location akOldLocation"/>
+				<Param name="Location akNewLocation"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryCraftItem" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a craft item story manager event.
+ 
+akBench: The ObjectReference bench that the item was made at.
+akLocation: The Location the object was made at.
+akCreatedItem: The base object of the item that was made.">
+				<Param name="ObjectReference akBench"/>
+				<Param name="Location akLocation"/>
+				<Param name="Form akCreatedItem"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryCrimeGold" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a crime gold story manager event.
+ 
+akVictim: The ObjectReference that was victimized.
+akCriminal: The ObjectReference that committed the crime.
+akFaction: The Faction that the crime was recorded with.
+aiGoldAmount: The amount of crime gold that was logged.
+aiCrime: The type of crime that the event is for. Will be one of the following:
+-1: None
+0: Steal
+1: Pick-pocket
+2: Trespass
+3: Attack
+4: Murder">
+				<Param name="ObjectReference akVictim"/>
+				<Param name="ObjectReference akCriminal"/>
+				<Param name="Form akFaction"/>
+				<Param name="Int aiGoldAmount"/>
+				<Param name="Int aiCrime"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryCure" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a cure story manager event.
+ 
+akInfection: The infection the player was cured of.">
+				<Param name="Form akInfection"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryDialogue" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a dialogue story manager event.
+ 
+akLocation: The Location where the dialogue happened.
+akActor1: The first ObjectReference in the dialogue.
+akActor2: The second ObjectReference in the dialogue.">
+				<Param name="Location akLocation"/>
+				<Param name="ObjectReference akActor1"/>
+				<Param name="ObjectReference akActor2"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryDiscoverDeadBody" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a discover dead body story manager event.
+ 
+akActor: The ObjectReference that discovered the body.
+akDeadActor: The ObjectReference that was discovered.
+akLocation: The Location where the discovery happened.">
+				<Param name="ObjectReference akActor"/>
+				<Param name="ObjectReference akDeadActor"/>
+				<Param name="Location akLocation"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryEscapeJail" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an escape jail story manager event.
+ 
+akLocation: The Location where the escape happened.
+akCrimeGroup: The crime group whose jail was escaped from.">
+				<Param name="Location akLocation"/>
+				<Param name="Form akCrimeGroup"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryFlatterNPC" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a flatter NPC story manager event.
+ 
+akActor: The ObjectReference that was flattered.">
+				<Param name="ObjectReference akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryHello" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a hello story manager event.
+ 
+akLocation: The Location where the hello happened.
+akActor1: The first ObjectReference in the hello.
+akActor2: The second ObjectReference in the hello.">
+				<Param name="Location akLocation"/>
+				<Param name="ObjectReference akActor1"/>
+				<Param name="ObjectReference akActor2"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryIncreaseLevel" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an increase level story manager event.
+ 
+aiNewLevel: The level the player just got.">
+				<Param name="Int aiNewLevel"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryIncreaseSkill" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an increase level story manager event.
+ 
+asSkill: The name of the actor value for the skill that just increased">
+				<Param name="String asSkill"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryInfection" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an infection story manager event.
+ 
+akTransmittingActor: The actor that gave the player the infection.
+akInfection: The infection the player got infected with.">
+				<Param name="ObjectReference akTransmittingActor"/>
+				<Param name="Form akInfection"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryIntimidateNPC" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via an intimidate NPC story manager event.
+ 
+akActor: The ObjectReference that was intimidated.">
+				<Param name="ObjectReference akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryJail" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a jail story manager event.
+ 
+akGuard: The ObjectReference that put the player in jail.
+akCrimeGroup: The crime group whose jail the player was put in.
+akLocation: The Location where the jail is.
+aiCrimeGold: The amount of crime gold the jail is for.">
+				<Param name="ObjectReference akGuard"/>
+				<Param name="Form akCrimeGroup"/>
+				<Param name="Location akLocation"/>
+				<Param name="Int aiCrimeGold"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryKillActor" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+ 
+Event called when this quest is started via a kill actor story manager event.
+ 
+akVictim: The ObjectReference that was killed.
+akKiller: The ObjectReference that killed the victim.
+akLocation: The Location where the crime occurred.
+aiCrimeStatus: Has the crime been reported? Return an Int : 0 = No crime Faction for target ; 1 = Crime is not repported ; 2 = Crime is repported
+aiRelationshipRank: The relationship between the killer and victim before the crime occurred. Will be one of the following:
+4: Lover
+3: Ally
+2: Confidant
+1: Friend
+0: Acquaintance
+-1: Rival
+-2: Foe
+-3: Enemy
+-4: Archnemesis">
+				<Param name="ObjectReference akVictim"/>
+				<Param name="ObjectReference akKiller"/>
+				<Param name="Location akLocation"/>
+				<Param name="Int aiCrimeStatus"/>
+				<Param name="Int aiRelationshipRank"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryNewVoicePower" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a new voice power story manager event.
+ 
+akActor: The ObjectReference that got the new voice power.
+akVoicePower: The voice power that the actor just got.">
+				<Param name="ObjectReference akActor"/>
+				<Param name="Form akVoicePower"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryPayFine" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a pay fine story manager event.
+ 
+akCriminal: The ObjectReference that is paying the fine.
+akGuard: The ObjectReference that is being paid.
+akCrimeGroup: The crime group that is being paid.
+aiCrimeGold: The amount being paid.">
+				<Param name="ObjectReference akCriminal"/>
+				<Param name="ObjectReference akGuard"/>
+				<Param name="Form akCrimeGroup"/>
+				<Param name="Int aiCrimeGold"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryPickLock" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a pick lock story manager event.
+ 
+akActor: The ObjectReference that picked the lock.
+akLock: The ObjectReference that was picked.">
+				<Param name="ObjectReference akActor"/>
+				<Param name="ObjectReference akLock"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryPlayerGetsFavor" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a player gets favor story manager event.
+ 
+akActor: The ObjectReference that the player just got favor with.">
+				<Param name="ObjectReference akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryRelationshipChange" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a relationship change story manager event. The relationship values will be one of the following:
+ 
+akActor1: The first ObjectReference whose relationship changed.
+akActor2: The second ObjectReference whose relationship changed.
+aiOldRelationship: The old relationship value.
+4: Lover
+3: Ally
+2: Confidant
+1: Friend
+0: Acquaintance
+-1: Rival
+-2: Foe
+-3: Enemy
+-4: Archnemesis
+ 
+aiNewRelationship: The new relationship value.">
+				<Param name="ObjectReference akActor1"/>
+				<Param name="ObjectReference akActor2"/>
+				<Param name="Int aiOldRelationship"/>
+				<Param name="Int aiNewRelationship"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryRemoveFromPlayer" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a remove from player story manager event.
+ 
+akOwner: The ObjectReference that owns the item.
+akItem: The ObjectReference that was removed.
+akLocation: The Location where the remove happened.
+akItemBase: The base object of the removed item.
+aiRemoveType: The type of remove performed. Will be one of the following:
+0: None
+1: Stolen
+2: Consumed
+3: Script
+4: Dropped
+5: Given
+6: Put in container">
+				<Param name="ObjectReference akOwner"/>
+				<Param name="ObjectReference akItem"/>
+				<Param name="Location akLocation"/>
+				<Param name="Form akItemBase"/>
+				<Param name="Int aiRemoveType"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryScript" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a script story manager event.
+ 
+akKeyword: The Keyword sent by the script
+akLocation: The Location sent by the script
+akRef1: The first ObjectReference sent by the script
+akRef2: The second ObjectReference sent by the script
+aiValue1: The first value sent by the script
+aiValue2: The second value sent by the script">
+				<Param name="Keyword akKeyword"/>
+				<Param name="Location akLocation"/>
+				<Param name="ObjectReference akRef1"/>
+				<Param name="ObjectReference akRef2"/>
+				<Param name="Int aiValue1"/>
+				<Param name="Int aiValue2"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryServedTime" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a served time story manager event.
+ 
+akLocation: The Location where the jail is.
+akCrimeGroup: The crime group whose jail the player was put in.
+aiCrimeGold: The amount of crime gold the jail is for.
+aiDaysJail: How many days the player was in jail for.">
+				<Param name="Location akLocation"/>
+				<Param name="Form akCrimeGroup"/>
+				<Param name="Int aiCrimeGold"/>
+				<Param name="Int aiDaysJail"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnStoryTrespass" func="yes">
+			<Overload retVal="Event" descr="Member of: Quest Script
+Event called when this quest is started via a trespass story manager event.
+ 
+akVictim: The ObjectReference who was victimized
+akTrespasser: The ObjectReference who trespassed
+akLocation: The Location where it occurred.
+aiCrime: Is this a crime? This is actually a bool, and Papyrus will handle it correctly if you use it in an if or cast it to a bool.
+0 = false, non-zero = true. (Story manager cannot handle bools, so it sends an int instead)">
+				<Param name="ObjectReference akVictim"/>
+				<Param name="ObjectReference akTrespasser"/>
+				<Param name="Location akLocation"/>
+				<Param name="Int aiCrime"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTrackedStatsEvent" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+Event called when tracked stats are updated - if this active magic effect/alias/form is registered for it.
+ 
+asStat: The text for the stat being updated. Link to list of tracked stats
+aiStatValue: The updated value of the stat.">
+				<Param name="String asStat"/>
+				<Param name="Int aiStatValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTranslationAlmostComplete" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference almost done translating to the destination.
+This is very useful for things like critters, where you want constant motion, and the script execution delay would otherwise
+make it possible for the reference to stay immobile for a few frames.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTranslationComplete" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference done translating to the destination.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTranslationFailed" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference failed translating to the destination for any reason (including when a new request is submitted).">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTrapHit" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference is a trap and has hit a live target. This event is sent every so often as long as a trap
+object is in contact with a live target. This event can be sent quite rapidly, so be careful how you use it so you dont overstress the script system.
+ 
+akTarget: The ObjectReference that this reference just hit.
+afXVel: The X velocity for our reference when it hit.
+afYVel: The Y velocity for our reference when it hit.
+afZVel: The Z velocity for our reference when it hit.
+afXPos: The X position of our reference when it hit.
+afYPos: The Y position of our reference when it hit.
+afZPos: The Z position of our reference when it hit.
+aeMaterial: Opaque integer value denoting what material the trap is. Not intended to be meaningful to script,
+just to be passed to other native functions that may use it.
+abInitialHit: True if this is the first time the trap has hit the target.
+aeMotionType: The motion type for the trap.
+Note: Currently there are several read-only properties in the ObjectReference source file that match this,
+but it will later be changed to an enum and the possible list of values reduced to something more meaningful.">
+				<Param name="ObjectReference akTarget"/>
+				<Param name="Float afXVel"/>
+				<Param name="Float afYVel"/>
+				<Param name="Float afZVel"/>
+				<Param name="Float afXPos"/>
+				<Param name="Float afYPos"/>
+				<Param name="Float afZPos"/>
+				<Param name="Int aeMaterial"/>
+				<Param name="Bool abInitialHit"/>
+				<Param name="Int aeMotionType"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTrapHitStart" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference is a trap and has started hitting a live target.
+ 
+akTarget: The ObjectReference that this reference just hit.
+afXVel: The X velocity for our reference when it hit.
+afYVel: The Y velocity for our reference when it hit.
+afZVel: The Z velocity for our reference when it hit.
+afXPos: The X position of our reference when it hit.
+afYPos: The Y position of our reference when it hit.
+afZPos: The Z position of our reference when it hit.
+aeMaterial: Opaque integer value denoting what material the trap is. Not intended to be meaningful to script,
+just to be passed to other native functions that may use it.
+abInitialHit: True if this is the first time the trap has hit the target.
+aeMotionType: The motion type for the trap.
+Note: Currently there are several read-only properties in the ObjectReference source file that match this,
+but it will later be changed to an enum and the possible list of values reduced to something more meaningful.">
+				<Param name="ObjectReference akTarget"/>
+				<Param name="Float afXVel"/>
+				<Param name="Float afYVel"/>
+				<Param name="Float afZVel"/>
+				<Param name="Float afXPos"/>
+				<Param name="Float afYPos"/>
+				<Param name="Float afZPos"/>
+				<Param name="Int aeMaterial"/>
+				<Param name="Bool abInitialHit"/>
+				<Param name="Int aeMotionType"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTrapHitStop" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference is a trap and has stopped hitting a live target.
+ 
+akTarget: The ObjectReference that this reference just hit.">
+				<Param name="ObjectReference akTarget"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTrigger" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference is a trigger and has been triggered.
+This event will be sent every so often while a reference stays inside the trigger box.
+This event is sent repeatedly, so care should be taken not to tie up the script
+system unnecessarily with a long complicated handler.
+Try using the trigger enter and leave events instead.
+ 
+akActionRef: The ObjectReference that triggered this reference.">
+				<Param name="ObjectReference akActionRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTriggerEnter" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script (Papyrus)
+Event called when the object reference is a trigger volume and has been entered.
+This event can be received out of order with OnTriggerLeave, so its ideal to keep a
+count instead of a simple true/false value for when things are inside the trigger.
+ 
+akActionRef: The ObjectReference that entered the volume.">
+				<Param name="ObjectReference akActionRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnTriggerLeave" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script (Papyrus)
+Event called when the object reference is a trigger volume and has been left.
+This event can be received out of order with OnTriggerEnter,
+so its ideal to keep a count instead of a simple true/false value
+for when things are inside the trigger.
+ 
+akActionRef: The ObjectReference that left the volume.">
+				<Param name="ObjectReference akActionRef"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnUnequipped" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference has been unequipped by an actor.
+When an object is unequipped it may still be inside a container,
+which means that you cannot call Member Functions on it.
+ 
+akActor: The actor that unequipped this object.">
+				<Param name="Actor akActor"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnUnload" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the objects 3d has been unloaded.
+This event is sent every time the 3d is unloaded,
+which may happen multiple times in a single game session.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnUpdate" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+Event called periodically if the active magic effect/alias/form is registered for update events.
+This event will not be sent if the game is in menu mode.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnUpdateGameTime" func="yes">
+			<Overload retVal="Event" descr="Member of: ActiveMagicEffect Script, Alias Script, and Form Script
+Event called periodically in game time if the active magic effect/alias/form is registered for update events.
+This event will not be sent if the game is in menu mode.">
+ 
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnVersionUpdate" func="yes">
+			<Overload retVal="Event" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Event called when a version update of this script has been detected.
+ 
+version: The new version.">
+				<Param name="Int version"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OnWardHit" func="yes">
+			<Overload retVal="Event" descr="Member of: ObjectReference Script
+Event called when the object reference is using a ward that is hit by a spell.
+ 
+akCaster: The ObjectReference that cast as spell at this reference.
+akSpell: The Spell that hit this reference.
+aiStatus: One of the following:
+0 for a friendly spell hit
+1 if the ward absorbed the spell
+2 if the ward was broken.">
+				<Param name="ObjectReference akCaster"/>
+				<Param name="Spell akSpell"/>
+				<Param name="Int aiStatus"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="OpenInventory"/>
+		<KeyWord name="OpenUserLog"/>
+		<KeyWord name="Outfit"/>
+		<KeyWord name="OverBudget"/>
+		<KeyWord name="Package"/>
+		<KeyWord name="Parent"/>
+		<KeyWord name="PathToReference"/>
+		<KeyWord name="Pause"/>
+		<KeyWord name="PlaceActorAtMe"/>
+		<KeyWord name="PlaceAtMe"/>
+		<KeyWord name="Play"/>
+		<KeyWord name="PlayAndWait"/>
+		<KeyWord name="PlayAnimation"/>
+		<KeyWord name="PlayAnimationAndWait"/>
+		<KeyWord name="PlayBink" func="yes"/>
+		<KeyWord name="PlayerKnows"/>
+		<KeyWord name="PlayerMoveToAndWait"/>
+		<KeyWord name="PlayerPayCrimeGold"/>
+		<KeyWord name="PlayGamebryoAnimation"/>
+		<KeyWord name="PlayIdle"/>
+		<KeyWord name="PlayIdleWithTarget"/>
+		<KeyWord name="PlayImpactEffect"/>
+		<KeyWord name="PlaySubGraphAnimation"/>
+		<KeyWord name="PlaySyncedAnimationAndWaitSS"/>
+		<KeyWord name="PlaySyncedAnimationSS"/>
+		<KeyWord name="PlayTerrainEffect"/>
+		<KeyWord name="PopTo"/>
+		<KeyWord name="Pow"/>
+		<KeyWord name="PrecacheCharGen"/>
+		<KeyWord name="PrecacheCharGenClear"/>
+		<KeyWord name="ProcessTrapHit"/>
+		<KeyWord name="Projectile"/>
+		<KeyWord name="Property"/>
+		<KeyWord name="PushActorAway"/>
+		<KeyWord name="QueryStat"/>
+		<KeyWord name="Quest"/>
+		<KeyWord name="QuitGame"/>
+		<KeyWord name="QuitToMainMenu"/>
+		<KeyWord name="Race"/>
+		<KeyWord name="RadiansToDegrees"/>
+		<KeyWord name="RampRumble" func="yes"/>
+		<KeyWord name="RandomFloat"/>
+		<KeyWord name="RandomInt"/>
+		<KeyWord name="ReferenceAlias"/>
+		<KeyWord name="ReloadScript"/>
+		<KeyWord name="RegisterForAnimationEvent"/>
+		<KeyWord name="RegisterForKey" func="yes"/>
+		<KeyWord name="RegisterForLOS"/>
+		<KeyWord name="RegisterForMenu" func="yes"/>
+		<KeyWord name="RegisterForSingleLOSGain"/>
+		<KeyWord name="RegisterForSingleLOSLost"/>
+		<KeyWord name="RegisterForSingleUpdate"/>
+		<KeyWord name="RegisterForSingleUpdateGameTime"/>
+		<KeyWord name="RegisterForSleep"/>
+		<KeyWord name="RegisterForTrackedStatsEvent"/>
+		<KeyWord name="RegisterForUpdate"/>
+		<KeyWord name="RegisterForUpdateGameTime"/>
+		<KeyWord name="ReleaseKey"/>
+		<KeyWord name="ReleaseOverride"/>
+		<KeyWord name="RemoteCast"/>
+		<KeyWord name="Remove"/>
+		<KeyWord name="RemoveAddedForm"/>
+		<KeyWord name="RemoveAllInventoryEventFilters"/>
+		<KeyWord name="RemoveAllItems"/>
+		<KeyWord name="RemoveCrossFade"/>
+		<KeyWord name="RemoveDependentAnimatedObjectReference"/>
+		<KeyWord name="RemoveFromAllFactions"/>
+		<KeyWord name="RemoveFromFaction"/>
+		<KeyWord name="RemoveHavokConstraints"/>
+		<KeyWord name="RemoveInventoryEventFilter"/>
+		<KeyWord name="RemoveItem"/>
+		<KeyWord name="RemovePerk"/>
+		<KeyWord name="RemoveShout"/>
+		<KeyWord name="RemoveSlotFromMask"/>
+		<KeyWord name="RemoveSpell"/>
+		<KeyWord name="RequestAutoSave"/>
+		<KeyWord name="RequestModel"/>
+		<KeyWord name="RequestSave"/>
+		<KeyWord name="Reset"/>
+		<KeyWord name="ResetHealthAndLimbs"/>
+		<KeyWord name="ResetHelpMessage"/>
+		<KeyWord name="RestoreActorValue"/>
+		<KeyWord name="RestoreAV"/>
+		<KeyWord name="Resurrect"/>
+		<KeyWord name="Return"/>
+		<KeyWord name="Revert"/>
+		<KeyWord name="RightShift"/>
+		<KeyWord name="Say"/>
+		<KeyWord name="Scene"/>
+		<KeyWord name="ScriptName"/>
+		<KeyWord name="Self"/>
+		<KeyWord name="SendAnimationEvent"/>
+		<KeyWord name="SendAssaultAlarm"/>
+		<KeyWord name="SendPlayerToJail"/>
+		<KeyWord name="SendStealAlarm"/>
+		<KeyWord name="SendStoryEvent"/>
+		<KeyWord name="SendStoryEventAndWait"/>
+		<KeyWord name="SendTrespassAlarm"/>
+		<KeyWord name="SendWereWolfTransformation"/>
+		<KeyWord name="ServeTime"/>
+		<KeyWord name="Set"/>
+		<KeyWord name="SetActive"/>
+		<KeyWord name="SetActorCause"/>
+		<KeyWord name="SetActorOwner"/>
+		<KeyWord name="SetActorValue"/>
+		<KeyWord name="SetAlert"/>
+		<KeyWord name="SetAllowDualWielding"/>
+		<KeyWord name="SetAllowFlying"/>
+		<KeyWord name="SetAllowFlyingEx" func="yes"/>
+		<KeyWord name="SetAllowFlyingMountLandingRequests" func="yes"/>
+		<KeyWord name="SetAlly"/>
+		<KeyWord name="SetAlpha"/>
+		<KeyWord name="SetAngle"/>
+		<KeyWord name="SetAnimationVariableBool"/>
+		<KeyWord name="SetAnimationVariableFloat"/>
+		<KeyWord name="SetAnimationVariableInt"/>
+		<KeyWord name="SetArmorRating"/>
+		<KeyWord name="SetAttackActorOnSight"/>
+		<KeyWord name="SetAV"/>
+		<KeyWord name="SetAvoidThreatChance"/>
+		<KeyWord name="SetBaseDamage"/>
+		<KeyWord name="SetBeastForm"/>
+		<KeyWord name="SetBribed"/>
+		<KeyWord name="SetCameraTarget"/>
+		<KeyWord name="SetClass"/>
+		<KeyWord name="SetCleared"/>
+		<KeyWord name="SetCloseRangeDuelingCircleMult"/>
+		<KeyWord name="SetCloseRangeDuelingFallbackMult"/>
+		<KeyWord name="SetCloseRangeFlankingFlankMult"/>
+		<KeyWord name="SetCloseRangeFlankingStalkMult"/>
+		<KeyWord name="SetColorDialogDefaultColor" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The default color (0xRRGGBB).">
+				<Param name="Int color"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetColorDialogStartColor" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+color - The intially selected color (0xRRGGBB).">
+				<Param name="Int color"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetColorOptionValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+option: The option ID.
+color: The new color (0xRRGGBB).
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="Int color"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetColorOptionValueST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+color: The new color (0xRRGGBB).
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="Int color"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetCombatStyle"/>
+		<KeyWord name="SetCrimeFaction"/>
+		<KeyWord name="SetCrimeGold"/>
+		<KeyWord name="SetCrimeGoldViolent"/>
+		<KeyWord name="SetCritDamage"/>
+		<KeyWord name="SetCriticalStage"/>
+		<KeyWord name="SetCurrentStageID"/>
+		<KeyWord name="SetCursorFillMode" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Sets the fill direction of the cursor used for the option setters.
+Accepted values are LEFT_TO_RIGHT and TOP_TO_BOTTOM.
+For LEFT_TO_RIGHT, the fill order is n, n+1, n+2, ..., i.e. fill up the current row, then move to the next one.
+For TOP_TO_BOTTOM, the fill order is n, n+2, n+4, ..., i.e. fill the next entry in the current column.
+ 
+fillMode: The new fill mode.">
+				<Param name="Int fillMode"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetCursorPosition" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Sets the position of the cursor used for the option setters.
+The options are displayed in a grid with 2 columns and 64 rows, with a total of 128 cells.
+They are indexed 0 to 127, left-to-right, top-to-bottom.
+Default cursor position is 0 (top-left).
+ 
+position: The new cursor position.">
+				<Param name="Int position"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetDefensiveMult"/>
+		<KeyWord name="SetDestroyed"/>
+		<KeyWord name="SetDoingFavor"/>
+		<KeyWord name="SetDontMove" func="yes"/>
+		<KeyWord name="SetEnchantment"/>
+		<KeyWord name="SetEnemy"/>
+		<KeyWord name="SetEssential"/>
+		<KeyWord name="SetExpressionOverride" func="yes"/>
+		<KeyWord name="SetEyeTexture" func="yes"/>
+		<KeyWord name="SetFaceMorph"/>
+		<KeyWord name="SetFacePreset"/>
+		<KeyWord name="SetFactionOwner"/>
+		<KeyWord name="SetFactionRank"/>
+		<KeyWord name="SetFlightDiveBombChance"/>
+		<KeyWord name="SetFlightFlyingAttackChance"/>
+		<KeyWord name="SetFlightHoverChance"/>
+		<KeyWord name="SetFogColor" func="yes"/>
+		<KeyWord name="SetFogPlanes"/>
+		<KeyWord name="SetFogPower"/>
+		<KeyWord name="SetFootIK"/>
+		<KeyWord name="SetForcedLandingMarker"/>
+		<KeyWord name="SetFrequency"/>
+		<KeyWord name="SetGameSettingBool"/>
+		<KeyWord name="SetGameSettingFloat"/>
+		<KeyWord name="SetGameSettingInt"/>
+		<KeyWord name="SetGameSettingString"/>
+		<KeyWord name="SetGhost"/>
+		<KeyWord name="SetGodMode"/>
+		<KeyWord name="SetGoldValue"/>
+		<KeyWord name="SetGroupOffensiveMult"/>
+		<KeyWord name="SetHairColor"/>
+		<KeyWord name="SetHeadTracking"/>
+		<KeyWord name="SetHudCartMode"/>
+		<KeyWord name="SetIconPath"/>
+		<KeyWord name="SetInChargen"/>
+		<KeyWord name="SetInfoText" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Sets the text for the info text field below the option panel.
+ 
+text: The new info text. Supports multi-line; use \n to start a new line.">
+				<Param name="String text"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetINIBool"/>
+		<KeyWord name="SetINIFloat"/>
+		<KeyWord name="SetINIInt"/>
+		<KeyWord name="SetINIString"/>
+		<KeyWord name="SetInstanceVolume"/>
+		<KeyWord name="SetIntimidated"/>
+		<KeyWord name="SetInvulnerable"/>
+		<KeyWord name="SetItemCharge"/>
+		<KeyWord name="SetItemHealthPercent"/>
+		<KeyWord name="SetKeyMapOptionValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+option: The option ID.
+keyCode: The new keycode.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="Int keyCode"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetKeyMapOptionValueST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+keyCode: The new keycode.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="Int keyCode"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetKeywordData"/>
+		<KeyWord name="SetLockLevel"/>
+		<KeyWord name="SetLongRangeStrafeMult"/>
+		<KeyWord name="SetLookAt"/>
+		<KeyWord name="SetMaxRange"/>
+		<KeyWord name="SetMeleeAttackStaggeredMult"/>
+		<KeyWord name="SetMeleeBashAttackMult"/>
+		<KeyWord name="SetMeleeBashMult"/>
+		<KeyWord name="SetMeleeBashPowerAttachMult"/>
+		<KeyWord name="SetMeleeBashRecoiledMult"/>
+		<KeyWord name="SetMeleeMult"/>
+		<KeyWord name="SetMeleePowerAttackBlockingMult"/>
+		<KeyWord name="SetMeleePowerAttackStaggeredMult"/>
+		<KeyWord name="SetMeleeSpecialAttackMult"/>
+		<KeyWord name="SetMenuDialogDefaultIndex" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The index of the default menu entry.">
+				<Param name="Int value"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetMenuDialogOptions" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+options: The list entries for the menu dialog.">
+				<Param name="String[] options"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetMenuDialogStartIndex" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The index of the initially selected menu entry.">
+				<Param name="Int value"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetMenuOptionValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+option: The option ID.
+value: The new option value.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="String value"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetMenuOptionValueST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The new option value.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="String value"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetMessageIconPath"/>
+		<KeyWord name="SetMinRange"/>
+		<KeyWord name="SetModelNthTextureSet"/>
+		<KeyWord name="SetModelPath"/>
+		<KeyWord name="SetMotionType"/>
+		<KeyWord name="SetName"/>
+		<KeyWord name="SetNoBleedoutRecovery"/>
+		<KeyWord name="SetNoFavorAllowed"/>
+		<KeyWord name="SetNotShowOnStealthMeter"/>
+		<KeyWord name="SetNthHeadPart"/>
+		<KeyWord name="SetNthIngredient"/>
+		<KeyWord name="SetNthIngredientQuantity"/>
+		<KeyWord name="SetNthRecoveryTime"/>
+		<KeyWord name="SetNthSpell"/>
+		<KeyWord name="SetNthWordOfPower"/>
+		<KeyWord name="SetObjectiveCompleted"/>
+		<KeyWord name="SetObjectiveDisplayed"/>
+		<KeyWord name="SetObjectiveFailed"/>
+		<KeyWord name="SetOffensiveMult"/>
+		<KeyWord name="SetOpen"/>
+		<KeyWord name="SetOptionFlags" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Sets the option flags.
+ 
+Accepted flags are:
+ 
+OPTION_FLAG_NONE, to clear the flags;
+OPTION_FLAG_DISABLED, to grey out and disable the option.
+OPTION_FLAG_HIDDEN, to hide an option. It'll behave like an empty option.
+OPTION_FLAG_WITH_UNMAP, to enable the unmap button for keymap options.
+ 
+option: The option ID.
+flags: The new option flags.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="Int flags"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetOptionFlagsST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Sets the option flags of a state option.
+ 
+flags: The new option flags. See SetOptionFlags.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="Int flags"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetOutfit"/>
+		<KeyWord name="SetPerkPoints"/>
+		<KeyWord name="SetPlayerAIDriven"/>
+		<KeyWord name="SetPlayerControls"/>
+		<KeyWord name="SetPlayerEnemy"/>
+		<KeyWord name="SetPlayerExpelled"/>
+		<KeyWord name="SetPlayerReportCrime"/>
+		<KeyWord name="SetPlayerResistingArrest"/>
+		<KeyWord name="SetPlayerTeammate"/>
+		<KeyWord name="SetPosition"/>
+		<KeyWord name="SetProtected"/>
+		<KeyWord name="SetPublic"/>
+		<KeyWord name="SetQuality"/>
+		<KeyWord name="SetRace"/>
+		<KeyWord name="SetRaceFlag"/>
+		<KeyWord name="SetRangedMult"/>
+		<KeyWord name="SetReach"/>
+		<KeyWord name="SetReaction"/>
+		<KeyWord name="SetRelationshipRank"/>
+		<KeyWord name="SetRestrained"/>
+		<KeyWord name="SetResult"/>
+		<KeyWord name="SetResultQuantity"/>
+		<KeyWord name="SetScale"/>
+		<KeyWord name="SetShoutMult"/>
+		<KeyWord name="SetSittingRotation"/>
+		<KeyWord name="SetSliderDialogDefaultValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The default value of the slider.">
+				<Param name="Float value"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetSliderDialogInterval" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The stepping interval for changing slider values.">
+				<Param name="Float value"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetSliderDialogRange" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+minValue: The smallest valid slider value.
+maxValue: The largest valid slider value.">
+				<Param name="Float minValue"/>
+				<Param name="Float maxValue"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetSliderDialogStartValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The starting value of the slider, which should be set to the current value.">
+				<Param name="Float value"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetSliderOptionValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+option: The option ID.
+value: The new option value.
+formatString: The new format string.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="Float value"/>
+				<Param name="String formatString = &quot;{0}&quot;"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetSliderOptionValueST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The new option value.
+formatString: The new format string.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="Float value"/>
+				<Param name="String formatString = &quot;{0}&quot;"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetSlotMask"/>
+		<KeyWord name="SetSpeed"/>
+		<KeyWord name="SetStaffMult"/>
+		<KeyWord name="SetStage"/>
+		<KeyWord name="SetStagger"/>
+		<KeyWord name="SetSubGraphFloatVariable" func="yes"/>
+		<KeyWord name="SetSunGazeImageSpaceModifier" func="yes"/>
+		<KeyWord name="SetTextOptionValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+option: The option ID.
+value: The new option value.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="String value"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetTextOptionValueST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+value: The new option value.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="String value"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetTitleText" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Sets the title text of the control panel.
+If the title is not set with this function, it defaults to the name of the current page, or the mod name if no pages are defined.
+ 
+text: The new title text.">
+				<Param name="String text"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetToggleOptionValue" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+option: The option ID.
+checked: The new check box state.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.">
+				<Param name="Int option"/>
+				<Param name="Bool checked"/>
+				<Param name="Bool noUpdate = False"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetToggleOptionValueST" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+checked: The new check box state.
+noUpdate: If true, the option display is not immediately updated, so several setter calls can be grouped together.
+stateName: Name of the state option. Default is the current state option.">
+				<Param name="Bool checked"/>
+				<Param name="Bool noUpdate = False"/>
+				<Param name="String stateName = &quot;&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="SetUnarmedMult"/>
+		<KeyWord name="SetUnconscious"/>
+		<KeyWord name="SetValidRaces"/>
+		<KeyWord name="SetValue"/>
+		<KeyWord name="SetValueInt" func="yes"/>
+		<KeyWord name="SetVehicle"/>
+		<KeyWord name="SetVoiceRecoveryTime"/>
+		<KeyWord name="SetVolume"/>
+		<KeyWord name="SetWeaponType"/>
+		<KeyWord name="SetWeight"/>
+		<KeyWord name="SetWeightClass" func="yes"/>
+		<KeyWord name="SetWorkbenchKeyword"/>
+		<KeyWord name="ShakeCamera"/>
+		<KeyWord name="ShakeController"/>
+		<KeyWord name="Shout"/>
+		<KeyWord name="Show"/>
+		<KeyWord name="ShowAsHelpMessage"/>
+		<KeyWord name="ShowBarterMenu"/>
+		<KeyWord name="ShowFirstPersonGeometry"/>
+		<KeyWord name="ShowGiftMenu"/>
+		<KeyWord name="ShowHelpMessage" func="yes"/>
+		<KeyWord name="ShowLimitedRaceMenu" func="yes"/>
+		<KeyWord name="ShowMessage" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Shows a message dialog.
+ 
+This function works similar to Message.Show, so it will pause the script and wait until the user closed the dialog.
+The return value indicates whether the dialog was accepted or canceled.
+ 
+Return value: True if the user accepted the dialog, false if it was canceled.
+ 
+message: The message string. Use \n for line breaks.
+withCancel: Show accept and cancel options. Otherwise, only the accept button is visible.
+acceptLabel: The text label used for the accept button. Default is localized Accept.
+cancelLabel: The text label used for the cancel button. Default is localized Cancel.">
+				<Param name="String message"/>
+				<Param name="Bool withCancel = True"/>
+				<Param name="String acceptLabel = &quot;$Yes&quot;"/>
+				<Param name="String cancelLabel = &quot;$No&quot;"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="ShowRaceMenu"/>
+		<KeyWord name="ShowRefPosition"/>
+		<KeyWord name="ShowTitleSequenceMenu"/>
+		<KeyWord name="ShowTrainingMenu"/>
+		<KeyWord name="Sin"/>
+		<KeyWord name="Sound"/>
+		<KeyWord name="Spell"/>
+		<KeyWord name="SplineTranslateTo"/>
+		<KeyWord name="SplineTranslateToRef" func="yes"/>
+		<KeyWord name="SplineTranslateToRefNode"/>
+		<KeyWord name="Sqrt"/>
+		<KeyWord name="Start"/>
+		<KeyWord name="StartCannibal"/>
+		<KeyWord name="StartCombat"/>
+		<KeyWord name="StartDeferredKill" func="yes"/>
+		<KeyWord name="StartFrameRateCapture"/>
+		<KeyWord name="StartObjectProfiling"/>
+		<KeyWord name="StartScriptProfiling"/>
+		<KeyWord name="StartSneaking"/>
+		<KeyWord name="StartStackProfiling"/>
+		<KeyWord name="StartTitleSequence"/>
+		<KeyWord name="StartVampireFeed"/>
+		<KeyWord name="State"/>
+		<KeyWord name="Stop"/>
+		<KeyWord name="StopCombat"/>
+		<KeyWord name="StopCombatAlarm"/>
+		<KeyWord name="StopInstance"/>
+		<KeyWord name="StopObjectProfiling"/>
+		<KeyWord name="StopScriptProfiling"/>
+		<KeyWord name="StopStackProfiling"/>
+		<KeyWord name="StopTranslation"/>
+		<KeyWord name="String"/>
+		<KeyWord name="Substring"/>
+		<KeyWord name="TakeScreenshot"/>
+		<KeyWord name="Tan"/>
+		<KeyWord name="TapKey"/>
+		<KeyWord name="TeachWord"/>
+		<KeyWord name="TetherToHorse"/>
+		<KeyWord name="ToggleAI"/>
+		<KeyWord name="ToggleCollisions"/>
+		<KeyWord name="ToggleMenus"/>
+		<KeyWord name="Topic"/>
+		<KeyWord name="TopicInfo"/>
+		<KeyWord name="Trace"/>
+		<KeyWord name="TraceConditional"/>
+		<KeyWord name="TraceStack"/>
+		<KeyWord name="TraceUser"/>
+		<KeyWord name="TranslateTo"/>
+		<KeyWord name="TrapSoul"/>
+		<KeyWord name="TriggerScreenBlood"/>
+		<KeyWord name="True"/>
+		<KeyWord name="TryToAddToFaction"/>
+		<KeyWord name="TryToDisable"/>
+		<KeyWord name="TryToEnable"/>
+		<KeyWord name="TryToKill"/>
+		<KeyWord name="TryToMoveTo"/>
+		<KeyWord name="TryToRemoveFromFaction"/>
+		<KeyWord name="TryToReset"/>
+		<KeyWord name="TryToStopCombat"/>
+		<KeyWord name="UnequipAll"/>
+		<KeyWord name="UnequipItem"/>
+		<KeyWord name="UnEquipItem"/>
+		<KeyWord name="UnequipShout"/>
+		<KeyWord name="UnequipSpell"/>
+		<KeyWord name="UnloadCustomContent" func="yes">
+			<Overload retVal="Function" descr="Member of: SKI_ConfigBase Script
+ 
+Requires SkyUI SDK
+ 
+Clears any custom content and re-enables the original option list.
+Has to be called manually after LoadCustomContent was used.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="UnLockOwnedDoorsInCell"/>
+		<KeyWord name="UnlockWord"/>
+		<KeyWord name="UnMute"/>
+		<KeyWord name="UnPause"/>
+		<KeyWord name="UnregisterForAnimationEvent"/>
+		<KeyWord name="UnregisterForLOS"/>
+		<KeyWord name="UnregisterForSleep"/>
+		<KeyWord name="UnregisterForTrackedStatsEvent"/>
+		<KeyWord name="UnregisterForUpdate"/>
+		<KeyWord name="UnregisterForUpdateGameTime"/>
+		<KeyWord name="UpdateCurrentInstanceGlobal" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Quest Script
+ 
+Attempts to update the stored value of the given global in the instance data for the quest's current instance.
+The function only returns false on failure which can be caused by calling the function when there is no active
+instance on the quest or by passing a global not in the quest's text global list.
+ 
+aUpdateGlobal: The global on the quest whose cached value should be reset to its current value.">
+				<Param name="GlobalVariable aUpdateGlobal"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="UsingGamepad" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Game Script
+ 
+			Returns true if we're using a gamepad.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Utility"/>
+		<KeyWord name="VisualEffect"/>
+		<KeyWord name="Wait" func="yes">
+			<Overload retVal="Function" descr="Member of: Utility Script
+ 
+Pauses the script for at least the specified amount of real-world time.
+This function is latent. Unlike WaitMenuMode, time will not be counted while the player is in a menu.
+ 
+afSeconds: How long to wait, in real-time seconds.">
+				<Param name="float afSeconds"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="WaitForAnimationEvent" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: ObjectReference Script
+ 
+Waits for the specified animation event from this object to happen before returning.
+ 
+asEventName: The event to wait for.">
+				<Param name="string asEventName"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="WaitGameTime" func="yes">
+			<Overload retVal="Function" descr="Member of: Utility Script
+ 
+Pauses the script for at least the specified amount of game time. This function is latent.
+ 
+afHours: How long to wait, in game hours.">
+				<Param name="float afHours"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="WaitMenuMode" func="yes">
+			<Overload retVal="Function" descr="Member of: Utility Script
+ 
+Pauses the script for at least the specified amount of time. This function is latent.
+Time will be counted while the player is in a menu.
+ 
+afSeconds: How long to wait, in real-time seconds.">
+				<Param name="float afSeconds"/>
+			</Overload>
+		</KeyWord>
+		<KeyWord name="Weapon"/>
+		<KeyWord name="Weather"/>
+		<KeyWord name="While"/>
+		<KeyWord name="WillIntimidateSucceed" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Returns whether or not an intimidation attempt by the player on this actor will succeed or not.">
+			</Overload>
+		</KeyWord>
+		<KeyWord name="WordOfPower"/>
+		<KeyWord name="WornHasKeyword" func="yes">
+			<Overload retVal="Bool Function" descr="Member of: Actor Script
+ 
+Checks to see if anything worn by this actor has the specified keyword attached.
+ 
+akKeyword: The Keyword to check for.">
+				<Param name="Keyword akKeyword"/>
+			</Overload>
+		</KeyWord>
+	</AutoComplete>
+</NotepadPlus>

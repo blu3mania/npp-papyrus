@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: PapyrusPlugin.sln
+
+jobs:
+  Build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        build_configuration: [Release]
+        build_platform: [x64, x86]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Update build numner
+      working-directory: ${{ github.workspace }}\src\Plugin\Common
+      run: (gc Resources.hpp) -replace 'BUILD_NUMBER    0', 'BUILD_NUMBER    ${{ github.run_number }}' | Out-File -encoding ASCII Resources.hpp
+
+    - name: Build plugin DLL
+      working-directory: ${{ github.workspace }}
+      run: msbuild /m /p:Configuration=${{ matrix.build_configuration}} /p:Platform=${{ matrix.build_platform }} ${{ env.SOLUTION_FILE_PATH }}

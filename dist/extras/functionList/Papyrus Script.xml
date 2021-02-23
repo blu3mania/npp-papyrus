@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Content of this file is from https://www.creationkit.com/index.php?title=Notepad%2B%2B_Setup -->
+<!-- ==========================================================================\
+|
+|   To learn how to make your own language parser, please check the following
+|   link:
+|       https://npp-user-manual.org/docs/function-list/
+|
+\=========================================================================== -->
+<NotepadPlus>
+	<functionList>
+        <parser
+            displayName="Papyrus Script"
+            id="papyrus_function"
+            commentExpr="(;.*?$)"
+        >
+            <function
+                displayMode="$functionName"
+                mainExpr="^[\t ]*([\w\[\]]+[\t ]+)?(function|event)[\t ]+\w+[\t ]*\(.*?\)"
+            >
+                <functionName>
+                    <nameExpr expr="\w+[\t ]*\(.*?\)"/>
+                </functionName>
+            </function>
+        </parser>
+	</functionList>
+</NotepadPlus>

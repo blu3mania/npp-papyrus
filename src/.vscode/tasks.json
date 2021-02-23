@@ -1,0 +1,169 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build VC++ project (Release x64)",
+      "type": "shell",
+      "command": "MSBuild.exe",
+      "args": [
+          // Ask msbuild to generate full paths for file names.
+          "/p:GenerateFullPaths=true",
+          "/p:Configuration=Release",
+          "/p:Platform=x64",
+          "/t:build",
+          "/m",
+          // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+          "/consoleloggerparameters:NoSummary"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+          // Reveal the output only if unrecognized errors occur.
+          "reveal": "silent"
+      },
+      // Use the standard MS compiler pattern to detect errors, warnings and infos
+      "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "Build VC++ project (Release x86)",
+        "type": "shell",
+        "command": "MSBuild.exe",
+        "args": [
+            // Ask msbuild to generate full paths for file names.
+            "/p:GenerateFullPaths=true",
+            "/p:Configuration=Release",
+            "/p:Platform=Win32",
+            "/t:build",
+            "/m",
+            // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "group": "build",
+        "presentation": {
+            // Reveal the output only if unrecognized errors occur.
+            "reveal": "silent"
+        },
+        // Use the standard MS compiler pattern to detect errors, warnings and infos
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "Build VC++ project (Debug x64)",
+        "type": "shell",
+        "command": "MSBuild.exe",
+        "args": [
+            // Ask msbuild to generate full paths for file names.
+            "/p:GenerateFullPaths=true",
+            "/p:Configuration=Debug",
+            "/p:Platform=x64",
+            "/t:build",
+            "/m",
+            // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "group": "build",
+        "presentation": {
+            // Reveal the output only if unrecognized errors occur.
+            "reveal": "silent"
+        },
+        // Use the standard MS compiler pattern to detect errors, warnings and infos
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "Build VC++ project (Debug x86)",
+        "type": "shell",
+        "command": "MSBuild.exe",
+        "args": [
+            // Ask msbuild to generate full paths for file names.
+            "/p:GenerateFullPaths=true",
+            "/p:Configuration=Debug",
+            "/p:Platform=Win32",
+            "/t:build",
+            "/m",
+            // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+            "/consoleloggerparameters:NoSummary"
+        ],
+        "group": "build",
+        "presentation": {
+            // Reveal the output only if unrecognized errors occur.
+            "reveal": "silent"
+        },
+        // Use the standard MS compiler pattern to detect errors, warnings and infos
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "CL.exe build active file (Debug)",
+        "type": "shell",
+        "command": "CL.exe",
+        "args": [
+            "/Od",
+            "/MDd",
+            "/Zi",
+            "/Fo\"Debug\\\\\"",
+            "/Fd\"Debug\\vc142.pdb\"",
+            "/c",
+            "/Inpp",
+            "/Iscintilla",
+            "/nologo",
+            "/W3",
+            "/WX-",
+            "/diagnostics:column",
+            "/std:c++latest",
+            "/sdl",
+            "/EHsc",
+            "/RTC1",
+            "/FC",
+            "/D",
+            "UNICODE",
+            "/Zc:wchar_t",
+            "/Zc:forScope",
+            "/Zc:inline",
+            "/analyze-",
+            "${file}"
+        ],
+        "group": "build",
+        // Use the standard MS compiler pattern to detect errors, warnings and infos
+        "problemMatcher": "$msCompile"
+    },
+    {
+        "label": "CL.exe build active file (Release)",
+        "type": "shell",
+        "command": "CL.exe",
+        "args": [
+            "/O2",
+            "/Oi",
+            "/Ot",
+            "/GL",
+            "/Gy",
+            "/Zi",
+            "/Fo\"Release\\\\\"",
+            "/Fd\"Release\\vc142.pdb\"",
+            "/c",
+            "/Inpp",
+            "/Iscintilla",
+            "/nologo",
+            "/W3",
+            "/WX-",
+            "/diagnostics:column",
+            "/std:c++latest",
+            "/sdl",
+            "/EHsc",
+            "/RTC1",
+            "/FC",
+            "/D",
+            "UNICODE",
+            "/Zc:wchar_t",
+            "/Zc:forScope",
+            "/Zc:inline",
+            "/analyze-",
+            "${file}"
+        ],
+        "group": "build",
+        // Use the standard MS compiler pattern to detect errors, warnings and infos
+        "problemMatcher": "$msCompile"
+    }
+  ]
+}

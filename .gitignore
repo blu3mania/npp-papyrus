@@ -1,0 +1,12 @@
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+x64/
+x86/
+
+.vs/
+*.vcxproj.user
+*.VC.VC.opendb
+*.VC.db
+
+/TODO.txt
