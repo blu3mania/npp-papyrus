@@ -155,8 +155,10 @@ namespace utility {
 
   // Date/Time utilities
   int currentYear() noexcept {
+    struct tm time {};
     auto now = Clock::to_time_t(Clock::now());
-    return localtime(&now)->tm_year + 1900;
+    localtime_s(&time, &now);
+    return time.tm_year + 1900;
   }
 
   // File utilities
