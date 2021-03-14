@@ -19,20 +19,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "..\Common\Game.hpp"
-#include "..\Common\NotepadPlusPlus.hpp"
-
-#include <string>
-
-namespace papyrus {
-
-  using Game = game::Game;
-
-  struct CompilationRequest {
-    Game game;
-    npp_buffer_t bufferID;
-    std::wstring filePath;
-    bool useAutoModeOutputDirectory;
-  };
-
-} // namespace
+// Start at a big number to avoid potential conflict with other lexers
+#define SCLEX_PAPYRUS_SCRIPT  18000

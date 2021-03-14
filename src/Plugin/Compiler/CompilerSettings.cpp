@@ -23,17 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
-  const CompilerSettings::GameSettings& CompilerSettings::gameSettings(game::Game game) const {
+  using GameSettings = CompilerSettings::GameSettings;
+
+  const GameSettings& CompilerSettings::gameSettings(Game game) const {
     switch (game) {
-      case game::Skyrim: {
+      case Game::Skyrim: {
         return skyrim;
       }
 
-      case game::SkyrimSE: {
+      case Game::SkyrimSE: {
         return sse;
       }
 
-      case game::Fallout4: {
+      case Game::Fallout4: {
         return fo4;
       }
 
@@ -43,7 +45,7 @@ namespace papyrus {
     }
   }
 
-  CompilerSettings::GameSettings& CompilerSettings::gameSettings(game::Game game) {
+  GameSettings& CompilerSettings::gameSettings(Game game) {
     return const_cast<GameSettings&>(const_cast<const CompilerSettings*>(this)->gameSettings(game));
   }
 

@@ -39,17 +39,17 @@ namespace papyrus {
     std::wstring installationPath(Game game) {
       const wchar_t* regKey = nullptr;
       switch (game) {
-        case Skyrim: {
+        case Game::Skyrim: {
           regKey = REGKEY_SOFTWARE(L"Bethesda Softworks\\Skyrim");
           break;
         }
 
-        case SkyrimSE: {
+        case Game::SkyrimSE: {
           regKey = REGKEY_SOFTWARE(L"Bethesda Softworks\\Skyrim Special Edition");
           break;
         }
 
-        case Fallout4: {
+        case Game::Fallout4: {
           regKey = REGKEY_SOFTWARE(L"Bethesda Softworks\\Fallout4");
           break;
         }

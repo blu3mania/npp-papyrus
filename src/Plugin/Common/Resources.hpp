@@ -29,8 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define USE_UNICODE     TRUE
 
+//
 // Messages
 //
+
 #define PPM_COMPILATION_DONE      WM_USER
 #define PPM_COMPILATION_FAILED    (WM_USER + 1)
 #define PPM_ANONYMIZATION_FAILED  (WM_USER + 2)
@@ -41,15 +43,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PARAM_COMPILATION_ONLY                0
 #define PARAM_COMPILATION_WITH_ANONYMIZATION  1
 
+//
 // Resources
 //
 
 // Errors window resources
-#define IDD_ERRORS_WINDOW                                 17000 // Starting at a big number to avoid potential conflict with included NPP classes' resource usage
+#define IDD_ERRORS_WINDOW                                 17000 // Start at a big number to avoid potential conflict with included NPP classes' resource usage
 #define IDC_ERRORS_LIST                                   (IDD_ERRORS_WINDOW + 1)
 
+
+// About dialog resources
+#define IDD_ABOUT_DIALOG                                  18000 // Base + 1000
+#define IDC_ABOUT_PRODUCT_NAME                            (IDD_ABOUT_DIALOG + 1)
+#define IDC_ABOUT_PRODUCT_VERSION                         (IDD_ABOUT_DIALOG + 2)
+#define IDC_ABOUT_COPYRIGHT                               (IDD_ABOUT_DIALOG + 3)
+#define IDC_ABOUT_HOMEPAGE                                (IDD_ABOUT_DIALOG + 4)
+#define IDC_ABOUT_HOMEPAGE_LINK                           (IDD_ABOUT_DIALOG + 5)
+#define IDC_ABOUT_LICENSE                                 (IDD_ABOUT_DIALOG + 6)
+#define IDC_ABOUT_LICENSE_LINK                            (IDD_ABOUT_DIALOG + 7)
+#define IDC_ABOUT_AUTHORS                                 (IDD_ABOUT_DIALOG + 8)
+#define IDC_ABOUT_ORIG_AUTHOR                             (IDD_ABOUT_DIALOG + 9)
+#define IDC_ABOUT_ORIG_AUTHOR_EMAIL                       (IDD_ABOUT_DIALOG + 10)
+#define IDC_ABOUT_AUTHOR                                  (IDD_ABOUT_DIALOG + 11)
+#define IDC_ABOUT_AUTHOR_EMAIL                            (IDD_ABOUT_DIALOG + 12)
+#define IDC_ABOUT_LIBRARIES                               (IDD_ABOUT_DIALOG + 13)
+#define IDC_ABOUT_LIBRARY_NPP                             (IDD_ABOUT_DIALOG + 14)
+#define IDC_ABOUT_LIBRARY_NPP_LINK                        (IDD_ABOUT_DIALOG + 15)
+#define IDC_ABOUT_LIBRARY_SCINTILLA                       (IDD_ABOUT_DIALOG + 16)
+#define IDC_ABOUT_LIBRARY_SCINTILLA_LINK                  (IDD_ABOUT_DIALOG + 17)
+#define IDC_ABOUT_LIBRARY_TINYXML                         (IDD_ABOUT_DIALOG + 18)
+#define IDC_ABOUT_LIBRARY_TINYXML_LINK                    (IDD_ABOUT_DIALOG + 19)
+#define IDC_ABOUT_LIBRARY_GSL                             (IDD_ABOUT_DIALOG + 20)
+#define IDC_ABOUT_LIBRARY_GSL_LINK                        (IDD_ABOUT_DIALOG + 21)
+
+
 // Settings dialog resources
-#define IDD_SETTINGS_DIALOG                               18000 // Base + 1000
+#define IDD_SETTINGS_DIALOG                               19000 // Base + 2000
 #define IDC_SETTINGS_TABS                                 (IDD_SETTINGS_DIALOG + 1)
 
 #define IDC_SETTINGS_TAB_LEXER                            (IDD_SETTINGS_DIALOG + 100)

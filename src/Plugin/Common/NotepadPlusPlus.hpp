@@ -29,7 +29,14 @@ using npp_size_t      = size_t;
 using npp_length_t    = intptr_t;
 using npp_position_t  = intptr_t;
 
+// These definitions are copied from Notepad++'s menuCmdID.h.
+// They are unlikely to change but make sure they are checked and updated as needed
+// with each new Notepad++ releases.
+#define IDM           40000
+#define IDM_ABOUT    (IDM  + 7000)
+
 // These definitions are copied from Notepad++'s Parameters.h.
-// Make sure they are checked and updated as needed with new Notepad++ releases.
+// They are unlikely to change but make sure they are checked and updated as needed
+// with each new Notepad++ releases.
 #define NB_MAX_EXTERNAL_LANG        30
 #define MAX_EXTERNAL_LEXER_NAME_LEN 16

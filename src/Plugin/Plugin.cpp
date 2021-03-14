@@ -93,7 +93,7 @@ namespace papyrus {
       switch (notification->nmhdr.code) {
         case SCN_MODIFIED: {
           if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-            //::MessageBox(nppData._nppHandle, L"SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT", L"Papyrus", MB_OK);
+            // TODO
           }
         }
         break;
@@ -127,16 +127,16 @@ namespace papyrus {
         // Menu command relayed by NPP
         UINT cmdId = static_cast<UINT>(wParam);
         if (cmdId >= advancedMenuBaseCmdID) {
-          switch (cmdId - advancedMenuBaseCmdID) {
-            case ShowLangID:
+          switch (static_cast<AdvancedMenu>(cmdId - advancedMenuBaseCmdID)) {
+            case AdvancedMenu::ShowLangID:
               showLangID();
               break;
 
-            case AddAutoCompletion:
+            case AdvancedMenu::AddAutoCompletion:
               addAutoCompletion();
               break;
 
-            case AddFunctionList:
+            case AdvancedMenu::AddFunctionList:
               addFunctionList();
               break;
           }
@@ -154,6 +154,7 @@ namespace papyrus {
     errorsWindow = std::make_unique<ErrorsWindow>(instance, nppData._nppHandle, messageWindow);
     errorAnnotator = std::make_unique<ErrorAnnotator>(nppData, settings.errorAnnotatorSettings);
     settingsDialog.init(instance, nppData._nppHandle);
+    aboutDialog.init(instance, nppData._nppHandle);
 
     // Get Notepad++'s plugins config folder
     npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
@@ -277,8 +278,8 @@ namespace papyrus {
             updateAnnotation = true;
 
             // If not compiling current file, check its game type (if applicable)
-            if (!isComplingCurrentFile && detectedGame != game::Auto) {
-              std::wstring gameSpecificStatus(L"[" + game::gameNames[detectedGame].second + L"] " + Lexer::statusText());
+            if (!isComplingCurrentFile && detectedGame != Game::Auto) {
+              std::wstring gameSpecificStatus(L"[" + game::gameNames[utility::underlying(detectedGame)].second + L"] " + Lexer::statusText());
               ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
             }
           }
@@ -294,13 +295,13 @@ namespace papyrus {
 
   void Plugin::onSettingsUpdated() {
     if (lexerData) {
-      updateLexerDataGameSettings(game::Skyrim, settings.compilerSettings.skyrim);
-      updateLexerDataGameSettings(game::SkyrimSE, settings.compilerSettings.sse);
-      updateLexerDataGameSettings(game::Fallout4, settings.compilerSettings.fo4);
+      updateLexerDataGameSettings(Game::Skyrim, settings.compilerSettings.skyrim);
+      updateLexerDataGameSettings(Game::SkyrimSE, settings.compilerSettings.sse);
+      updateLexerDataGameSettings(Game::Fallout4, settings.compilerSettings.fo4);
     }
   }
 
-  void Plugin::updateLexerDataGameSettings(game::Game game, const CompilerSettings::GameSettings& gameSettings) {
+  void Plugin::updateLexerDataGameSettings(Game game, const CompilerSettings::GameSettings& gameSettings) {
     if (lexerData) {
       lexerData->importDirectories[game].clear();
       std::wstringstream stream(gameSettings.importDirectories);
@@ -337,12 +338,12 @@ namespace papyrus {
     }
   }
 
-  std::pair<game::Game, bool> Plugin::detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings) {
-    game::Game detectedGameType = compilerSettings.gameMode;
+  std::pair<Game, bool> Plugin::detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings) {
+    Game detectedGameType = compilerSettings.gameMode;
     bool useAutoModeOutputDirectory = false;
-    if (detectedGameType == game::Auto) {
-      for (int i = static_cast<int>(game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
-        auto game = static_cast<game::Game>(i);
+    if (detectedGameType == Game::Auto) {
+      for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
+        auto game = static_cast<Game>(i);
         auto gameSettings = compilerSettings.gameSettings(game);
         if (gameSettings.enabled && !gameSettings.installPath.empty() && utility::startsWith(filePath, gameSettings.installPath)) {
           detectedGameType = game;
@@ -350,19 +351,19 @@ namespace papyrus {
         }
       }
 
-      if (detectedGameType == game::Auto) {
+      if (detectedGameType == Game::Auto) {
         // Can't detect, use auto mode default game instead
         detectedGameType = compilerSettings.autoModeDefaultGame;
         useAutoModeOutputDirectory = true;
       }
     }
 
-    return std::pair<game::Game, bool>(detectedGameType, useAutoModeOutputDirectory);
+    return std::pair<Game, bool>(detectedGameType, useAutoModeOutputDirectory);
   }
 
   void Plugin::clearActiveCompilation() {
     activeCompilationRequest = {
-      .game = game::Auto,
+      .game = Game::Auto,
       .bufferID = 0 
     };
     isComplingCurrentFile = false;
@@ -525,7 +526,7 @@ namespace papyrus {
     if (::SendMessage(nppData._nppHandle, NPPM_ALLOCATECMDID, advancedMenuItems.size(), reinterpret_cast<LPARAM>(&advancedMenuBaseCmdID)) != 0) {
       HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
       HMENU advancedMenu = ::CreatePopupMenu();
-      if (::ModifyMenu(menu, funcs[Advanced]._cmdID, MF_BYCOMMAND | MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(advancedMenu), funcs[Advanced]._itemName)) {
+      if (::ModifyMenu(menu, funcs[utility::underlying(Menu::Advanced)]._cmdID, MF_BYCOMMAND | MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(advancedMenu), funcs[utility::underlying(Menu::Advanced)]._itemName)) {
         for (UINT i = 0; i < advancedMenuItems.size(); i++) {
           ::InsertMenu(advancedMenu, i, MF_BYPOSITION, advancedMenuBaseCmdID + i, advancedMenuItems[i]);
         }
@@ -659,7 +660,7 @@ namespace papyrus {
           std::wstring currentFile(filePath);
           if (utility::endsWith(currentFile, L".psc") && (currentFileLangID == scriptLangID || settings.compilerSettings.allowUnmanagedSource)) {
             auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);
-            if (detectedGame != game::Auto) {
+            if (detectedGame != Game::Auto) {
               if (errorsWindow) {
                 errorsWindow->clear();
                 errorsWindow->hide();
@@ -719,24 +720,7 @@ namespace papyrus {
   }
 
   void Plugin::showAbout() {
-    ::MessageBox(nppData._nppHandle,
-      PLUGIN_NAME " " PLUGIN_VERSION " for Notepad++\r\n"
-      "Copyright 2016 - 2021\r\n"
-      "All Rights Reserved\r\n"
-      "\r\n"
-      "Contributors:\r\n"
-      "Tschilkroete (original author)\r\n"
-      "blu3mania\r\n"
-      "\r\n"
-      "This plugin is licensed under the GNU General Public Licence 3 https://www.gnu.org/licenses/gpl-3.0.txt\r\n"
-      "Get the source code: https://github.com/blu3mania/npp-papyrus \r\n"
-      "\r\n"
-      "This plugin includes source code (original/modified) from the following libraries:\r\n"
-      "Notepad++: see ? -> About Notepad++ for more information.\r\n"
-      "Scintilla: https://www.scintilla.org/\r\n"
-      "TinyXML2: http://www.grinninglizard.com/tinyxml2/\r\n"
-      "GSL: https://github.com/microsoft/GSL\r\n",
-      L"About " PLUGIN_NAME " Plugin", MB_OK);
+    aboutDialog.doDialog();
   }
 
 } // namespace

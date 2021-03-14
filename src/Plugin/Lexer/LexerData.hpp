@@ -31,16 +31,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
-  using game_import_dirs_t = std::map<game::Game, std::vector<std::wstring>>;
+  using Game = game::Game;
+  using game_import_dirs_t = std::map<Game, std::vector<std::wstring>>;
 
   struct LexerData {
-    LexerData(const NppData& nppData, LexerSettings& settings, game::Game currentGame = game::Auto, game_import_dirs_t importDirectories = game_import_dirs_t(), bool usable = true)
+    LexerData(const NppData& nppData, LexerSettings& settings, Game currentGame = Game::Auto, game_import_dirs_t importDirectories = game_import_dirs_t(), bool usable = true)
       : nppData(nppData), settings(settings), currentGame(currentGame), importDirectories(importDirectories), scriptLangID(0), usable(usable) {
     }
 
     const NppData& nppData;
     LexerSettings& settings;
-    game::Game currentGame;
+    Game currentGame;
     game_import_dirs_t importDirectories;
     npp_lang_type_t scriptLangID;
     bool usable;

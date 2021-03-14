@@ -28,17 +28,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-using namespace Scintilla;
-
 namespace papyrus {
 
-  class SimpleLexerBase : public ILexer4 {
+  using namespace Scintilla;
+
+  using ILexer = ILexer5;
+
+  class SimpleLexerBase : public ILexer {
     public:
-      SimpleLexerBase() {}
-      virtual ~SimpleLexerBase() {}
+      inline SimpleLexerBase(const char* name, int id) : name(name), id(id) {}
+      SimpleLexerBase() = delete;
+
+      inline virtual ~SimpleLexerBase() {}
 
       // ILexer4 interface
-      inline virtual int SCI_METHOD Version() const override { return lvRelease4; }
+      inline virtual int SCI_METHOD Version() const override { return lvRelease5; }
       inline virtual void SCI_METHOD Release() override { delete this; }
       inline virtual const char * SCI_METHOD PropertyNames() override { return ""; }
       inline virtual int SCI_METHOD PropertyType(const char* name) override { return 0; }
@@ -64,6 +68,11 @@ namespace papyrus {
       inline virtual const char * SCI_METHOD TagsOfStyle(int style) override { return ""; }
       inline virtual const char * SCI_METHOD DescriptionOfStyle(int style) override { return ""; }
 
+      // ILexer5 methods
+      inline virtual const char * SCI_METHOD GetName() override { return name; }
+      inline virtual int SCI_METHOD  GetIdentifier() override { return id; }
+      inline virtual const char * SCI_METHOD PropertyGet(const char *key) override { return ""; }
+
     protected:
       // Whether current lexer is usable.
       inline virtual bool isUsable() const { return true; }
@@ -73,6 +82,10 @@ namespace papyrus {
 
       // A list of WordList pointers for type1 - 7. If not all instre word lists are supported, just return a partial list (e.g. type1 - 4). If a list is skipped, use nullptr.
       virtual const std::vector<WordList*>& getTypeWordLists() const = 0;
+
+    private:
+      const char* name;
+      int id;
   };
 
 } // namespace

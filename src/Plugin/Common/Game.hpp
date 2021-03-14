@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "EnumUtil.hpp"
+
 #include <map>
 #include <string>
 
@@ -26,7 +28,7 @@ namespace papyrus {
 
   namespace game {
 
-    enum Game {
+    enum class Game {
       Auto,
       Skyrim,
       SkyrimSE,
@@ -42,17 +44,17 @@ namespace papyrus {
     };
 
     static std::map<std::wstring, Game> gameAliases {
-      {gameNames[Game::Auto].first, Game::Auto},
-      {gameNames[Game::Skyrim].first, Game::Skyrim},
-      {gameNames[Game::SkyrimSE].first, Game::SkyrimSE},
-      {gameNames[Game::Fallout4].first, Game::Fallout4}
+      {gameNames[utility::underlying(Game::Auto)].first, Game::Auto},
+      {gameNames[utility::underlying(Game::Skyrim)].first, Game::Skyrim},
+      {gameNames[utility::underlying(Game::SkyrimSE)].first, Game::SkyrimSE},
+      {gameNames[utility::underlying(Game::Fallout4)].first, Game::Fallout4}
     };
 
     static std::map<std::wstring, Game> games {
-      {gameNames[Game::Auto].second, Game::Auto},
-      {gameNames[Game::Skyrim].second, Game::Skyrim},
-      {gameNames[Game::SkyrimSE].second, Game::SkyrimSE},
-      {gameNames[Game::Fallout4].second, Game::Fallout4}
+      {gameNames[utility::underlying(Game::Auto)].second, Game::Auto},
+      {gameNames[utility::underlying(Game::Skyrim)].second, Game::Skyrim},
+      {gameNames[utility::underlying(Game::SkyrimSE)].second, Game::SkyrimSE},
+      {gameNames[utility::underlying(Game::Fallout4)].second, Game::Fallout4}
     };
 
     std::wstring installationPath(Game game);

@@ -30,6 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
+  using Game = game::Game;
+
   struct CompilerSettings {
 
     struct GameSettings {
@@ -49,13 +51,13 @@ namespace papyrus {
     GameSettings skyrim;
     GameSettings sse;
     GameSettings fo4;
-    utility::PrimitiveTypeValueMonitor<game::Game> gameMode;
-    utility::PrimitiveTypeValueMonitor<game::Game> autoModeDefaultGame;
+    Game gameMode;
+    Game autoModeDefaultGame;
     std::wstring autoModeOutputDirectory;
     utility::PrimitiveTypeValueMonitor<bool> allowUnmanagedSource;
 
-    const GameSettings& gameSettings(game::Game game) const;
-    GameSettings& gameSettings(game::Game game);
+    const GameSettings& gameSettings(Game game) const;
+    GameSettings& gameSettings(Game game);
   };
 
 } // namespace

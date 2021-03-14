@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "Common\EnumUtil.hpp"
 #include "Common\Game.hpp"
 #include "Common\NotepadPlusPlus.hpp"
 #include "Common\Resources.hpp"
@@ -30,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Compiler\CompilerSettings.hpp"
 #include "Settings\Settings.hpp"
 #include "Settings\SettingsDialog.hpp"
+#include "UI\AboutDialog.hpp"
 
 #include "..\external\npp\PluginInterface.h"
 
@@ -39,6 +41,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Plugin constants
 //
 namespace papyrus {
+
+  using Game = game::Game;
 
   class Plugin {
     public:
@@ -51,24 +55,24 @@ namespace papyrus {
       // Interface functions with Notepad++
       inline TCHAR* name() const { return const_cast<TCHAR*>(PLUGIN_NAME); }
       inline BOOL useUnicode() const { return USE_UNICODE; }
-      inline int numFuncs() const { return MENU_COUNT; }
+      inline int numFuncs() const { return utility::underlying(Menu::COUNT); }
       inline  FuncItem* getFuncs() { return funcs; }
       void setNppData(NppData nppData);
       void onNotification(SCNotification* notification);
       LRESULT handleNppMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
     private:
-      enum Menu {
+      enum class Menu {
         Compile,
         Options,
         Seperator1,
         Advanced,
         Seperator2,
         About,
-        MENU_COUNT
+        COUNT
       };
 
-      enum AdvancedMenu {
+      enum class AdvancedMenu {
         ShowLangID,
         AddAutoCompletion,
         AddFunctionList
@@ -84,13 +88,13 @@ namespace papyrus {
 
       // Handle setting changes
       void onSettingsUpdated();
-      void updateLexerDataGameSettings(game::Game game, const CompilerSettings::GameSettings& gameSettings);
+      void updateLexerDataGameSettings(Game game, const CompilerSettings::GameSettings& gameSettings);
 
       // Find out langID assigned to Papyrus Script lexer
       void detectLangID();
 
       // Find out game type based on file path and settings
-      std::pair<game::Game, bool> detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings);
+      std::pair<Game, bool> detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings);
 
       // Clear cached active compilation request, so when buffer gets switched
       // in NPP it can be properly handled
@@ -122,7 +126,7 @@ namespace papyrus {
 
       // Private members
       //
-      FuncItem funcs[MENU_COUNT];
+      FuncItem funcs[utility::underlying(Menu::COUNT)];
 
       UINT advancedMenuBaseCmdID {};
 
@@ -145,6 +149,8 @@ namespace papyrus {
       std::unique_ptr<utility::Timer> jumpToErrorLineTimer;
 
       npp_lang_type_t scriptLangID {0};
+
+      AboutDialog aboutDialog;
   };
 
 } // namespace

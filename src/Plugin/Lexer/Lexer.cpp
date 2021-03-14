@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Lexer.hpp"
 
 #include "LexerData.hpp"
+#include "LexerIDs.hpp"
+#include "..\Common\EnumUtil.hpp"
 #include "..\Common\Utility.hpp"
 
 #include "..\..\external\npp\Common.h"
@@ -35,7 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace papyrus {
 
   Lexer::Lexer()
-    : instreWordLists{&wordListOperators, &wordListFlowControl},
+    : SimpleLexerBase(LEXER_NAME, SCLEX_PAPYRUS_SCRIPT),
+      instreWordLists{&wordListOperators, &wordListFlowControl},
       typeWordLists{&wordListTypes, &wordListKeywords, &wordListKeywords2, &wordListFoldOpen, &wordListFoldMiddle, &wordListFoldClose} {
     // Setup settings change listeners
     if (isUsable()) {
@@ -107,25 +110,25 @@ namespace papyrus {
               propertyNames.insert(property.name);
 
               // Always style "property" keyword as KEYWORD
-              colorToken(styleContext, *iterTokens, KEYWORD);
+              colorToken(styleContext, *iterTokens, State::Keyword);
               continue;
             }
           }
 
-          if (messageState == COMMENTDOC) {
-            colorToken(styleContext, *iterTokens, COMMENTDOC);
+          if (messageState == State::CommentDoc) {
+            colorToken(styleContext, *iterTokens, State::CommentDoc);
             if (tokenString == "}") {
-              messageState = DEFAULT;
+              messageState = State::Default;
             }
-          } else if(messageState == COMMENTMULTILINE) {
-            colorToken(styleContext, *iterTokens, COMMENTMULTILINE);
+          } else if(messageState == State::CommentMultiLine) {
+            colorToken(styleContext, *iterTokens, State::CommentMultiLine);
             if (tokenString == ";" && iterTokens != tokens.begin() && (*std::prev(iterTokens)).content == "/") {
-              messageState = DEFAULT;
+              messageState = State::Default;
             }
-          } else if(messageState == COMMENT) {
-            colorToken(styleContext, *iterTokens, COMMENT);
-          } else if(messageState == STRING) {
-            colorToken(styleContext, *iterTokens, STRING);
+          } else if(messageState == State::Comment) {
+            colorToken(styleContext, *iterTokens, State::Comment);
+          } else if(messageState == State::String) {
+            colorToken(styleContext, *iterTokens, State::String);
             if (tokenString == "\"") {
               // This may be an escape for double quote. Check previous tokens
               int numBackslash = 0;
@@ -138,55 +141,55 @@ namespace papyrus {
                 }
               }
               if (numBackslash % 2 == 0) {
-                messageState = DEFAULT;
+                messageState = State::Default;
               }
             }
           } else {
             // Determine the type of the token and color it
             if (tokenString == "{") {
-              colorToken(styleContext, *iterTokens, COMMENTDOC);
-              messageState = COMMENTDOC;
+              colorToken(styleContext, *iterTokens, State::CommentDoc);
+              messageState = State::CommentDoc;
             } else if (tokenString == ";") {
               if (std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content == "/") {
-                colorToken(styleContext, *iterTokens, COMMENTMULTILINE);
-                messageState = COMMENTMULTILINE;
+                colorToken(styleContext, *iterTokens, State::CommentMultiLine);
+                messageState = State::CommentMultiLine;
               } else {
-                colorToken(styleContext, *iterTokens, COMMENT);
-                messageState = COMMENT;
+                colorToken(styleContext, *iterTokens, State::Comment);
+                messageState = State::Comment;
               }
             } else if (tokenString == "\"") {
-              colorToken(styleContext, *iterTokens, STRING);
-              messageState = STRING;
-            } else if ((*iterTokens).tokenType == NUMERIC) {
-              colorToken(styleContext, *iterTokens, NUMBER);
-            } else if ((*iterTokens).tokenType == IDENTIFIER) {
+              colorToken(styleContext, *iterTokens, State::String);
+              messageState = State::String;
+            } else if ((*iterTokens).tokenType == TokenType::Numeric) {
+              colorToken(styleContext, *iterTokens, State::Number);
+            } else if ((*iterTokens).tokenType == TokenType::Identifier) {
               if (!wordListFlowControl.InList(tokenString.c_str()) && isalnum(tokenString.back()) && std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content == "(") {
                 // If next token is ( and current token is an identifier but not if/elseif/while, it is a function name.
-                colorToken(styleContext, *iterTokens, FUNCTION);
+                colorToken(styleContext, *iterTokens, State::Function);
               } else if (wordListTypes.InList(tokenString.c_str())) {
-                colorToken(styleContext, *iterTokens, TYPE);
+                colorToken(styleContext, *iterTokens, State::Type);
               } else if (wordListFlowControl.InList(tokenString.c_str())) {
-                colorToken(styleContext, *iterTokens, FLOWCONTROL);
+                colorToken(styleContext, *iterTokens, State::FlowControl);
               } else if (wordListKeywords.InList(tokenString.c_str())) {
-                colorToken(styleContext, *iterTokens, KEYWORD);
+                colorToken(styleContext, *iterTokens, State::Keyword);
               } else if (wordListKeywords2.InList(tokenString.c_str())) {
-                colorToken(styleContext, *iterTokens, KEYWORD2);
+                colorToken(styleContext, *iterTokens, State::Keyword2);
               } else if (wordListOperators.InList(tokenString.c_str())) {
-                colorToken(styleContext, *iterTokens, OPERATOR);
+                colorToken(styleContext, *iterTokens, State::Operator);
               } else {
                 bool found = (propertyNames.find(tokenString) != propertyNames.end());
                 if (found) {
-                  colorToken(styleContext, *iterTokens, PROPERTY);
+                  colorToken(styleContext, *iterTokens, State::Property);
                 } else {
                   if (classNames.find(tokenString) != classNames.end()) {
-                    colorToken(styleContext, *iterTokens, CLASS);
+                    colorToken(styleContext, *iterTokens, State::Class);
                     found = true;
                   } else if (nonClassNames.find(tokenString) == nonClassNames.end()) {
                     // Check all import directories for a source file with given name
-                    if (lexerData->currentGame != game::Auto) {
+                    if (lexerData->currentGame != game::Game::Auto) {
                       for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
                         if (utility::fileExists(std::filesystem::path(path) / (tokenString + ".psc"))) {
-                          colorToken(styleContext, *iterTokens, CLASS);
+                          colorToken(styleContext, *iterTokens, State::Class);
                           if (lexerData->settings.enableClassNameCache) {
                             classNames.insert(tokenString);
                           }
@@ -202,27 +205,27 @@ namespace papyrus {
                   }
 
                   if (!found) {
-                    colorToken(styleContext, *iterTokens, DEFAULT);
+                    colorToken(styleContext, *iterTokens, State::Default);
                   }
                 }
               }
-            } else if ((*iterTokens).tokenType == SPECIAL) {
+            } else if ((*iterTokens).tokenType == TokenType::Special) {
               if (wordListOperators.InList((*iterTokens).content.c_str())) {
-                colorToken(styleContext, *iterTokens, OPERATOR);
+                colorToken(styleContext, *iterTokens, State::Operator);
               } else {
-                colorToken(styleContext, *iterTokens, DEFAULT);
+                colorToken(styleContext, *iterTokens, State::Default);
               }
             }
           }
         }
-        if (messageState == COMMENT || messageState == STRING) {
-          messageState = DEFAULT;
+        if (messageState == State::Comment || messageState == State::String) {
+          messageState = State::Default;
         }
         if (styleContext.ch == '\r') {
           styleContext.Forward();
         }
         if (styleContext.ch == '\n') {
-          styleContext.SetState(messageState);
+          styleContext.SetState(utility::underlying(messageState));
           styleContext.Forward();
         }
         messageStateLast = messageState;
@@ -244,7 +247,7 @@ namespace papyrus {
         // Chars
         auto tokens = tokenize(accessor, line);
         for (const Token& token : tokens) {
-          if (!isComment(accessor.StyleAt(token.startPos)) && accessor.StyleAt(token.startPos) != STRING) {
+          if (!isComment(accessor.StyleAt(token.startPos)) && accessor.StyleAt(token.startPos) != utility::underlying(State::String)) {
             if (wordListFoldOpen.InList(token.content.c_str())) {
               numFoldOpen++;
             } else if (wordListFoldClose.InList(token.content.c_str())) {
@@ -303,7 +306,7 @@ namespace papyrus {
         ch = getNextChar(accessor, index, indexNext);
       } else if (isalpha(ch) || ch == '_') {
         Token token {
-          .tokenType = IDENTIFIER,
+          .tokenType = TokenType::Identifier,
           .startPos = index
         };
         while (isalnum(ch) || ch == '_') {
@@ -313,7 +316,7 @@ namespace papyrus {
         tokens.push_back(token);
       } else if (isdigit(ch) || ch == '-') {
         Token token {
-          .tokenType = NUMERIC,
+          .tokenType = TokenType::Numeric,
           .startPos = index
         };
         bool hasDigit = false;
@@ -329,14 +332,14 @@ namespace papyrus {
           ch = getNextChar(accessor, index, indexNext);
         }
 
-        // In the case it's a single '-', correct token type
+        // In the case when the token is a single '-', it's not numeric
         if (token.content.at(0) == '-' && token.content.size() == 1) {
-          token.tokenType = SPECIAL;
+          token.tokenType = TokenType::Special;
         }
         tokens.push_back(token);
       } else {
         Token token {
-          .tokenType = SPECIAL,
+          .tokenType = TokenType::Special,
           .startPos = index
         };
         token.content.push_back(tolower(ch));
@@ -352,17 +355,18 @@ namespace papyrus {
       styleContext.Forward(token.startPos - styleContext.currentPos);
     }
 
-    styleContext.SetState(state);
+    styleContext.SetState(utility::underlying(state));
     styleContext.Forward(token.content.size());
   }
 
   bool Lexer::isComment(int style) const {
-    return style == COMMENT || style == COMMENTMULTILINE || style == COMMENTDOC;
+    State styleState = static_cast<State>(style);
+    return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
   }
 
   int Lexer::getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const {
     index = indexNext;
-    if (accessor.Encoding() != enc8bit) {
+    if (accessor.Encoding() != EncodingType::eightBit) {
       Sci_Position length {};
       int ch = accessor.MultiByteAccess()->GetCharacterAndWidth(index, &length);
       indexNext = index + length;

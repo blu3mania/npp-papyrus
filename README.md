@@ -38,6 +38,7 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Compiler] Only run compiler if active file is using Papyrus Script lexer (configurable behavior).
 
 ### Improvements
+- {Lexer] Upgrade to support Scintilla's ILexer5.
 - [Lexer] Support folding on properties. Original plugin likely omitted properties from folding since it could
   not exclude those that have definitions done in a single line.
 - [Lexer] Support "folding in code, middle" so that Else and ElseIf can be folded as well (configurable
@@ -71,8 +72,9 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Lexer] A new "Show langID" menu which can be used to find out internal langID assigned to Papyrus Script
   lexer, which is useful if using Notepad++'s functionList feature.
 
-### Future
-- [Compiler] [Papyrus Projects (PPJ)](https://www.creationkit.com/fallout4/index.php?title=Papyrus_Projects)
+### Future plan
+- [Lexer] FOMOD installer XML syntax highlighting
+- [Lexer/Compiler] [Papyrus Projects (PPJ)](https://www.creationkit.com/fallout4/index.php?title=Papyrus_Projects)
   support.
 
 
@@ -118,7 +120,8 @@ needed by MSBuild is set up properly.
         ├── CompilationErrorHandling - show/annotate compilation errors
         ├── Compiler - invoke Papyrus compiler in a separate thread
         ├── Lexer - Papyrus script lexer that provides syntax highlighting
-        └──Settings - read/write Papyrus.ini and provide configuration support to other modules
+        ├── Settings - read/write Papyrus.ini and provide configuration support to other modules
+        └── UI - other UI dialogs, such as About dialog
 ```
 
 

@@ -19,20 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "..\Common\Game.hpp"
-#include "..\Common\NotepadPlusPlus.hpp"
+#include <type_traits>
 
-#include <string>
+namespace utility {
 
-namespace papyrus {
-
-  using Game = game::Game;
-
-  struct CompilationRequest {
-    Game game;
-    npp_buffer_t bufferID;
-    std::wstring filePath;
-    bool useAutoModeOutputDirectory;
-  };
+  // Convenient function to cast an enum class member to its underlying type
+  template <class E>
+  constexpr auto underlying(E e) noexcept {
+    return static_cast<std::underlying_type_t<E>>(e);
+  }
 
 } // namespace

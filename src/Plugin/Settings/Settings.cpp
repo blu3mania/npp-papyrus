@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Settings.hpp"
 
+#include "..\Common\EnumUtil.hpp"
 #include "..\Common\Utility.hpp"
 #include "..\CompilationErrorHandling\ErrorAnnotator.hpp"
 
@@ -57,13 +58,13 @@ namespace papyrus {
     storage.putString(L"errorAnnotator.indicatorForegroundColor", utility::colorToHexStr(errorAnnotatorSettings.indicatorForegroundColor));
 
     storage.putString(L"compiler.common.allowUnmanagedSource", utility::boolToStr(compilerSettings.allowUnmanagedSource));
-    storage.putString(L"compiler.common.gameMode", game::gameNames[compilerSettings.gameMode].first);
-    storage.putString(L"compiler.auto.defaultGame", game::gameNames[compilerSettings.autoModeDefaultGame].first);
+    storage.putString(L"compiler.common.gameMode", game::gameNames[utility::underlying(compilerSettings.gameMode)].first);
+    storage.putString(L"compiler.auto.defaultGame", game::gameNames[utility::underlying(compilerSettings.autoModeDefaultGame)].first);
     storage.putString(L"compiler.auto.outputDirectory", compilerSettings.autoModeOutputDirectory);
 
-    saveGameSettings(storage, game::Skyrim, compilerSettings.skyrim);
-    saveGameSettings(storage, game::SkyrimSE, compilerSettings.sse);
-    saveGameSettings(storage, game::Fallout4, compilerSettings.fo4);
+    saveGameSettings(storage, Game::Skyrim, compilerSettings.skyrim);
+    saveGameSettings(storage, Game::SkyrimSE, compilerSettings.sse);
+    saveGameSettings(storage, Game::Fallout4, compilerSettings.fo4);
     storage.save();
   }
 
@@ -158,15 +159,15 @@ namespace papyrus {
     // Game specific compiler settings
     //
     const std::vector<const wchar_t*> defaultSkyrimImportDirectories{ L"Data\\Scripts\\Source" };
-    auto [skyrimConfigured, skyrimSettingsUpdated] = readGameSettings(storage, game::Skyrim, compilerSettings.skyrim, defaultSkyrimImportDirectories, L"TESV_Papyrus_Flags.flg");
+    auto [skyrimConfigured, skyrimSettingsUpdated] = readGameSettings(storage, Game::Skyrim, compilerSettings.skyrim, defaultSkyrimImportDirectories, L"TESV_Papyrus_Flags.flg");
     updated = updated || skyrimSettingsUpdated;
 
     const std::vector<const wchar_t*>  defaultSseImportDirectories { L"Data\\Scripts\\Source", L"Data\\Source\\Scripts" };
-    auto [sseConfigured, sseSettingsUpdated] = readGameSettings(storage, game::SkyrimSE, compilerSettings.sse, defaultSseImportDirectories, L"TESV_Papyrus_Flags.flg");
+    auto [sseConfigured, sseSettingsUpdated] = readGameSettings(storage, Game::SkyrimSE, compilerSettings.sse, defaultSseImportDirectories, L"TESV_Papyrus_Flags.flg");
     updated = updated || sseSettingsUpdated;
 
     const std::vector<const wchar_t*>  defaultFo4ImportDirectories { L"Data\\Scripts\\Source\\User", L"Data\\Scripts\\Source\\Base" };
-    auto [fo4Configured, fo4SettingsUpdated] = readGameSettings(storage, game::Fallout4, compilerSettings.fo4, defaultFo4ImportDirectories, L"Institute_Papyrus_Flags.flg");
+    auto [fo4Configured, fo4SettingsUpdated] = readGameSettings(storage, Game::Fallout4, compilerSettings.fo4, defaultFo4ImportDirectories, L"Institute_Papyrus_Flags.flg");
     updated = updated || fo4SettingsUpdated;
 
     // General compiler settings
@@ -184,16 +185,16 @@ namespace papyrus {
         compilerSettings.gameMode = iter->second;
 
         // If a game was selected but is now disabled, change to auto mode
-        if (compilerSettings.gameMode != game::Auto && !compilerSettings.gameSettings(compilerSettings.gameMode).enabled) {
-          compilerSettings.gameMode = game::Auto;
+        if (compilerSettings.gameMode != Game::Auto && !compilerSettings.gameSettings(compilerSettings.gameMode).enabled) {
+          compilerSettings.gameMode = Game::Auto;
           updated = true;
         }
       } else {
-        compilerSettings.gameMode = game::Auto;
+        compilerSettings.gameMode = Game::Auto;
         updated = true;
       }
     } else {
-      compilerSettings.gameMode = game::Auto;
+      compilerSettings.gameMode = Game::Auto;
       updated = true;
     }
 
@@ -203,29 +204,29 @@ namespace papyrus {
         compilerSettings.autoModeDefaultGame = iter->second;
 
         // If a game was selected but is now disabled, change to none so we can choose a suitable game
-        if (compilerSettings.autoModeDefaultGame != game::Auto && !compilerSettings.gameSettings(compilerSettings.autoModeDefaultGame).enabled) {
-          compilerSettings.autoModeDefaultGame = game::Auto;
+        if (compilerSettings.autoModeDefaultGame != Game::Auto && !compilerSettings.gameSettings(compilerSettings.autoModeDefaultGame).enabled) {
+          compilerSettings.autoModeDefaultGame = Game::Auto;
           updated = true;
         }
       } else {
-        compilerSettings.autoModeDefaultGame = game::Auto;
+        compilerSettings.autoModeDefaultGame = Game::Auto;
         updated = true;
       }
     } else {
-      compilerSettings.autoModeDefaultGame = game::Auto;
+      compilerSettings.autoModeDefaultGame = Game::Auto;
       updated = true;
     }
 
     // If auto mode default game is not selected yet, check configured games and enabled games to make a best guess
-    if (compilerSettings.autoModeDefaultGame == game::Auto) {
+    if (compilerSettings.autoModeDefaultGame == Game::Auto) {
       if (skyrimConfigured && compilerSettings.skyrim.enabled) {
-        compilerSettings.autoModeDefaultGame = game::Skyrim;
+        compilerSettings.autoModeDefaultGame = Game::Skyrim;
         updated = true;
       } else if (sseConfigured && compilerSettings.sse.enabled) {
-        compilerSettings.autoModeDefaultGame = game::SkyrimSE;
+        compilerSettings.autoModeDefaultGame = Game::SkyrimSE;
         updated = true;
       } else if (fo4Configured && compilerSettings.fo4.enabled) {
-        compilerSettings.autoModeDefaultGame = game::Fallout4;
+        compilerSettings.autoModeDefaultGame = Game::Fallout4;
         updated = true;
       }
     }
@@ -240,11 +241,11 @@ namespace papyrus {
     return updated;
   }
 
-  std::pair<bool, bool> Settings::readGameSettings(const SettingsStorage& storage, game::Game game, CompilerSettings::GameSettings& gameSettings, const std::vector<const wchar_t*>& defaultImportDirs, const wchar_t* defaultFlagFile) {
+  std::pair<bool, bool> Settings::readGameSettings(const SettingsStorage& storage, Game game, CompilerSettings::GameSettings& gameSettings, const std::vector<const wchar_t*>& defaultImportDirs, const wchar_t* defaultFlagFile) {
     bool gameConfigured = true;
     bool updated = false;
     std::wstring value;
-    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[game].first + L'.');
+    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[utility::underlying(game)].first + L'.');
     std::wstring gamePath = game::installationPath(game);
 
     // Enabled flag
@@ -369,7 +370,7 @@ namespace papyrus {
     if (storage.getString(gameSettingsPrefix + L"release", value)) {
       gameSettings.releaseFlag = utility::strToBool(value);
     } else {
-      gameSettings.releaseFlag = false;
+      gameSettings.releaseFlag = (game == Game::Fallout4);
       updated = true;
     }
 
@@ -378,15 +379,15 @@ namespace papyrus {
     if (storage.getString(gameSettingsPrefix + L"final", value)) {
       gameSettings.finalFlag = utility::strToBool(value);
     } else {
-      gameSettings.finalFlag = false;
+      gameSettings.finalFlag = (game == Game::Fallout4);
       updated = true;
     }
 
     return std::pair<bool, bool>(gameConfigured, updated);
   }
 
-  void Settings::saveGameSettings(SettingsStorage& storage, game::Game game, const CompilerSettings::GameSettings& gameSettings) {
-    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[game].first + L'.');
+  void Settings::saveGameSettings(SettingsStorage& storage, Game game, const CompilerSettings::GameSettings& gameSettings) {
+    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[utility::underlying(game)].first + L'.');
     storage.putString(gameSettingsPrefix + L"enabled", utility::boolToStr(gameSettings.enabled));
     storage.putString(gameSettingsPrefix + L"installPath", gameSettings.installPath);
     storage.putString(gameSettingsPrefix + L"compilerPath", gameSettings.compilerPath);

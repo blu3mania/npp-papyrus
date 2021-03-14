@@ -21,68 +21,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Settings.hpp"
 
-#include "..\..\external\npp\ColourPicker.h"
-#include "..\..\external\npp\StaticDialog.h"
-
-#include <string>
-#include <vector>
-
-#include <windows.h>
+#include "..\Common\Resources.hpp"
+#include "..\UI\DialogBase.hpp"
 
 namespace papyrus {
 
-  using dropdown_options_t = std::vector<LPCWSTR>;
+  using Game = game::Game;
 
-  class SettingsDialog : public StaticDialog {
+  class SettingsDialog : public DialogBase {
     public:
-      inline SettingsDialog(Settings& settings) : StaticDialog(), settings(settings) {}
+      inline SettingsDialog(Settings& settings) : DialogBase(IDD_SETTINGS_DIALOG), settings(settings) {}
       ~SettingsDialog();
 
-      INT_PTR doDialog();
-
     protected:
-	    INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+      void initControls() override;
+      INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
+      INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
+      INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;
 
     private:
-      enum {
-        TAB_LEXER,
-        TAB_ERROR_ANNOTATOR,
-        TAB_COMPILER,
-        TAB_GAME_BASE
+      enum class Tab {
+        Lexer,
+        ErrorAnnotator,
+        Compiler,
+        GameBase
       };
 
-      enum {
-        GROUP_ANNOTATION,
-        GROUP_INDICATION,
-        GROUP_GAME_AUTO,
-        GROUP_GAME_SKYRIM,
-        GROUP_GAME_SSE,
-        GROUP_GAME_FO4
+      enum class Group {
+        Annotation,
+        Indication,
+        GameAuto,
+        GameSkyrim,
+        GameSSE,
+        GameFO4
       };
 
-      HWND getControl(int controlID) const;
-      void initControls();
-      void initDropdownList(int controlID, const dropdown_options_t& options) const;
-      void initColorPicker(ColourPicker& colorPicker, int labelControlID) const;
-      HWND createToolTip(int controlID, std::wstring toolTip, int delayTime = 15) const;
+      void switchTab(Tab newTab);
+      void showTab(Tab tab, bool show, bool intializing = false) const;
 
-      void switchTab(int newTab);
-      void showTab(int tab, bool show, bool intializing = false) const;
+      void enableGroup(Group group, bool enabled) const;
 
-      void enableGroup(int group, bool enabled) const;
-
-      void setChecked(int controlID, bool checked) const;
-      bool getChecked(int controlID) const;
-
-      void setText(int controlID, std::wstring text) const;
-      std::wstring getText(int controlID) const;
-
-      game::Game getGame(int tab) const;
-      int getGameTab(game::Game game) const;
-      void addGameTab(game::Game game) const;
-      void removeGameTab(game::Game game) const;
-      void toggleGame(game::Game game, int controlID, int group) const;
-      void configureGame(game::Game game);
+      Game getGame(Tab tab) const;
+      int getGameTab(Game game) const;
+      void addGameTab(Game game) const;
+      void removeGameTab(Game game) const;
+      void toggleGame(Game game, int controlID, Group group) const;
+      void configureGame(Game game);
 
       void updateAutoModeDefaultGame() const;
       void updateGameEnableButtonText(int controlID, bool enabled) const;
@@ -94,7 +78,7 @@ namespace papyrus {
       // Private members
       //
       Settings& settings;
-      int currentTab { TAB_LEXER };
+      Tab currentTab { Tab::Lexer };
 
       HWND indicatorIdTooltip {};
       HWND autoModeTooltip {};

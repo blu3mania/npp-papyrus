@@ -50,7 +50,7 @@ namespace papyrus {
       // Interface functions with Notepad++
       inline static char* name() { return const_cast<char*>(LEXER_NAME); }
       inline static TCHAR* statusText() { return const_cast<TCHAR*>(LEXER_STATUS_TEXT); }
-      inline static ILexer4* factory() { return new Lexer(); }
+      inline static ILexer* factory() { return new Lexer(); }
 
       // Lexer functions
       void SCI_METHOD Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
@@ -66,24 +66,24 @@ namespace papyrus {
 
     private:
       // Lexer style states
-      enum State {
-        DEFAULT,
-        OPERATOR,
-        FLOWCONTROL,
-        TYPE,
-        KEYWORD,
-        KEYWORD2,
-        FOLDOPEN,
-        FOLDMIDDLE,
-        FOLDCLOSE,
-        COMMENT,
-        COMMENTDOC,
-        COMMENTMULTILINE,
-        NUMBER,
-        STRING,
-        PROPERTY,
-        CLASS,
-        FUNCTION
+      enum class State {
+        Default,
+        Operator,
+        FlowControl,
+        Type,
+        Keyword,
+        Keyword2,
+        FoldOpen,
+        FoldMiddle,
+        FoldClose,
+        Comment,
+        CommentMultiLine,
+        CommentDoc,
+        Number,
+        String,
+        Property,
+        Class,
+        Function
       };
 
       // Defined properties in current Papyrus script
@@ -92,10 +92,10 @@ namespace papyrus {
         Sci_Position line;
       };
 
-      enum TokenType {
-        IDENTIFIER,
-        NUMERIC,
-        SPECIAL
+      enum class TokenType {
+        Identifier,
+        Numeric,
+        Special
       };
       struct Token {
         std::string content;

@@ -172,9 +172,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Plugin\Common\EnumUtil.hpp" />
     <ClInclude Include="Plugin\Common\FinalAction.hpp" />
     <ClInclude Include="Plugin\Common\Game.hpp" />
-    <ClInclude Include="Plugin\Common\GslUtil.hpp" />
     <ClInclude Include="Plugin\Common\NotepadPlusPlus.hpp" />
     <ClInclude Include="Plugin\Common\PrimitiveTypeValueMonitor.hpp" />
     <ClInclude Include="Plugin\Common\Resources.hpp" />
@@ -191,12 +191,15 @@
     <ClInclude Include="Plugin\Compiler\CompilerSettings.hpp" />
     <ClInclude Include="Plugin\Lexer\Lexer.hpp" />
     <ClInclude Include="Plugin\Lexer\LexerData.hpp" />
+    <ClInclude Include="Plugin\Lexer\LexerIDs.hpp" />
     <ClInclude Include="Plugin\Lexer\LexerSettings.hpp" />
     <ClInclude Include="Plugin\Lexer\SimpleLexerBase.hpp" />
     <ClInclude Include="Plugin\Plugin.hpp" />
     <ClInclude Include="Plugin\Settings\Settings.hpp" />
     <ClInclude Include="Plugin\Settings\SettingsDialog.hpp" />
     <ClInclude Include="Plugin\Settings\SettingsStorage.hpp" />
+    <ClInclude Include="Plugin\UI\AboutDialog.hpp" />
+    <ClInclude Include="Plugin\UI\DialogBase.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -204,6 +207,7 @@
     <ClCompile Include="external\npp\ColourPopup.cpp" />
     <ClCompile Include="external\npp\Common.cpp" />
     <ClCompile Include="external\npp\StaticDialog.cpp" />
+    <ClCompile Include="external\npp\URLCtrl.cpp" />
     <ClCompile Include="external\scintilla\Accessor.cxx" />
     <ClCompile Include="external\scintilla\PropSetSimple.cxx" />
     <ClCompile Include="external\scintilla\WordList.cxx" />
@@ -224,6 +228,8 @@
     <ClCompile Include="Plugin\Settings\Settings.cpp" />
     <ClCompile Include="Plugin\Settings\SettingsDialog.cpp" />
     <ClCompile Include="Plugin\Settings\SettingsStorage.cpp" />
+    <ClCompile Include="Plugin\UI\AboutDialog.cpp" />
+    <ClCompile Include="Plugin\UI\DialogBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Plugin\Resources.rc" />

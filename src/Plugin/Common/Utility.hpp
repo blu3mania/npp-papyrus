@@ -46,6 +46,9 @@ namespace utility {
   std::wstring toUpper(const std::wstring& str) noexcept;
   std::wstring toLower(const std::wstring& str) noexcept;
 
+  // Date/Time utilities
+  int currentYear() noexcept;
+
   // File utilities
   //
   bool fileExists(const std::wstring& filePath);

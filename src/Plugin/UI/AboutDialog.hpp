@@ -19,20 +19,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "..\Common\Game.hpp"
-#include "..\Common\NotepadPlusPlus.hpp"
+#include "..\Common\Resources.hpp"
+#include "..\UI\DialogBase.hpp"
 
-#include <string>
+#include "..\..\external\npp\URLCtrl.h"
 
 namespace papyrus {
 
-  using Game = game::Game;
+  class AboutDialog : public DialogBase {
+    public:
+      inline AboutDialog() : DialogBase(IDD_ABOUT_DIALOG) {}
+      ~AboutDialog();
 
-  struct CompilationRequest {
-    Game game;
-    npp_buffer_t bufferID;
-    std::wstring filePath;
-    bool useAutoModeOutputDirectory;
+    protected:
+      void initControls() override;
+      INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
+
+    private:
+      URLCtrl homePageLink;
+      URLCtrl gpl3Link;
+      URLCtrl origAuthorEmail;
+      URLCtrl authorEmail;
+      URLCtrl nppLink;
+      URLCtrl scintillaLink;
+      URLCtrl tinyxmlLink;
+      URLCtrl gslLink;
   };
 
 } // namespace

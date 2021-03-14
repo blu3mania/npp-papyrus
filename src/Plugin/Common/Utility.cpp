@@ -20,11 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Utility.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <sstream> 
 
 #include <windows.h>
 
 namespace utility {
+
+  using Clock = std::chrono::system_clock;
 
   // Conversion between string and other types
   //
@@ -77,6 +80,10 @@ namespace utility {
       return false;
     }
 
+    if (!ignoreCase) {
+      return str1.compare(str2) == 0;
+    }
+
     return std::equal(str1.begin(), str1.end(), str2.begin(), str2.end(),
       [](const char ch1, const char ch2) {
         return toupper(ch1) == toupper(ch2);
@@ -87,6 +94,10 @@ namespace utility {
   bool compare(const std::wstring& str1, const std::wstring& str2, bool ignoreCase) noexcept {
     if (str1.length() != str2.length()) {
       return false;
+    }
+
+    if (!ignoreCase) {
+      return str1.compare(str2) == 0;
     }
 
     return std::equal(str1.begin(), str1.end(), str2.begin(), str2.end(),
@@ -140,6 +151,12 @@ namespace utility {
     std::wstring lower;
     std::transform(str.begin(), str.end(), std::back_inserter(lower), towlower);
     return lower;
+  }
+
+  // Date/Time utilities
+  int currentYear() noexcept {
+    auto now = Clock::to_time_t(Clock::now());
+    return localtime(&now)->tm_year + 1900;
   }
 
   // File utilities

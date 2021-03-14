@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
+  using Game = game::Game;
+
   struct Settings {
     CompilerSettings        compilerSettings;
     ErrorAnnotatorSettings  errorAnnotatorSettings;
@@ -42,9 +44,9 @@ namespace papyrus {
 
       // Read game settings from storage. Returns a pair of booleans. The first indicates whether the game is configured;
       // The 2nd indicates if some settings are updated (due to missing or invalid value, etc.)
-      std::pair<bool, bool> readGameSettings(const SettingsStorage& storage, game::Game game, CompilerSettings::GameSettings& gameSettings, const std::vector<const wchar_t*>& defaultImportDirs, const wchar_t* defaultFlagFile);
+      std::pair<bool, bool> readGameSettings(const SettingsStorage& storage, Game game, CompilerSettings::GameSettings& gameSettings, const std::vector<const wchar_t*>& defaultImportDirs, const wchar_t* defaultFlagFile);
 
-      void saveGameSettings(SettingsStorage& storage, game::Game game, const CompilerSettings::GameSettings& gameSettings);
+      void saveGameSettings(SettingsStorage& storage, Game game, const CompilerSettings::GameSettings& gameSettings);
   };
 
 } // namespace
