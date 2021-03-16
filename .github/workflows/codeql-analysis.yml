@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: '18 3 * * 2'
 
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: PapyrusPlugin.sln
+
 jobs:
   Analyze:
     runs-on: windows-latest

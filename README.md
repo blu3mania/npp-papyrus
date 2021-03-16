@@ -114,7 +114,8 @@ needed by MSBuild is set up properly.
     ├── .vscode - configuration files for VS Code
     ├── external - source files from external projects (may be modified)
     │   ├── npp - Notepad++ source files
-    │   └── scintilla - Scintilla source files
+    │   ├── scintilla - Scintilla source files
+    │   └── tinyxml2 - TinyXML2 source files
     └── Plugin - source files of the plugin
         ├── Common - common definitions and utilities shared by all modules
         ├── CompilationErrorHandling - show/annotate compilation errors
