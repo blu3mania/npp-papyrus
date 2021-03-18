@@ -23,8 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SettingsStorage.hpp"
 
-#include "..\Common\FinalAction.hpp"
 #include "..\Common\Utility.hpp"
+
+#include "..\..\external\gsl\include\gsl\util"
 
 #include <codecvt>
 #include <fstream>
@@ -63,7 +64,7 @@ namespace papyrus {
   void SettingsStorage::save() const {
     if (!settingsPath.empty()) {
       std::wofstream settingsFile(settingsPath, std::wofstream::trunc);
-      auto autoCleanup = utility::finally([&] { settingsFile.close(); });
+      auto autoCleanup = gsl::finally([&] { settingsFile.close(); });
       settingsFile.imbue(std::locale(settingsFile.getloc(), new std::codecvt_utf8<wchar_t>())); // Use UTF-8 enoding
       settingsFile << VERSION_KEY << L'=' << version << std::endl;
       for (const auto& p : data) {

@@ -41,8 +41,8 @@ enhancements, and made to work with the latest Notepad++ release.
 - {Lexer] Upgrade to support Scintilla's ILexer5.
 - [Lexer] Support folding on properties. Original plugin likely omitted properties from folding since it could
   not exclude those that have definitions done in a single line.
-- [Lexer] Support "folding in code, middle" so that Else and ElseIf can be folded as well (configurable
-  behavior).
+- [Lexer] Support "folding in code, middle" so that Else and ElseIf can be folded as well. Configurable
+  behavior, default on.
 - [Compiler] Compilation error list window will be hidden when starting a new compilation.
 - [Compiler] Compilation error list window will not contain duplicate error messages.
 - [Compiler] Support more compilation flags:
@@ -56,7 +56,8 @@ enhancements, and made to work with the latest Notepad++ release.
   current file window is not the same as the one that got compiled.
 - [Lexer] Slightly better performance in syntax highlighting with property name caching, especially with big
   script files. In addition, class name caching can be turned on in Settings menu. However, there is a caveat.
-  See [configuration guide](Configuration.md#class-names-caching) for details.
+  See [configuration guide](Configuration.md#class-names-caching) for details. Configurable behavior, default
+  off.
 - [Settings] No more forced setup on startup.
 - [Settings] Revamped UI with many more settings now configurable.
 
@@ -69,11 +70,18 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Compiler] Skyrim SE and Fallout 4 support.
 - [Compiler] Auto detection of game/compiler settings to be used based on source script file location.
 - [Lexer] Syntax highlighting of function names.
-- [Lexer] A new "Show langID" menu which can be used to find out internal langID assigned to Papyrus Script
-  lexer, which is useful if using Notepad++'s functionList feature.
+- [Lexer] Class names can be styled as links to open the script files. Configurable behavior, default on (with
+  double click).
+- [Lexer] A new "Advanced" submenu with:
+  - Show langID - can be used to find out internal langID assigned to Papyrus Script lexer, which is useful if
+    you need to manually configure Notepad++'s functionList feature.
+  - Install auto completion support - provides auto-completion support for functions defined in base game,
+    SKSE, and even SkyUI.
+  - Install function list support - allows using "View" -> "Function List" menu to show all defined functions
+    in a Papyrus script file.
 
 ### Future plan
-- [Lexer] FOMOD installer XML syntax highlighting
+- [Lexer] FOMOD installer XML syntax highlighting.
 - [Lexer/Compiler] [Papyrus Projects (PPJ)](https://www.creationkit.com/fallout4/index.php?title=Papyrus_Projects)
   support.
 
@@ -91,14 +99,16 @@ Please find [configuration guide here](Configuration.md).
 
 
 ## Building
-The project doesn't have any additional dependencies and comes with the needed Scintilla and Notepad++ files
-for building. The solution file included can be used to build the project in Visual Studio 2019.
+The project comes with the needed Scintilla and Notepad++ files for building. It also references
+[GSL](https://github.com/microsoft/GSL) and [TinyXML2](https://github.com/leethomason/tinyxml2) as submodules,
+which means if you clone the repository, you should specify --recurse-submodules to also get these modules
+in your local repository.
 
-For those who use Visual Studio Code, a .vscode folder is provided at src level, with tasks defined so the
-default build task will use MSBuild to generate the Release|x64 output. For this option, you need to download
-Build Tools or Visual Studio 2019 from [this page](https://visualstudio.microsoft.com/downloads/), and launch
-VSCode from Developer Command Prompt for VS 2019 by running "code ." from src directory, so that environment
-needed by MSBuild is set up properly.
+To build the project in Visual Studio 2019, just open the solution file in VS2019 and build. For those who use
+Visual Studio Code, a .vscode folder is provided at src level, with tasks defined and the default build task
+uses MSBuild to generate the Release|x64 output. Note, you need to download Build Tools or Visual Studio 2019
+from [this page](https://visualstudio.microsoft.com/downloads/), and launch VSCode from Developer Command Prompt
+for VS 2019 by running "code ." from src directory, so that environment needed by MSBuild is set up properly.
 
 
 ## Code Structure
@@ -113,9 +123,10 @@ needed by MSBuild is set up properly.
 └── src - source codes
     ├── .vscode - configuration files for VS Code
     ├── external - source files from external projects (may be modified)
+    │   ├── gsl - references GSL as submodule
     │   ├── npp - Notepad++ source files
     │   ├── scintilla - Scintilla source files
-    │   └── tinyxml2 - TinyXML2 source files
+    │   └── tinyxml2 - references TinyXML2 as submodule
     └── Plugin - source files of the plugin
         ├── Common - common definitions and utilities shared by all modules
         ├── CompilationErrorHandling - show/annotate compilation errors

@@ -19,17 +19,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "Topic.hpp"
+
 #include <functional>
-#include <vector>
 
 namespace utility {
 
   template <class T>
   class PrimitiveTypeValueMonitor {
     public:
-      using callback_t = std::function<void(T, T)>;
+      template <class T>
+      struct ValueChangeEventData {
+        T oldValue;
+        T newValue;
+      };
 
-      PrimitiveTypeValueMonitor() noexcept {}
+      using event_data_t = ValueChangeEventData<T>;
+      using callback_t = std::function<void(const event_data_t&)>;
+      using topic_t = Topic<event_data_t>;
+      using subscription_t = topic_t::subscription_t;
+
+      PrimitiveTypeValueMonitor() {}
       PrimitiveTypeValueMonitor(const T& value) noexcept : value(value) {}
 
       operator T() const noexcept { return value; }
@@ -37,30 +47,26 @@ namespace utility {
       // Only assignment operator is monitored
       const PrimitiveTypeValueMonitor& operator=(const T& newValue) {
         if (value != newValue) {
-          T oldValue = std::exchange(value, newValue);
-          for (const auto& watcher : watchers) {
-            watcher(oldValue, value);
-          }
+          event_data_t eventData {
+            std::exchange(value, newValue),
+            newValue
+          };
+          topic.publish(eventData);
         }
         return *this;
       }
 
-      // Add a watcher (i.e. callback) over value change
-      void addWatcher(callback_t watcher) noexcept {
-        watchers.push_back(watcher);
+      subscription_t subscribe(callback_t&& watcher) noexcept {
+        return topic.subscribe(std::forward<callback_t>(watcher));
       }
 
-      // Remove a watcher, which needs to be the exact instance
-      void removeWatcher(callback_t watcher) noexcept {
-        auto iter = watchers.find(watchers.begin(), watchers.end(), watcher);
-        if (iter != watchers.end()) {
-          watchers.erase(iter);
-        }
+      bool unsubscribe(subscription_t& watcher) noexcept {
+        return watcher.unsubscribe();
       }
 
     private:
       T value {};
-      std::vector<callback_t> watchers;
+      topic_t topic;
   };
 
 } // namespace

@@ -26,7 +26,7 @@ namespace utility {
     TimerQueue timerQueue;
   }
 
-  TimerQueue::~TimerQueue() noexcept {
+  TimerQueue::~TimerQueue() {
     if (queueHandle) {
       ::DeleteTimerQueueEx(queueHandle, nullptr);
       queueHandle = nullptr;

@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Plugin.hpp"
 
-extern papyrus::Plugin papyrusPlugin;
-
 namespace papyrus {
 
   const TCHAR* getName() {

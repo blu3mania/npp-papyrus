@@ -17,11 +17,13 @@ features that are not part of teh lexer/compiler:
 
 - autoCompletion\Papyrus Script.xml
 
-  You can either use this plugin's "Add auto completion support" feature under Advanced menu, or manually copy
-  this file to "autoCompletion" directory under Notepad++'s installation folder. It provides auto-completion
-  support for functions defined in base game, SKSE, and even SkyUI. Though, there is currently [a bug in
-  Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997) that makes it case sensitive
-  when using the default "Function and word completion" option for Notepad++'s Auto-Completion feature.
+  You can either use this plugin's "Install auto completion support" feature under Advanced menu, or manually
+  copy this file to "autoCompletion" directory under Notepad++'s installation folder.
+  
+  It provides auto-completion support for functions defined in base game, SKSE, and even SkyUI. Though, there
+  is currently [a bug in Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997) that
+  makes it case sensitive when using the default "Function and word completion" option for Notepad++'s
+  auto-completion feature.
 
   The suggestion is to either change it to "Function completion" only (you lose auto-completion on words), or
   always use uppercase for the first letter when typing a game defined function name.
@@ -31,8 +33,8 @@ features that are not part of teh lexer/compiler:
 
 - functionList\Papyrus Script.xml
 
-  You can use this plugin's "Add function list support" feature under Advanced menu, which automatically copy
-  this file and also correctly set langID in overrideMap.xml.
+  You can use this plugin's "Install function list support" feature under Advanced menu, which automatically
+  copies this file and also sets correct langID in overrideMap.xml.
   
   If you want to do it manually, it is a bit tricky. First, copy this file to "functionList" directory under
   Notepad++'s data folder. Then, you need to update overrideMap.xml under that folder. The key is to find the

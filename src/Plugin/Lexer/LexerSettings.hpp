@@ -26,8 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace papyrus {
 
   struct LexerSettings {
-    utility::PrimitiveTypeValueMonitor<bool> enableFoldMiddle;
-    utility::PrimitiveTypeValueMonitor<bool> enableClassNameCache;
+    utility::PrimitiveTypeValueMonitor<bool>     enableFoldMiddle;
+    utility::PrimitiveTypeValueMonitor<bool>     enableClassNameCache;
+    utility::PrimitiveTypeValueMonitor<bool>     enableClassLink;
+    utility::PrimitiveTypeValueMonitor<bool>     classLinkUnderline;
+    utility::PrimitiveTypeValueMonitor<COLORREF> classLinkForegroundColor;
+    utility::PrimitiveTypeValueMonitor<COLORREF> classLinkBackgroundColor;
+    utility::PrimitiveTypeValueMonitor<bool>     classLinkRequiresDoubleClick;
+    utility::PrimitiveTypeValueMonitor<int>      classLinkClickModifier;
   };
 
 } // namespace

@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ErrorAnnotator.hpp"
 
-#include "..\Common\FinalAction.hpp"
 #include "..\Common\Utility.hpp"
 
+#include "..\..\external\gsl\include\gsl\util"
 #include "..\..\external\npp\Common.h"
 
 #include <list>
@@ -35,16 +35,16 @@ namespace papyrus {
   ErrorAnnotator::ErrorAnnotator(const NppData& nppData, ErrorAnnotatorSettings& settings)
     : nppData(nppData), settings(settings) {
     // Setup settings change listeners
-    settings.enableAnnotation.addWatcher([&](bool oldValue, bool newValue) { updateAnnotationStyle(); });
-    settings.annotationForegroundColor.addWatcher([&](COLORREF oldValue, COLORREF newValue) { updateAnnotationStyle(); });
-    settings.annotationBackgroundColor.addWatcher([&](COLORREF oldValue, COLORREF newValue) { updateAnnotationStyle(); });
-    settings.isAnnotationItalic.addWatcher([&](COLORREF oldValue, COLORREF newValue) { updateAnnotationStyle(); });
-    settings.isAnnotationBold.addWatcher([&](COLORREF oldValue, COLORREF newValue) { updateAnnotationStyle(); });
+    settings.enableAnnotation.subscribe([&](auto eventData) { updateAnnotationStyle(); });
+    settings.annotationForegroundColor.subscribe([&](auto eventData) { updateAnnotationStyle(); });
+    settings.annotationBackgroundColor.subscribe([&](auto eventData) { updateAnnotationStyle(); });
+    settings.isAnnotationItalic.subscribe([&](auto eventData) { updateAnnotationStyle(); });
+    settings.isAnnotationBold.subscribe([&](auto eventData) { updateAnnotationStyle(); });
 
-    settings.enableIndication.addWatcher([&](bool oldValue, bool newValue) { updateIndicatorStyle(); });
-    settings.indicatorID.addWatcher([&](int oldValue, int newValue) { changeIndicator(newValue); });
-    settings.indicatorStyle.addWatcher([&](int oldValue, int newValue) { updateIndicatorStyle(); });
-    settings.indicatorForegroundColor.addWatcher([&](COLORREF oldValue, COLORREF newValue) { updateIndicatorStyle(); });
+    settings.enableIndication.subscribe([&](auto eventData) { updateIndicatorStyle(); });
+    settings.indicatorID.subscribe([&](auto eventData) { changeIndicator(eventData.newValue); });
+    settings.indicatorStyle.subscribe([&](auto eventData) { updateIndicatorStyle(); });
+    settings.indicatorForegroundColor.subscribe([&](auto eventData) { updateIndicatorStyle(); });
   }
 
   ErrorAnnotator::~ErrorAnnotator() {
@@ -61,11 +61,11 @@ namespace papyrus {
     errors.clear();
 
     // Check and clear all annotations from both views
-    if (!getPapyrusScriptFilePathOnView(MAIN_VIEW).empty()) {
+    if (!getApplicableFilePathOnView(MAIN_VIEW).empty()) {
       clearAnnotations(nppData._scintillaMainHandle);
       clearIndications(nppData._scintillaMainHandle);
     }
-    if (!getPapyrusScriptFilePathOnView(SUB_VIEW).empty()) {
+    if (!getApplicableFilePathOnView(SUB_VIEW).empty()) {
       clearAnnotations(nppData._scintillaSecondHandle);
       clearIndications(nppData._scintillaSecondHandle);
     }
@@ -135,7 +135,7 @@ namespace papyrus {
     return errors.find(utility::toUpper(filePath)) != errors.end();
   }
 
-  std::wstring ErrorAnnotator::getPapyrusScriptFilePathOnView(npp_view_t view) const {
+  std::wstring ErrorAnnotator::getApplicableFilePathOnView(npp_view_t view) const {
     // Check whether there is an active doc on the given view
     HWND handle = (view == MAIN_VIEW ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle);
     npp_index_t docIndex = static_cast<npp_index_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
@@ -146,7 +146,7 @@ namespace papyrus {
         wchar_t filePathArray[MAX_PATH];
         if (::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), reinterpret_cast<LPARAM>(filePathArray)) != -1) {
           std::wstring filePath(filePathArray);
-          if (utility::endsWith(filePath, L".psc")) {
+          if (utility::endsWith(filePath, L".psc") || utility::endsWith(filePath, L".pas")) {
             return filePath;
           }
         }
@@ -158,7 +158,7 @@ namespace papyrus {
 
   void ErrorAnnotator::annotate(npp_view_t view) {
     // Annotate current file on the given view if it's Papyrus script
-    std::wstring filePath = getPapyrusScriptFilePathOnView(view);
+    std::wstring filePath = getApplicableFilePathOnView(view);
     if (!filePath.empty()) {
       annotate(view, filePath);
     } else {
@@ -199,10 +199,10 @@ namespace papyrus {
 
   void ErrorAnnotator::updateAnnotationStyle() {
     // Update annotation style of the current file on the given view if it's Papyrus script
-    if (!getPapyrusScriptFilePathOnView(MAIN_VIEW).empty()) {
+    if (!getApplicableFilePathOnView(MAIN_VIEW).empty()) {
       updateAnnotationStyle(MAIN_VIEW, nppData._scintillaMainHandle);
     }
-    if (!getPapyrusScriptFilePathOnView(SUB_VIEW).empty()) {
+    if (!getApplicableFilePathOnView(SUB_VIEW).empty()) {
       updateAnnotationStyle(SUB_VIEW, nppData._scintillaSecondHandle);
     }
   }
@@ -236,11 +236,11 @@ namespace papyrus {
   // Since indication locations are not tracked after they were draw, calling this methid could cause newly rendered incations to be off
   void ErrorAnnotator::changeIndicator(int indicator) {
     // Clear indications from both views if they are Papyrus scripts
-    std::wstring mainViewFilePath = getPapyrusScriptFilePathOnView(MAIN_VIEW);
+    std::wstring mainViewFilePath = getApplicableFilePathOnView(MAIN_VIEW);
     if (!mainViewFilePath.empty()) {
       clearIndications(nppData._scintillaMainHandle);
     }
-    std::wstring secondViewFilePath = getPapyrusScriptFilePathOnView(SUB_VIEW);
+    std::wstring secondViewFilePath = getApplicableFilePathOnView(SUB_VIEW);
     if (!secondViewFilePath.empty()) {
       clearIndications(nppData._scintillaSecondHandle);
     }
@@ -257,10 +257,10 @@ namespace papyrus {
 
   void ErrorAnnotator::updateIndicatorStyle() {
     // Update indicator style of the current file on the given view if it's Papyrus script
-    if (!getPapyrusScriptFilePathOnView(MAIN_VIEW).empty()) {
+    if (!getApplicableFilePathOnView(MAIN_VIEW).empty()) {
       updateIndicatorStyle(nppData._scintillaMainHandle);
     }
-    if (!getPapyrusScriptFilePathOnView(SUB_VIEW).empty()) {
+    if (!getApplicableFilePathOnView(SUB_VIEW).empty()) {
         updateIndicatorStyle(nppData._scintillaSecondHandle);
     }
   }
@@ -294,7 +294,7 @@ namespace papyrus {
     
     // Scintilla does not use wide char, also returned line length does not include the ending null char
     char* line = new char[lineLength + 1];
-    auto autoCleanup = utility::finally([&] { delete[] line; });
+    auto autoCleanup = gsl::finally([&] { delete[] line; });
     npp_position_t filledLength = ::SendMessage(handle, SCI_GETLINE, lineError.line, reinterpret_cast<LPARAM>(line));
     if (filledLength <= lineLength) {
       line[filledLength] = 0;

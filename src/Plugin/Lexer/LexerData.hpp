@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "LexerSettings.hpp"
 #include "..\Common\Game.hpp"
+#include "..\Common\Topic.hpp"
 
 #include "..\..\external\npp\PluginInterface.h"
 
@@ -44,6 +45,8 @@ namespace papyrus {
     Game currentGame;
     game_import_dirs_t importDirectories;
     npp_lang_type_t scriptLangID;
+    utility::Topic<std::pair<npp_view_t, bool>> bufferActivated;
+    utility::Topic<std::pair<HWND, Sci_Position>> clickEventData;
     bool usable;
   };
 

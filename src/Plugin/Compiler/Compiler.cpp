@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Compiler.hpp"
 
-#include "..\Common\FinalAction.hpp"
 #include "..\Common\Utility.hpp"
+
+#include "..\..\external\gsl\include\gsl\util"
 
 #include <filesystem>
 #include <fstream>
@@ -39,7 +40,7 @@ namespace papyrus {
   void Compiler::start(const CompilationRequest& request) {
     try {
       if (!compilationThread.joinable()) {
-        compilationThread = std::thread([=]() { compile(request); });
+        compilationThread = std::thread([=]() { compile(request); }); // Capture the request by value due to asynchornous nature of thread
       } else {
         ::SendMessage(messageWindow, messages.otherErrordMessage, reinterpret_cast<WPARAM>(L"Compilation thread unusable."), reinterpret_cast<LPARAM>(L"Compilation aborted."));
       }
@@ -53,7 +54,7 @@ namespace papyrus {
 
   void Compiler::compile(CompilationRequest request) {
     try {
-      auto gameSettings = settings.gameSettings(request.game);
+      const CompilerSettings::GameSettings& gameSettings = settings.gameSettings(request.game);
       std::wstring path = gameSettings.compilerPath;
       if (std::ifstream(path).good()) {
         // Input file path
@@ -89,7 +90,7 @@ namespace papyrus {
         if (::CreatePipe(&outputReadHandle, &startupInfo.hStdOutput, &attr, STDOUT_PIPE_SIZE) && ::CreatePipe(&errorReadHandle, &startupInfo.hStdError, &attr, STDERR_PIPE_SIZE)) {
           // Run the process
           PROCESS_INFORMATION compilationProcess {};
-          if (::CreateProcess(nullptr, &commandLine[0], nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, nullptr, &startupInfo, &compilationProcess)) {
+          if (::CreateProcess(nullptr, const_cast<LPWSTR>(commandLine.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, nullptr, &startupInfo, &compilationProcess)) {
             if (::WaitForSingleObject(compilationProcess.hProcess, INFINITE) != WAIT_FAILED) {
               DWORD size {};
               if (::PeekNamedPipe(errorReadHandle, nullptr, 0, nullptr, &size, nullptr)) {
@@ -128,7 +129,7 @@ namespace papyrus {
                         if (anonymizeOutput(outputFile, errorMsg)) {
                           ::SendMessage(messageWindow, messages.compilationDoneMessage, messages.withAnonymization, 0);
                         } else {
-                          ::SendMessage(messageWindow, messages.anonymizationFailureMessage, reinterpret_cast<WPARAM>(errorMsg.c_str()), 0);
+                          ::SendMessage(messageWindow, messages.anonymizationFailureMessage, reinterpret_cast<WPARAM>(&errorMsg), 0);
                         }
                       } else {
                         ::SendMessage(messageWindow, messages.compilationDoneMessage, messages.compilationOnly, 0);
@@ -169,7 +170,7 @@ namespace papyrus {
     bool noError = true;
     std::fstream file;
     file.open(outputFile, std::ios::binary | std::ios::in | std::ios::out);
-    auto autoCleanup = utility::finally([&] { file.close(); });
+    auto autoCleanup = gsl::finally([&] { file.close(); });
 
     if (file.fail()) {
       errorMsg = std::wstring(_wcserror(errno));
@@ -221,7 +222,7 @@ namespace papyrus {
 
       // Overwrite with dashes
       char* buffer = new char[size];
-      auto autoCleanup = utility::finally([&] { delete[] buffer; });
+      auto autoCleanup = gsl::finally([&] { delete[] buffer; });
       memset(buffer, '-', size);
       file.write(buffer, size);
 

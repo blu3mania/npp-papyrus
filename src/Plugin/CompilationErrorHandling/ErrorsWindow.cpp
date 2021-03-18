@@ -69,19 +69,19 @@ namespace papyrus {
       LVITEM item {
         .mask = LVIF_TEXT,
         .iItem = i,
-        .pszText = &filename[0]
+        .pszText = const_cast<LPWSTR>(filename.c_str())
       };
       ListView_InsertItem(listView, &item);
       item.iSubItem = 1;
-      item.pszText = &errors[i].message[0];
+      item.pszText = const_cast<LPWSTR>(errors[i].message.c_str());
       ListView_SetItem(listView, &item);
       item.iSubItem = 2;
       std::wstring line = std::to_wstring(errors[i].line);
-      item.pszText = &line[0];
+      item.pszText = const_cast<LPWSTR>(line.c_str());
       ListView_SetItem(listView, &item);
       item.iSubItem = 3;
       std::wstring column = std::to_wstring(errors[i].column);
-      item.pszText = &column[0];
+      item.pszText = const_cast<LPWSTR>(column.c_str());
       ListView_SetItem(listView, &item);
     }
     display();
@@ -102,7 +102,7 @@ namespace papyrus {
         if (item->hdr.hwndFrom == listView && item->hdr.code == NM_DBLCLK) {
           if (item->iItem != -1) {
             Error error = errors[item->iItem];
-            ::SendMessage(pluginMessageWindow, PPM_JUMP_TO_ERROR, 0, reinterpret_cast<LPARAM>(&error));
+            ::SendMessage(pluginMessageWindow, PPM_JUMP_TO_ERROR, reinterpret_cast<WPARAM>(&error), 0);
           }
           return true;
         } else {

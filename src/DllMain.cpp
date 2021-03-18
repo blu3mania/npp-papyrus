@@ -21,9 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-extern papyrus::Plugin papyrusPlugin;
-
-BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID) {
+BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved) {
   if (reason == DLL_PROCESS_ATTACH) {
     papyrusPlugin.onInit(instance);
   } else if (reason == DLL_PROCESS_DETACH) {

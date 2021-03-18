@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Game.hpp"
 
-#include "FinalAction.hpp"
+#include "..\..\external\gsl\include\gsl\util"
 
 #include <string>
 #include <vector>
@@ -60,7 +60,7 @@ namespace papyrus {
         // Check if the game's registry key exists
         HKEY gameRegKey;
         if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, regKey, 0, KEY_READ, &gameRegKey) == ERROR_SUCCESS) {
-          auto autoCleanup = utility::finally([&] { ::RegCloseKey(gameRegKey); });
+          auto autoCleanup = gsl::finally([&] { ::RegCloseKey(gameRegKey); });
 
           // Get game's installation path
           DWORD size;

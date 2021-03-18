@@ -46,6 +46,12 @@ namespace papyrus {
   void Settings::saveSettings(SettingsStorage& storage) {
     storage.putString(L"lexer.enableFoldMiddle", utility::boolToStr(lexerSettings.enableFoldMiddle));
     storage.putString(L"lexer.enableClassNameCache", utility::boolToStr(lexerSettings.enableClassNameCache));
+    storage.putString(L"lexer.enableClassLink", utility::boolToStr(lexerSettings.enableClassLink));
+    storage.putString(L"lexer.classLinkUnderline", utility::boolToStr(lexerSettings.classLinkUnderline));
+    storage.putString(L"lexer.classLinkForegroundColor", utility::colorToHexStr(lexerSettings.classLinkForegroundColor));
+    storage.putString(L"lexer.classLinkBackgroundColor", utility::colorToHexStr(lexerSettings.classLinkBackgroundColor));
+    storage.putString(L"lexer.classLinkRequiresDoubleClick", utility::boolToStr(lexerSettings.classLinkRequiresDoubleClick));
+    storage.putString(L"lexer.classLinkClickModifier", std::to_wstring(lexerSettings.classLinkClickModifier));
 
     storage.putString(L"errorAnnotator.enableAnnotation", utility::boolToStr(errorAnnotatorSettings.enableAnnotation));
     storage.putString(L"errorAnnotator.annotationForegroundColor", utility::colorToHexStr(errorAnnotatorSettings.annotationForegroundColor));
@@ -91,6 +97,48 @@ namespace papyrus {
       updated = true;
     }
 
+    if (storage.getString(L"lexer.enableClassLink", value)) {
+      lexerSettings.enableClassLink = utility::strToBool(value);
+    } else {
+      lexerSettings.enableClassLink = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.classLinkUnderline", value)) {
+      lexerSettings.classLinkUnderline = utility::strToBool(value);
+    } else {
+      lexerSettings.classLinkUnderline = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.classLinkForegroundColor", value)) {
+      lexerSettings.classLinkForegroundColor = utility::hexStrToColor(value);
+    } else {
+      lexerSettings.classLinkForegroundColor = 0xFF0000; // BGR
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.classLinkBackgroundColor", value)) {
+      lexerSettings.classLinkBackgroundColor = utility::hexStrToColor(value);
+    } else {
+      lexerSettings.classLinkBackgroundColor = 0xFFFFFF; // BGR
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.classLinkRequiresDoubleClick", value)) {
+      lexerSettings.classLinkRequiresDoubleClick = utility::strToBool(value);
+    } else {
+      lexerSettings.classLinkRequiresDoubleClick = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.classLinkClickModifier", value)) {
+      lexerSettings.classLinkClickModifier = std::stoi(value);
+    } else {
+      lexerSettings.classLinkClickModifier = SCMOD_NORM;
+      updated = true;
+    }
+
     // Error annotator settings
     //
     if (storage.getString(L"errorAnnotator.enableAnnotation", value)) {
@@ -106,7 +154,7 @@ namespace papyrus {
       errorAnnotatorSettings.annotationForegroundColor = 0x0000C0; // BGR
       updated = true;
     }
-  
+
     if (storage.getString(L"errorAnnotator.annotationBackgroundColor", value)) {
       errorAnnotatorSettings.annotationBackgroundColor = utility::hexStrToColor(value);
     } else {
@@ -383,7 +431,7 @@ namespace papyrus {
       updated = true;
     }
 
-    return std::pair<bool, bool>(gameConfigured, updated);
+    return std::make_pair(gameConfigured, updated);
   }
 
   void Settings::saveGameSettings(SettingsStorage& storage, Game game, const CompilerSettings::GameSettings& gameSettings) {

@@ -127,7 +127,7 @@ namespace papyrus {
   std::wstring DialogBase::getText(int controlID) const {
     auto control = getControl(controlID);
     std::wstring content(::GetWindowTextLength(control) + 1, L' ');
-    ::GetWindowText(control, &content[0], static_cast<int>(content.size()));
+    ::GetWindowText(control, const_cast<LPWSTR>(content.c_str()), static_cast<int>(content.size()));
     content.pop_back(); // Remove trailing NULL
     return content;
   }

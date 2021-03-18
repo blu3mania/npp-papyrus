@@ -48,6 +48,7 @@ namespace papyrus {
       };
 
       enum class Group {
+        ClassLink,
         Annotation,
         Indication,
         GameAuto,
@@ -55,6 +56,8 @@ namespace papyrus {
         GameSSE,
         GameFO4
       };
+
+      void cleanup();
 
       void switchTab(Tab newTab);
       void showTab(Tab tab, bool show, bool intializing = false) const;
@@ -83,6 +86,8 @@ namespace papyrus {
       HWND indicatorIdTooltip {};
       HWND autoModeTooltip {};
 
+      ColourPicker classLinkFgColorPicker;
+      ColourPicker classLinkBgColorPicker;
       ColourPicker annotationFgColorPicker;
       ColourPicker annotationBgColorPicker;
       ColourPicker indicatorFgColorPicker;

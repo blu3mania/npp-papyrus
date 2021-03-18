@@ -30,16 +30,13 @@ namespace utility {
   class TimerQueue {
     public:
       // Should not to be discarded immediately
-      [[nodiscard]] inline TimerQueue() noexcept { queueHandle = ::CreateTimerQueue(); }
+      [[nodiscard]] inline TimerQueue() { queueHandle = ::CreateTimerQueue(); }
 
-      // Disable all copy/move constructor/assignment operator
-      TimerQueue(const TimerQueue&) = delete;
+      // Disable all copy/move constructors/assignment operators
       TimerQueue(TimerQueue&& other) = delete;
-      TimerQueue& operator=(const TimerQueue&) = delete;
-      TimerQueue& operator=(TimerQueue&& other) = delete;
 
       // Destructor will release timer queue resource
-      ~TimerQueue() noexcept;
+      ~TimerQueue();
 
       // Convenient conversion operator to return queue handle
       inline operator HANDLE() const noexcept { return queueHandle; }
@@ -58,15 +55,12 @@ namespace utility {
   //
   class Timer {
     public:
-      [[nodiscard]] explicit Timer(int interval, timer_callback_t func, bool shortExecution = false, bool onlyOnce = true) noexcept;
+      [[nodiscard]] Timer(int interval, timer_callback_t func, bool shortExecution = false, bool onlyOnce = true) noexcept;
 
-      // Disable all copy/move constructor/assignment operator
-      Timer(const Timer&) = delete;
+      // Disable all copy/move constructors/assignment operators
       Timer(Timer&& other) = delete;
-      Timer& operator=(const Timer&) = delete;
-      Timer& operator=(Timer&& other) = delete;
 
-      inline ~Timer() noexcept { cancel(); }
+      inline ~Timer() { cancel(); }
 
       // Only a valid timer will trigger callback
       inline bool isValid() const noexcept { return valid; }

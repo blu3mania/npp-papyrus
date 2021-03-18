@@ -45,6 +45,29 @@ namespace papyrus {
 
   class Lexer : public SimpleLexerBase {
     public:
+      // A class that helps with subscription to shared Lexer data, since the handling are all static, and not
+      // tied to a specific Lexer instance. Fro example, restyle currently displayed document, regardless if it's
+      // lexed by current Lexer instance.
+      //
+      class SubscriptionHelper {
+        public:
+          SubscriptionHelper();
+
+        private:
+          // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used
+          bool isUsable() const;
+
+          // Get current buffer ID on the given view, if it's a applicable
+          npp_buffer_t getApplicableBufferIdOnView(npp_view_t view) const;
+
+          // Restyle currently displayed document, which includes Lex and Fold
+          void restyleDocument() const;
+          void restyleDocument(npp_view_t view) const;
+
+          // Hotspot click handler
+          void handleHotspotClick(HWND handle, Sci_Position position) const;
+      };
+
       Lexer();
 
       // Interface functions with Notepad++
@@ -115,10 +138,6 @@ namespace papyrus {
       // If a style (from StyleContext) is a comment style defined by this lexer
       bool isComment(int style) const;
 
-      // Restyle current document, which includes Lex and Fold
-      void restyleDocument() const;
-      void restyleDocument(npp_view_t view) const;
-
       // Private members
       //
 
@@ -141,11 +160,6 @@ namespace papyrus {
 
       // Cache property names defined in current file, for better performance
       std::set<std::string> propertyNames;
-
-       // Cache names that are classes (i.e. files in import directories) used in current file, and names that aren't, for better performance
-       // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded
-      std::set<std::string> classNames;
-      std::set<std::string> nonClassNames;
   };
 
 } // namespace

@@ -25,31 +25,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\Common\EnumUtil.hpp"
 #include "..\Common\Utility.hpp"
 
+#include "..\..\external\gsl\include\gsl\util"
 #include "..\..\external\npp\Common.h"
 #include "..\..\external\scintilla\LexerModule.h"
 #include "..\..\external\scintilla\Scintilla.h"
 
 #include <filesystem>
-#include <locale>
-#include <string>
-#include <vector>
+#include <map>
+#include <memory>
 
 namespace papyrus {
+
+  using SubscriptionHelper = Lexer::SubscriptionHelper;
+
+  // Static shared subscription helper
+  namespace {
+    std::unique_ptr<SubscriptionHelper> subscriptionHelper;
+
+    // Cache names that are classes (i.e. files in import directories) used in current file, and names that aren't, for better performance.
+    // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded. This can be
+    // fixed by toggling off this option then toggling it back on in Settings dialog
+    std::map<Game, std::set<std::string>> classNames;
+    std::map<Game, std::set<std::string>> nonClassNames;
+  }
 
   Lexer::Lexer()
     : SimpleLexerBase(LEXER_NAME, SCLEX_PAPYRUS_SCRIPT),
       instreWordLists{&wordListOperators, &wordListFlowControl},
       typeWordLists{&wordListTypes, &wordListKeywords, &wordListKeywords2, &wordListFoldOpen, &wordListFoldMiddle, &wordListFoldClose} {
     // Setup settings change listeners
-    if (isUsable()) {
-      lexerData->settings.enableFoldMiddle.addWatcher([&](bool oldValue, bool newValue) { restyleDocument(); });
-      lexerData->settings.enableClassNameCache.addWatcher([&](bool oldValue, bool newValue) { 
-        if (!newValue) {
-          classNames.clear();
-          nonClassNames.clear();
-        }
-        restyleDocument();
-      });
+    if (isUsable() && !subscriptionHelper) {
+      subscriptionHelper = std::make_unique<SubscriptionHelper>();
     }
   }
 
@@ -181,26 +187,30 @@ namespace papyrus {
                 if (found) {
                   colorToken(styleContext, *iterTokens, State::Property);
                 } else {
-                  if (classNames.find(tokenString) != classNames.end()) {
-                    colorToken(styleContext, *iterTokens, State::Class);
-                    found = true;
-                  } else if (nonClassNames.find(tokenString) == nonClassNames.end()) {
-                    // Check all import directories for a source file with given name
-                    if (lexerData->currentGame != game::Game::Auto) {
-                      for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
-                        if (utility::fileExists(std::filesystem::path(path) / (tokenString + ".psc"))) {
-                          colorToken(styleContext, *iterTokens, State::Class);
-                          if (lexerData->settings.enableClassNameCache) {
-                            classNames.insert(tokenString);
+                  if (lexerData->currentGame != game::Game::Auto) {
+                    auto currentGameClassNames = classNames[lexerData->currentGame];
+                    if (currentGameClassNames.find(tokenString) != currentGameClassNames.end()) {
+                      colorToken(styleContext, *iterTokens, State::Class);
+                      found = true;
+                    } else {
+                      auto currentGameNonClassNames = nonClassNames[lexerData->currentGame];
+                      if (currentGameNonClassNames.find(tokenString) == currentGameNonClassNames.end()) {
+                        // Check all import directories for a source file with given name
+                        for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
+                          if (utility::fileExists(std::filesystem::path(path) / (tokenString + ".psc"))) {
+                            colorToken(styleContext, *iterTokens, State::Class);
+                            if (lexerData->settings.enableClassNameCache) {
+                              currentGameClassNames.insert(tokenString);
+                            }
+                            found = true;
+                            break;
                           }
-                          found = true;
-                          break;
                         }
                       }
-                    }
 
-                    if (!found && lexerData->settings.enableClassNameCache) {
-                      nonClassNames.insert(tokenString);
+                      if (!found && lexerData->settings.enableClassNameCache) {
+                        currentGameNonClassNames.insert(tokenString);
+                      }
                     }
                   }
 
@@ -377,22 +387,128 @@ namespace papyrus {
     }
   }
 
-  void Lexer::restyleDocument() const {
+  SubscriptionHelper::SubscriptionHelper() {
+    lexerData->bufferActivated.subscribe([&](auto eventData) {
+      if (isUsable() && lexerData->settings.enableClassLink && eventData.second) { // isManagedBuffer
+        HWND handle = (eventData.first == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
+        ::SendMessage(handle, SCI_STYLESETHOTSPOT, utility::underlying(State::Class), true);
+        ::SendMessage(handle, SCI_SETHOTSPOTACTIVEFORE, true, lexerData->settings.classLinkForegroundColor);
+        ::SendMessage(handle, SCI_SETHOTSPOTACTIVEBACK, true, lexerData->settings.classLinkBackgroundColor);
+        ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
+      }
+    });
+
+    lexerData->settings.enableClassLink.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_STYLESETHOTSPOT, utility::underlying(State::Class), eventData.newValue);
+        }
+        if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_STYLESETHOTSPOT, utility::underlying(State::Class), eventData.newValue);
+        }
+      }
+    });
+
+    lexerData->settings.classLinkForegroundColor.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEFORE, true, eventData.newValue);
+        }
+        if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETHOTSPOTACTIVEFORE, true, eventData.newValue);
+        }
+      }
+    });
+
+    lexerData->settings.classLinkBackgroundColor.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEBACK, true, eventData.newValue);
+        }
+        if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETHOTSPOTACTIVEBACK, true, eventData.newValue);
+        }
+      }
+    });
+
+    lexerData->settings.classLinkUnderline.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEUNDERLINE, eventData.newValue, 0);
+        }
+        if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETHOTSPOTACTIVEUNDERLINE, eventData.newValue, 0);
+        }
+      }
+    });
+
+    lexerData->clickEventData.subscribe([&](auto eventData) {
+      handleHotspotClick(eventData.first, eventData.second);
+    });
+
+    lexerData->settings.enableFoldMiddle.subscribe([&](auto eventData) { restyleDocument(); });
+
+    lexerData->settings.enableClassNameCache.subscribe([&](auto eventData) { 
+      if (!eventData.newValue) {
+        classNames.clear();
+        nonClassNames.clear();
+      }
+      restyleDocument();
+    });
+  }
+
+  bool SubscriptionHelper::isUsable() const {
+    return (lexerData != nullptr && lexerData->usable);
+  }
+
+  npp_buffer_t SubscriptionHelper::getApplicableBufferIdOnView(npp_view_t view) const {
+    npp_index_t viewDocIndex = static_cast<npp_index_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
+    if (viewDocIndex != -1) {
+      npp_buffer_t viewBufferID = static_cast<npp_buffer_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERIDFROMPOS, static_cast<WPARAM>(viewDocIndex), static_cast<LPARAM>(view)));
+      if (viewBufferID != 0 && lexerData->scriptLangID == static_cast<npp_lang_type_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERLANGTYPE, static_cast<WPARAM>(viewBufferID), 0))) {
+        return viewBufferID;
+      }
+    }
+
+    return 0;
+  }
+
+  void SubscriptionHelper::restyleDocument() const {
     if (isUsable()) {
       restyleDocument(MAIN_VIEW);
       restyleDocument(SUB_VIEW);
     }
   }
 
-  void Lexer::restyleDocument(npp_view_t view) const {
+  void SubscriptionHelper::restyleDocument(npp_view_t view) const {
     // Ask Scintilla to restyle urrent document on the given view, but only when it is using this lexer
-    HWND handle = (view == MAIN_VIEW ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle);
-    npp_index_t viewDocIndex = static_cast<npp_index_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
-    if (viewDocIndex != -1) {
-      npp_buffer_t viewBufferID = static_cast<npp_buffer_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERIDFROMPOS, static_cast<WPARAM>(viewDocIndex), static_cast<LPARAM>(view)));
-      if (viewBufferID != 0) {
-        if (lexerData->scriptLangID == static_cast<npp_buffer_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERLANGTYPE, static_cast<WPARAM>(viewBufferID), 0))) {
-          ::SendMessage(handle, SCI_COLOURISE, 0, -1);
+    if (getApplicableBufferIdOnView(view) != 0) {
+      HWND handle = (view == MAIN_VIEW ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle);
+      ::SendMessage(handle, SCI_COLOURISE, 0, -1);
+    }
+  }
+
+  void SubscriptionHelper::handleHotspotClick(HWND handle, Sci_Position position) const {
+    if (isUsable() && lexerData->currentGame != game::Game::Auto) {
+      Sci_Position start = ::SendMessage(handle, SCI_WORDSTARTPOSITION, position, true);
+      Sci_Position end = ::SendMessage(handle, SCI_WORDENDPOSITION, position, true);
+      char* word = new char[end - start + 1];
+      auto autoCleanup = gsl::finally([&] { delete[] word; });
+
+      Sci_TextRange textRange {
+        .chrg = {
+          .cpMin = static_cast<Sci_PositionCR>(start),
+          .cpMax = static_cast<Sci_PositionCR>(end)
+        },
+        .lpstrText = word
+      };
+      ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&textRange));
+      std::string fileName = std::string(word) + ".psc";
+      for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
+        std::wstring filePath = std::filesystem::path(path) / fileName;
+        if (utility::fileExists(filePath)) {
+          ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
+          break;
         }
       }
     }

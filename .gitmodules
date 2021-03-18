@@ -1,0 +1,6 @@
+[submodule "src/external/tinyxml2"]
+	path = src/external/tinyxml2
+	url = https://github.com/leethomason/tinyxml2.git
+[submodule "src/external/gsl"]
+	path = src/external/gsl
+	url = https://github.com/microsoft/GSL.git

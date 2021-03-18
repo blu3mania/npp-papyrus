@@ -58,8 +58,8 @@ namespace papyrus {
       // Check if a file path is in the error map (case insensitive)
       bool hasErrors(const std::wstring& filePath) const;
 
-      // Get current file path on the given view, if it's a Papyrus script
-      std::wstring getPapyrusScriptFilePathOnView(npp_view_t view) const;
+      // Get current file path on the given view, if it's a applicable
+      std::wstring getApplicableFilePathOnView(npp_view_t view) const;
 
       // Annotate current buffer on a given view, if it has errors
       void annotate(npp_view_t view);

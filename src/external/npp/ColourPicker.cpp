@@ -45,7 +45,12 @@ void ColourPicker::destroy()
 {
 	delete _pColourPopup;
 	_pColourPopup = NULL;
-	::DestroyWindow(_hSelf);
+
+	// PapyrusPlugin modification -- reentry safeguard
+	if (_hSelf) {
+		::DestroyWindow(_hSelf);
+		_hSelf = nullptr;
+	}
 }
 
 

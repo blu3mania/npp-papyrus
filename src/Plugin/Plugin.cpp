@@ -27,13 +27,13 @@ https://community.notepad-plus-plus.org/category/5/plugin-development
 
 #include "Plugin.hpp"
 
-#include "Common\FinalAction.hpp"
 #include "Common\Utility.hpp"
 #include "Common\Version.hpp"
 #include "Compiler\CompilationRequest.hpp"
 #include "Lexer\Lexer.hpp"
 #include "Lexer\LexerData.hpp"
 
+#include "..\external\gsl\include\gsl\util"
 #include "..\external\tinyxml2\tinyxml2.h"
 
 #include <filesystem>
@@ -52,8 +52,8 @@ namespace papyrus {
   namespace {
     std::vector<LPCWSTR> advancedMenuItems {
       L"Show langID",
-      L"Add auto completion support",
-      L"Add function list support"
+      L"Install auto completion support",
+      L"Install function list support"
     };
   }
 
@@ -89,33 +89,46 @@ namespace papyrus {
   }
 
   void Plugin::onNotification(SCNotification* notification) {
-    if ((notification->nmhdr.hwndFrom == nppData._scintillaMainHandle) || (notification->nmhdr.hwndFrom == nppData._scintillaSecondHandle)) {
-      switch (notification->nmhdr.code) {
-        case SCN_MODIFIED: {
-          if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-            // TODO
+    if (!isShuttingDown) {
+      if ((notification->nmhdr.hwndFrom == nppData._scintillaMainHandle) || (notification->nmhdr.hwndFrom == nppData._scintillaSecondHandle)) {
+        switch (notification->nmhdr.code) {
+          case SCN_HOTSPOTCLICK:
+          case SCN_HOTSPOTDOUBLECLICK: {
+            handleHotspotClick(notification);
+            break;
+          }
+
+          case SCN_MODIFIED: {
+            if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
+              // TODO
+            }
+            break;
+          }
+
+          default: {
+            break;
           }
         }
-        break;
+      } else if (notification->nmhdr.hwndFrom == nppData._nppHandle) {
+        switch (notification->nmhdr.code) {
+          case NPPN_READY: {
+            setupAdvancedMenu();
+            break;
+          }
 
-        default: {
-          break;
-        }
-      }
-    } else if (notification->nmhdr.hwndFrom == nppData._nppHandle) {
-      switch (notification->nmhdr.code) {
-        case NPPN_BUFFERACTIVATED: {
-          handleBufferActivation(notification->nmhdr.idFrom);
-          break;
-        }
+          case NPPN_BEFORESHUTDOWN: {
+            isShuttingDown = true;
+            break;
+          }
 
-        case NPPN_READY: {
-          setupAdvancedMenu();
-          break;
-        }
+          case NPPN_BUFFERACTIVATED: {
+            handleBufferActivation(notification->nmhdr.idFrom);
+            break;
+          }
 
-        default: {
-          break;
+          default: {
+            break;
+          }
         }
       }
     }
@@ -132,12 +145,12 @@ namespace papyrus {
               showLangID();
               break;
 
-            case AdvancedMenu::AddAutoCompletion:
-              addAutoCompletion();
+            case AdvancedMenu::InstallAutoCompletion:
+              installAutoCompletion();
               break;
 
-            case AdvancedMenu::AddFunctionList:
-              addFunctionList();
+            case AdvancedMenu::InstallFunctionList:
+              installFunctionList();
               break;
           }
         }
@@ -160,7 +173,7 @@ namespace papyrus {
     npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
     if (configPathLength > 0) {
       wchar_t* configPathCharArray = new wchar_t[configPathLength + 1];
-      auto autoCleanupConfigPath = utility::finally([&] { delete[] configPathCharArray; });
+      auto autoCleanupConfigPath = gsl::finally([&] { delete[] configPathCharArray; });
       ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, configPathLength + 1, reinterpret_cast<LPARAM>(configPathCharArray));
       std::wstring configPath(configPathCharArray);
 
@@ -198,7 +211,7 @@ namespace papyrus {
       npp_size_t homePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, 0, 0));
       if (homePathLength > 0) {
         wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
-        auto autoCleanupHomePath = utility::finally([&] { delete[] homePathCharArray; });
+        auto autoCleanupHomePath = gsl::finally([&] { delete[] homePathCharArray; });
         ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, homePathLength + 1, reinterpret_cast<LPARAM>(homePathCharArray));
         std::wstring pluginHomePath(homePathCharArray);
 
@@ -225,13 +238,15 @@ namespace papyrus {
     npp_size_t filePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), 0));
     if (filePathLength > 0) {
       wchar_t* filePathCharArray = new wchar_t[filePathLength + 1];
-      auto autoCleanup = utility::finally([&] { delete[] filePathCharArray; });
+      auto autoCleanup = gsl::finally([&] { delete[] filePathCharArray; });
       if (::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), reinterpret_cast<LPARAM>(filePathCharArray)) != -1) {
         std::wstring filePath(filePathCharArray);
 
         // Set detected game for lexer
         auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);
-        lexerData->currentGame = detectedGame;
+        if (lexerData) {
+          lexerData->currentGame = detectedGame;
+        }
 
         // Check if active compilation file is still the current one on either view
         if (activeCompilationRequest.bufferID != 0) {
@@ -269,29 +284,48 @@ namespace papyrus {
           }
         }
 
+        bool isManagedBuffer = false;
         npp_lang_type_t currentFileLangID;
         ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
-        if (utility::endsWith(filePath, L".psc")) {
-          bool updateAnnotation = false;
-          if (currentFileLangID == scriptLangID) {
-            // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
-            updateAnnotation = true;
+        if (currentFileLangID == scriptLangID) {
+          // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
+          isManagedBuffer = true;
 
-            // If not compiling current file, check its game type (if applicable)
-            if (!isComplingCurrentFile && detectedGame != Game::Auto) {
-              std::wstring gameSpecificStatus(L"[" + game::gameNames[utility::underlying(detectedGame)].second + L"] " + Lexer::statusText());
-              ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
-            }
+          // If not compiling current file, check its game type (if applicable)
+          if (!isComplingCurrentFile && detectedGame != Game::Auto) {
+            std::wstring gameSpecificStatus(L"[" + game::gameNames[utility::underlying(detectedGame)].second + L"] " + Lexer::statusText());
+            ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
           }
+        }
 
-          // Even if the file is not lexed by this plugin's lexer, it might be compiled when compiling unmanaged files are allowed
-          if (errorAnnotator && (updateAnnotation || settings.compilerSettings.allowUnmanagedSource)) {
-            errorAnnotator->annotate(currentView, filePath);
-          }
+        // Only Papyrus script and assembly files can be annotated
+        if (errorAnnotator && (utility::endsWith(filePath, L".psc") || utility::endsWith(filePath, L".pas"))) {
+          errorAnnotator->annotate(currentView, filePath);
+        }
+
+        if (lexerData) {
+          lexerData->bufferActivated = std::make_pair(currentView, isManagedBuffer);
         }
       }
     }
- }
+  }
+
+  void Plugin::handleHotspotClick(SCNotification* notification) {
+    if (lexerData) {
+      if ((notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick && notification->modifiers == lexerData->settings.classLinkClickModifier) {
+        // Make sure Papyrus script langID is detected
+        if (scriptLangID == 0) {
+          detectLangID();
+        }
+
+        npp_lang_type_t currentFileLangID;
+        ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
+        if (currentFileLangID == scriptLangID) {
+          lexerData->clickEventData = std::make_pair(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position);
+        }
+      }
+    }
+  }
 
   void Plugin::onSettingsUpdated() {
     if (lexerData) {
@@ -320,7 +354,7 @@ namespace papyrus {
         npp_size_t langNameLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETLANGUAGENAME, i, 0));
         if (langNameLength > 0) {
           wchar_t* langNameCharArray = new wchar_t[langNameLength + 1];
-          auto autoCleanup = utility::finally([&] { delete[] langNameCharArray; });
+          auto autoCleanup = gsl::finally([&] { delete[] langNameCharArray; });
           ::SendMessage(nppData._nppHandle, NPPM_GETLANGUAGENAME, i, reinterpret_cast<LPARAM>(langNameCharArray));
           std::wstring langName(langNameCharArray);
 
@@ -344,7 +378,7 @@ namespace papyrus {
     if (detectedGameType == Game::Auto) {
       for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
         auto game = static_cast<Game>(i);
-        auto gameSettings = compilerSettings.gameSettings(game);
+        const CompilerSettings::GameSettings& gameSettings = compilerSettings.gameSettings(game);
         if (gameSettings.enabled && !gameSettings.installPath.empty() && utility::startsWith(filePath, gameSettings.installPath)) {
           detectedGameType = game;
           break;
@@ -358,7 +392,7 @@ namespace papyrus {
       }
     }
 
-    return std::pair<Game, bool>(detectedGameType, useAutoModeOutputDirectory);
+    return std::make_pair(detectedGameType, useAutoModeOutputDirectory);
   }
 
   void Plugin::clearActiveCompilation() {
@@ -433,7 +467,7 @@ namespace papyrus {
         }
 
         std::wstring msg(L"Compilation successful but anonymization failed: ");
-        msg += reinterpret_cast<const wchar_t*>(wParam);
+        msg += *reinterpret_cast<std::wstring*>(wParam);
         if (!isComplingCurrentFile) {
           msg += L" File: " + activeCompilationRequest.filePath;
         }
@@ -449,7 +483,7 @@ namespace papyrus {
       }
 
       case PPM_JUMP_TO_ERROR: {
-        Error* error = reinterpret_cast<Error*>(lParam);
+        Error* error = reinterpret_cast<Error*>(wParam);
         auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
           [&](Error& comparisionError) {
             return comparisionError.file == error->file && comparisionError.line == error->line;
@@ -458,7 +492,7 @@ namespace papyrus {
         if (iter == activatedErrorsTrackingList.end()) {
           // The most recent error selection always takes priority so push it to the front of the queue
           activatedErrorsTrackingList.push_front(*error);
-          ::SendMessage(nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(&error->file[0]));
+          ::SendMessage(nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(error->file.c_str()));
         }
         return 0;
       }
@@ -469,12 +503,10 @@ namespace papyrus {
     }
   }
 
-  bool Plugin::copyFile(std::wstring sourceFile, std::wstring destinationFile, int waitFor) {
+  bool Plugin::copyFile(const std::wstring& sourceFile, const std::wstring& destinationFile, int waitFor) {
     if (utility::fileExists(sourceFile)) {
       std::ofstream dest(destinationFile, std::ios::binary);
-      auto autoCleanupDestStream = utility::finally([&] {
-        dest.close();
-      });
+      auto autoCleanupDestStream = gsl::finally([&] { dest.close(); });
 
       if (dest.fail()) {
         // Likely a UAC issue since by default Notepad++ is installed under %PROGRAMFILES%. Try to execute copy command with administrator privilege.
@@ -501,9 +533,7 @@ namespace papyrus {
         }
       } else {
         std::ifstream source(sourceFile, std::ios::binary);
-        auto autoCleanupSourceStream = utility::finally([&] {
-          source.close();
-        });
+        auto autoCleanupSourceStream = gsl::finally([&] { source.close(); });
 
         if (!source.fail()) {
           dest << source.rdbuf();
@@ -547,12 +577,12 @@ namespace papyrus {
     }
   }
 
-  void Plugin::addAutoCompletion() {
+  void Plugin::installAutoCompletion() {
     // Get Notepad++'s plugin home path
     npp_size_t homePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, 0, 0));
     if (homePathLength > 0) {
       wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
-      auto autoCleanupHomePath = utility::finally([&] { delete[] homePathCharArray; });
+      auto autoCleanupHomePath = gsl::finally([&] { delete[] homePathCharArray; });
       ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, homePathLength + 1, reinterpret_cast<LPARAM>(homePathCharArray));
       std::wstring pluginHomePath(homePathCharArray);
 
@@ -568,12 +598,12 @@ namespace papyrus {
     }
   }
 
-  void Plugin::addFunctionList() {
+  void Plugin::installFunctionList() {
     // Get Notepad++'s plugin home path
     npp_size_t homePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, 0, 0));
     if (homePathLength > 0) {
       wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
-      auto autoCleanupHomePath = utility::finally([&] { delete[] homePathCharArray; });
+      auto autoCleanupHomePath = gsl::finally([&] { delete[] homePathCharArray; });
       ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, homePathLength + 1, reinterpret_cast<LPARAM>(homePathCharArray));
       std::wstring pluginHomePath(homePathCharArray);
 
@@ -581,7 +611,7 @@ namespace papyrus {
       npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
       if (configPathLength > 0) {
         wchar_t* configPathCharArray = new wchar_t[configPathLength + 1];
-        auto autoCleanupConfigPath = utility::finally([&] { delete[] configPathCharArray; });
+        auto autoCleanupConfigPath = gsl::finally([&] { delete[] configPathCharArray; });
         ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, configPathLength + 1, reinterpret_cast<LPARAM>(configPathCharArray));
         std::wstring configPath(configPathCharArray);
         std::string functionListConfigFileName = std::string(Lexer::name()) + ".xml";

@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SettingsDialog.hpp"
 
 #include "..\Common\EnumUtil.hpp"
-#include "..\Common\FinalAction.hpp"
 #include "..\Common\Resources.hpp"
 #include "..\Common\Utility.hpp"
 
+#include "..\..\external\gsl\include\gsl\util"
 #include "..\..\external\npp\PluginInterface.h"
 
 #include <sstream>
@@ -67,9 +67,7 @@ namespace papyrus {
   }
 
   SettingsDialog::~SettingsDialog() {
-    annotationFgColorPicker.destroy();
-    annotationBgColorPicker.destroy();
-    indicatorFgColorPicker.destroy();
+    cleanup();
   }
 
   // Protected methods
@@ -78,19 +76,23 @@ namespace papyrus {
   void SettingsDialog::initControls() {
     // Lexer settings
     //
-    setChecked(IDC_SETTINGS_LEXER_FOLDMIDDLE, settings.lexerSettings.enableFoldMiddle);
-    setChecked(IDC_SETTINGS_LEXER_CLASSNAMECACHING, settings.lexerSettings.enableClassNameCache);
+    setChecked(IDC_SETTINGS_LEXER_FOLD_MIDDLE, settings.lexerSettings.enableFoldMiddle);
+    setChecked(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, settings.lexerSettings.enableClassNameCache);
+
+    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK, settings.lexerSettings.enableClassLink);
+    initColorPicker(classLinkFgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL);
+    classLinkFgColorPicker.setColour(settings.lexerSettings.classLinkForegroundColor);
+    initColorPicker(classLinkBgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL);
+    classLinkBgColorPicker.setColour(settings.lexerSettings.classLinkBackgroundColor);
+    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, settings.lexerSettings.classLinkUnderline);
 
     // Error annotator settings
     //
     setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, settings.errorAnnotatorSettings.enableAnnotation);
-
     initColorPicker(annotationFgColorPicker, IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL);
     annotationFgColorPicker.setColour(settings.errorAnnotatorSettings.annotationForegroundColor);
-
     initColorPicker(annotationBgColorPicker, IDC_SETTINGS_ANNOTATOR_ANNOTATION_BGCOLOR_LABEL);
     annotationBgColorPicker.setColour(settings.errorAnnotatorSettings.annotationBackgroundColor);
-
     setChecked(IDC_SETTINGS_ANNOTATOR_ANNOTATION_ITALIC, settings.errorAnnotatorSettings.isAnnotationItalic);
     setChecked(IDC_SETTINGS_ANNOTATOR_ANNOTATION_BOLD, settings.errorAnnotatorSettings.isAnnotationBold);
     setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
@@ -150,7 +152,7 @@ namespace papyrus {
 
     for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
       auto game = static_cast<Game>(i);
-      auto gameSettings = settings.compilerSettings.gameSettings(game);
+      const CompilerSettings::GameSettings& gameSettings = settings.compilerSettings.gameSettings(game);
       if (gameSettings.enabled) {
         addGameTab(game);
       }
@@ -164,8 +166,19 @@ namespace papyrus {
     if (HIWORD(wParam) == BN_CLICKED) {
       // Only controls that would trigger live update are checked here
       switch (LOWORD(wParam)) {
-        case IDC_SETTINGS_LEXER_FOLDMIDDLE: {
-          settings.lexerSettings.enableFoldMiddle = getChecked(IDC_SETTINGS_LEXER_FOLDMIDDLE);
+        case IDC_SETTINGS_LEXER_FOLD_MIDDLE: {
+          settings.lexerSettings.enableFoldMiddle = getChecked(IDC_SETTINGS_LEXER_FOLD_MIDDLE);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_LEXER_CLASS_LINK: {
+          settings.lexerSettings.enableClassLink = getChecked(IDC_SETTINGS_LEXER_CLASS_LINK);
+          enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE: {
+          settings.lexerSettings.classLinkUnderline = getChecked(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE);
           return FALSE;
         }
 
@@ -223,7 +236,11 @@ namespace papyrus {
 
         default: {
           HWND window = reinterpret_cast<HWND>(lParam);
-          if (window == annotationFgColorPicker.getHSelf()) {
+          if (window == classLinkFgColorPicker.getHSelf()) {
+            settings.lexerSettings.classLinkForegroundColor = classLinkFgColorPicker.getColour();
+          } else if (window == classLinkBgColorPicker.getHSelf()) {
+            settings.lexerSettings.classLinkBackgroundColor = classLinkBgColorPicker.getColour();
+          } else if (window == annotationFgColorPicker.getHSelf()) {
             settings.errorAnnotatorSettings.annotationForegroundColor = annotationFgColorPicker.getColour();
           } else if (window == annotationBgColorPicker.getHSelf()) {
             settings.errorAnnotatorSettings.annotationBackgroundColor = annotationBgColorPicker.getColour();
@@ -268,15 +285,7 @@ namespace papyrus {
 
   INT_PTR SettingsDialog::handleCloseMessage(WPARAM wParam, LPARAM lParam) {
     if (saveSettings()) {
-      annotationFgColorPicker.destroy();
-      annotationBgColorPicker.destroy();
-      indicatorFgColorPicker.destroy();
-      if (indicatorIdTooltip) {
-        ::DestroyWindow(indicatorIdTooltip);
-      }
-      if (autoModeTooltip) {
-        ::DestroyWindow(autoModeTooltip);
-      }
+      cleanup();
       ::EndDialog(getHSelf(), IDOK);
     }
 
@@ -285,6 +294,22 @@ namespace papyrus {
 
   // Private methods
   //
+
+  void SettingsDialog::cleanup() {
+    classLinkFgColorPicker.destroy();
+    classLinkBgColorPicker.destroy();
+    annotationFgColorPicker.destroy();
+    annotationBgColorPicker.destroy();
+    indicatorFgColorPicker.destroy();
+    if (indicatorIdTooltip) {
+      ::DestroyWindow(indicatorIdTooltip);
+      indicatorIdTooltip = nullptr;
+    }
+    if (autoModeTooltip) {
+      ::DestroyWindow(autoModeTooltip);
+      autoModeTooltip = nullptr;
+    }
+  }
 
   void SettingsDialog::switchTab(Tab newTab) {
     if (newTab != currentTab) {
@@ -298,9 +323,18 @@ namespace papyrus {
     int showCommand = show ? SW_SHOW : SW_HIDE;
     switch (tab) {
       case Tab::Lexer: {
+        if (show) {
+          enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
+        }
         setControlVisibility(IDC_SETTINGS_LEXER_SCRIPT_GROUP, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_FOLDMIDDLE, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASSNAMECACHING, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_FOLD_MIDDLE, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, show);
+        classLinkFgColorPicker.display(show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL, show);
+        classLinkBgColorPicker.display(show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, show);
         break;
       }
 
@@ -395,6 +429,15 @@ namespace papyrus {
 
   void SettingsDialog::enableGroup(Group group, bool enabled) const {
     switch (group) {
+      case Group::ClassLink: {
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, enabled);
+        ::EnableWindow(classLinkFgColorPicker.getHSelf(), enabled);
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL, enabled);
+        ::EnableWindow(classLinkBgColorPicker.getHSelf(), enabled);
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, enabled);
+        break;
+      }
+
       case Group::Annotation: {
         setControlEnabled(IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL, enabled);
         ::EnableWindow(annotationFgColorPicker.getHSelf(), enabled);
@@ -452,7 +495,7 @@ namespace papyrus {
       int count = utility::underlying(tab) - utility::underlying(Tab::GameBase) + 1;
       for (int i = static_cast<int>(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
         auto game = static_cast<Game>(i);
-        auto gameSettings = settings.compilerSettings.gameSettings(game);
+        const CompilerSettings::GameSettings& gameSettings = settings.compilerSettings.gameSettings(game);
         if (gameSettings.enabled && --count == 0) {
           return game;
         }
@@ -468,7 +511,7 @@ namespace papyrus {
 
     int count = 0;
     for (int i = utility::underlying(Game::Auto) + 1; i <= utility::underlying(game); i++) {
-      auto gameSettings = settings.compilerSettings.gameSettings(static_cast<Game>(i));
+      const CompilerSettings::GameSettings& gameSettings = settings.compilerSettings.gameSettings(static_cast<Game>(i));
       if (gameSettings.enabled) {
         count++;
       }
@@ -523,7 +566,7 @@ namespace papyrus {
     auto dropdown = getControl(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN);
     int length = ::GetWindowTextLength(dropdown);
     wchar_t* currentSelection = new wchar_t[length + 1];
-    auto autoCleanup = utility::finally([&] { delete[] currentSelection; });
+    auto autoCleanup = gsl::finally([&] { delete[] currentSelection; });
     ::GetWindowText(dropdown, currentSelection, length + 1);
 
     // Clear and re-populate default game dropdown list
@@ -618,7 +661,7 @@ namespace papyrus {
 
     settings.errorAnnotatorSettings.indicatorID = indicatorID;
 
-    settings.lexerSettings.enableClassNameCache = getChecked(IDC_SETTINGS_LEXER_CLASSNAMECACHING);
+    settings.lexerSettings.enableClassNameCache = getChecked(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
     settings.compilerSettings.allowUnmanagedSource = getChecked(IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE);
     settings.compilerSettings.autoModeOutputDirectory = getText(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT);
     settings.compilerSettings.autoModeDefaultGame = game::games[getText(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN)];

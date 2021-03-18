@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 // Errors window resources
-#define IDD_ERRORS_WINDOW                                 17000 // Start at a big number to avoid potential conflict with included NPP classes' resource usage
+#define IDD_ERRORS_WINDOW                                 17000 // Base #
 #define IDC_ERRORS_LIST                                   (IDD_ERRORS_WINDOW + 1)
 
 
@@ -83,8 +83,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define IDC_SETTINGS_TAB_LEXER                            (IDD_SETTINGS_DIALOG + 100)
 #define IDC_SETTINGS_LEXER_SCRIPT_GROUP                   (IDC_SETTINGS_TAB_LEXER + 1)
-#define IDC_SETTINGS_LEXER_FOLDMIDDLE                     (IDC_SETTINGS_TAB_LEXER + 2)
-#define IDC_SETTINGS_LEXER_CLASSNAMECACHING               (IDC_SETTINGS_TAB_LEXER + 3)
+#define IDC_SETTINGS_LEXER_FOLD_MIDDLE                    (IDC_SETTINGS_TAB_LEXER + 2)
+#define IDC_SETTINGS_LEXER_CLASS_NAME_CACHING             (IDC_SETTINGS_TAB_LEXER + 3)
+#define IDC_SETTINGS_LEXER_CLASS_LINK                     (IDC_SETTINGS_TAB_LEXER + 4)
+#define IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL       (IDC_SETTINGS_TAB_LEXER + 5)
+#define IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL       (IDC_SETTINGS_TAB_LEXER + 6)
+#define IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE           (IDC_SETTINGS_TAB_LEXER + 7)
 
 #define IDC_SETTINGS_TAB_ERROR_ANNOTATOR                  (IDD_SETTINGS_DIALOG + 200)
 #define IDC_SETTINGS_ANNOTATOR_ANNOTATION_GROUP           (IDC_SETTINGS_TAB_ERROR_ANNOTATOR + 1)

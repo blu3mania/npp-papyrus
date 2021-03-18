@@ -74,8 +74,8 @@ namespace papyrus {
 
       enum class AdvancedMenu {
         ShowLangID,
-        AddAutoCompletion,
-        AddFunctionList
+        InstallAutoCompletion,
+        InstallFunctionList
       };
 
       void initializeComponents();
@@ -85,6 +85,9 @@ namespace papyrus {
 
       // Notepad++ notification NPPN_BUFFERACTIVATED handler
       void handleBufferActivation(npp_buffer_t bufferID);
+
+      // Scintilla notification SCN_HOTSPOTCLICK handler
+      void handleHotspotClick(SCNotification* notification);
 
       // Handle setting changes
       void onSettingsUpdated();
@@ -107,15 +110,15 @@ namespace papyrus {
       // Copy source file to destination (possibly overwrite). May invoke shell command to execute if privilege
       // elevation is needed. In that case, "waitFor" will be used to determien how long the process is going
       // to wait for the execution. By default it only waits for up to 3 seconds.
-      bool copyFile(std::wstring sourceFile, std::wstring destinationFile, int waitFor = 3000);
+      bool copyFile(const std::wstring& sourceFile, const std::wstring& destinationFile, int waitFor = 3000);
 
       // Menu functions
       //
       void setupAdvancedMenu();
       static void advancedMenuFunc(); // Still need an empty func so NPP won't render the menu item as a separator
       void showLangID();
-      void addAutoCompletion();
-      void addFunctionList();
+      void installAutoCompletion();
+      void installFunctionList();
 
       static void compileMenuFunc();
       void compile();
@@ -151,6 +154,10 @@ namespace papyrus {
       npp_lang_type_t scriptLangID {0};
 
       AboutDialog aboutDialog;
+
+      bool isShuttingDown {false};
   };
 
 } // namespace
+
+extern papyrus::Plugin papyrusPlugin;

@@ -72,23 +72,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\dist\bin\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\dist\bin\x64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -173,12 +173,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Plugin\Common\EnumUtil.hpp" />
-    <ClInclude Include="Plugin\Common\FinalAction.hpp" />
     <ClInclude Include="Plugin\Common\Game.hpp" />
     <ClInclude Include="Plugin\Common\NotepadPlusPlus.hpp" />
     <ClInclude Include="Plugin\Common\PrimitiveTypeValueMonitor.hpp" />
     <ClInclude Include="Plugin\Common\Resources.hpp" />
     <ClInclude Include="Plugin\Common\Timer.hpp" />
+    <ClInclude Include="Plugin\Common\Topic.hpp" />
     <ClInclude Include="Plugin\Common\Utility.hpp" />
     <ClInclude Include="Plugin\Common\Version.hpp" />
     <ClInclude Include="Plugin\CompilationErrorHandling\Error.hpp" />
