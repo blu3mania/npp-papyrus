@@ -5,7 +5,8 @@
 ![C++](https://img.shields.io/badge/c++-blue.svg?&logo=c%2B%2B)
 ![Notepad++ Plugin](https://img.shields.io/badge/Notepad++-Plugin-blue.svg?&logo=notepad%2B%2B)
 
-![Build Status](https://github.com/blu3mania/PapyrusPlusPlus/workflows/Build/badge.svg?branch=master)
+![Build Status](https://github.com/blu3mania/npp-papyrus/workflows/Build/badge.svg?branch=main)
+![CodeQL Status](https://github.com/blu3mania/npp-papyrus/workflows/CodeQL/badge.svg?branch=main)
 ![Latest Release](https://img.shields.io/github/v/release/blu3mania/npp-papyrus)
 
 This plugin adds support of [Bethesda](https://bethesdagamestudios.com/)'s Papyrus scripting language to
@@ -117,9 +118,9 @@ for VS 2019 by running "code ." from src directory, so that environment needed b
 │   └── workflows - GitHub action workflows
 ├── dist - output folder, used by build script to create the release package
 │   └── extras - extra configuration files that can be used in Notepad++
-│   │   ├── autoCompletion - auto completion configuration file for Papyrus scripts
-│   │   ├── functionList - function list configuration file for Papyrus scripts
-│   │   └── userDefineLangs - user-defined Papyrus language instead of this plugin's lexer
+│       ├── autoCompletion - auto completion configuration file for Papyrus scripts
+│       ├── functionList - function list configuration file for Papyrus scripts
+│       └── userDefineLangs - user-defined Papyrus language instead of this plugin's lexer
 └── src - source codes
     ├── .vscode - configuration files for VS Code
     ├── external - source files from external projects (may be modified)
