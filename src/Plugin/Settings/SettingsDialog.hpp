@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\Common\Resources.hpp"
 #include "..\UI\DialogBase.hpp"
 
+#include "..\..\external\npp\URLCtrl.h"
+
 namespace papyrus {
 
   using Game = game::Game;
@@ -85,6 +87,8 @@ namespace papyrus {
 
       HWND indicatorIdTooltip {};
       HWND autoModeTooltip {};
+
+      URLCtrl stylerConfigLink;
 
       ColourPicker classLinkFgColorPicker;
       ColourPicker classLinkBgColorPicker;

@@ -76,7 +76,7 @@ namespace papyrus {
 
   INT_PTR AboutDialog::handleCommandMessage(WPARAM wParam, LPARAM lParam) {
     if (wParam == IDC_ABOUT_LIBRARY_NPP_LINK) {
-      //Special link for Notepad++'s ABout dialog. Send a message to activate that menu
+      // Special link for Notepad++'s About dialog. Send a message to activate that menu
       ::SendMessage(getHParent(), NPPM_MENUCOMMAND, 0, IDM_ABOUT);
     } else if (HIWORD(wParam) == BN_CLICKED) {
       switch (LOWORD(wParam)) {

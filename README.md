@@ -36,10 +36,10 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Lexer] Proper syntax highlighting with strings that contain double quote escapes.
 - [Lexer] Proper syntax highlighting with integers literals that start with minus sign.
 - [Lexer] Proper syntax highlighting with float literals that contain decimal point.
-- [Compiler] Only run compiler if active file is using Papyrus Script lexer (configurable behavior).
+- [Compiler] Only run compiler if active file is using Papyrus Script lexer. Configurable behavior, default on.
 
 ### Improvements
-- {Lexer] Upgrade to support Scintilla's ILexer5.
+- [Lexer] Upgrade to support Scintilla's ILexer5.
 - [Lexer] Support folding on properties. Original plugin likely omitted properties from folding since it could
   not exclude those that have definitions done in a single line.
 - [Lexer] Support "folding in code, middle" so that Else and ElseIf can be folded as well. Configurable
@@ -66,8 +66,8 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Compiler] Anonymize compiled .pex file. In case you are not aware, when you use PapyrusCompiler to compile
   any script your user account and machine name are stored inside the generated .pex file, so it's a big
   **privacy concern**.
-- [Annotator] Show annotation below error lines, and/or show indications where errors are (configurable
-  behavior).
+- [Annotator] Show annotation below error lines, and/or show indications where errors are. configurable
+  behavior, default on.
 - [Compiler] Skyrim SE and Fallout 4 support.
 - [Compiler] Auto detection of game/compiler settings to be used based on source script file location.
 - [Lexer] Syntax highlighting of function names.

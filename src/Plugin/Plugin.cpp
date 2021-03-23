@@ -51,9 +51,9 @@ namespace papyrus {
   // Internal static variables
   namespace {
     std::vector<LPCWSTR> advancedMenuItems {
-      L"Show langID",
-      L"Install auto completion support",
-      L"Install function list support"
+      L"Show langID...",
+      L"Install auto completion support...",
+      L"Install function list support..."
     };
   }
 

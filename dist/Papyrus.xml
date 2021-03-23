@@ -20,18 +20,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<NotepadPlus lexerConfigVersion="1">
+<NotepadPlus lexerConfigVersion="2">
     <Languages>
         <Language name="Papyrus Script" ext="psc" commentLine="; " commentStart=";/" commentEnd="/;">
-            <!-- Make sure you keep keyword names instre1, instre2, type 1 - type 7 unchanged -->
-            <Keywords name="instre1">( ) [ ] , = + - * / % . ! &gt; &lt; | &amp; as</Keywords>
+            <!-- Make sure you keep keyword names instre1, instre2, type1 - type7 unchanged -->
+            <Keywords name="instre1">( ) [ ] , = + - * / % . ! &gt; &lt; | &amp; as is</Keywords>
             <Keywords name="instre2">if else elseif endif while endwhile</Keywords>
             <Keywords name="type1">bool float int string</Keywords>
             <Keywords name="type2">scriptname extends import event endevent state endstate function endfunction global native property endproperty auto autoreadonly conditional hidden new return length</Keywords>
             <Keywords name="type3">none parent self true false</Keywords>
             <Keywords name="type4">if while function property event state</Keywords>
             <Keywords name="type5">else elseif</Keywords>
-            <Keywords name="type6">auto autoreadonly endevent endfunction endif endproperty endstate endwhile</Keywords>
+            <Keywords name="type6">endif endwhile endfunction native endproperty auto autoreadonly endevent endstate</Keywords>
         </Language>
     </Languages>
     <LexerStyles>

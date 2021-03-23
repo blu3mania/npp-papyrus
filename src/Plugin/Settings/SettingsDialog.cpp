@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SettingsDialog.hpp"
 
 #include "..\Common\EnumUtil.hpp"
+#include "..\Common\NotepadPlusPlus.hpp"
 #include "..\Common\Resources.hpp"
 #include "..\Common\Utility.hpp"
 
@@ -68,6 +69,7 @@ namespace papyrus {
 
   SettingsDialog::~SettingsDialog() {
     cleanup();
+    stylerConfigLink.destroy();
   }
 
   // Protected methods
@@ -80,11 +82,17 @@ namespace papyrus {
     setChecked(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, settings.lexerSettings.enableClassNameCache);
 
     setChecked(IDC_SETTINGS_LEXER_CLASS_LINK, settings.lexerSettings.enableClassLink);
+    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, settings.lexerSettings.classLinkUnderline);
     initColorPicker(classLinkFgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL);
     classLinkFgColorPicker.setColour(settings.lexerSettings.classLinkForegroundColor);
     initColorPicker(classLinkBgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL);
     classLinkBgColorPicker.setColour(settings.lexerSettings.classLinkBackgroundColor);
-    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, settings.lexerSettings.classLinkUnderline);
+    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, (settings.lexerSettings.classLinkClickModifier & SCMOD_SHIFT) != 0);
+    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, (settings.lexerSettings.classLinkClickModifier & SCMOD_CTRL) != 0);
+    setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, (settings.lexerSettings.classLinkClickModifier & SCMOD_ALT) != 0);
+
+    stylerConfigLink.init(getHinst(), getHSelf());
+    stylerConfigLink.create(getControl(IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK), IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK);
 
     // Error annotator settings
     //
@@ -98,7 +106,7 @@ namespace papyrus {
     setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
 
     indicatorIdTooltip = createToolTip(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL,
-      L"Choose a number between 9 and 31. Keep in mind other plugins may use indiator IDs as well, "
+      L"Choose a number between 9 and 20. Keep in mind other plugins may use indiator IDs as well, "
       L"e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number.\r\n"
       L"Note, if changes have been made after indications were shown, changing ID again may cause "
       L"indications to be rendered incorrectly. Trigger recompilation to fix them if needed."
@@ -163,7 +171,10 @@ namespace papyrus {
   }
 
   INT_PTR SettingsDialog::handleCommandMessage(WPARAM wParam, LPARAM lParam) {
-    if (HIWORD(wParam) == BN_CLICKED) {
+    if (wParam == IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK) {
+      // Special link for Notepad++'s Style Configurator dialog. Send a message to activate that menu
+      ::SendMessage(getHParent(), NPPM_MENUCOMMAND, 0, IDM_LANGSTYLE_CONFIG_DLG);
+    } else if (HIWORD(wParam) == BN_CLICKED) {
       // Only controls that would trigger live update are checked here
       switch (LOWORD(wParam)) {
         case IDC_SETTINGS_LEXER_FOLD_MIDDLE: {
@@ -330,11 +341,18 @@ namespace papyrus {
         setControlVisibility(IDC_SETTINGS_LEXER_FOLD_MIDDLE, show);
         setControlVisibility(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, show);
         setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, show);
         setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, show);
         classLinkFgColorPicker.display(show);
         setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL, show);
         classLinkBgColorPicker.display(show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_LABEL, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_STYLER_CONFIG_TEXT1, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_STYLER_CONFIG_TEXT2, show);
+        setControlVisibility(IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK, show);
         break;
       }
 
@@ -430,11 +448,15 @@ namespace papyrus {
   void SettingsDialog::enableGroup(Group group, bool enabled) const {
     switch (group) {
       case Group::ClassLink: {
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, enabled);
         setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, enabled);
         ::EnableWindow(classLinkFgColorPicker.getHSelf(), enabled);
         setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL, enabled);
         ::EnableWindow(classLinkBgColorPicker.getHSelf(), enabled);
-        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, enabled);
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_LABEL, enabled);
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, enabled);
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, enabled);
+        setControlEnabled(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, enabled);
         break;
       }
 
@@ -649,19 +671,24 @@ namespace papyrus {
   bool SettingsDialog::saveSettings() {
     std::wstring indicatorIDStr = getText(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
     if (!utility::isNumber(indicatorIDStr)) {
-      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 31", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
       return false;
     }
     int indicatorID {};
     std::wistringstream(indicatorIDStr) >> indicatorID;
-    if (indicatorID < 9 || indicatorID > 31) {
-      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 31", L"Invalid setting", MB_OK);
+    if (indicatorID < 9 || indicatorID > 20) {
+      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_OK);
       return false;
     }
 
     settings.errorAnnotatorSettings.indicatorID = indicatorID;
 
     settings.lexerSettings.enableClassNameCache = getChecked(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
+    settings.lexerSettings.classLinkClickModifier = SCMOD_NORM
+      | (getChecked(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT) ? SCMOD_SHIFT : SCMOD_NORM)
+      | (getChecked(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL) ? SCMOD_CTRL : SCMOD_NORM)
+      | (getChecked(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT) ? SCMOD_ALT : SCMOD_NORM);
+
     settings.compilerSettings.allowUnmanagedSource = getChecked(IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE);
     settings.compilerSettings.autoModeOutputDirectory = getText(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT);
     settings.compilerSettings.autoModeDefaultGame = game::games[getText(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN)];

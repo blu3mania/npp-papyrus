@@ -23,6 +23,19 @@ the new class name may not be dynamically recognized, if the name has already be
 "not a class name". When this happens, simply disable the option to force the lexer to re-check for class
 names. Afterwards the option can be enabled again.
 
+### Class names as links
+Since classes reference other script files, it would be convenient to be able to open those files without
+going through open file dialog. By enabling this feature, every class name is shown as a link. When hovering
+over, the style will change to the configured style. By default, the link is shown as underlined, with
+blue foreground and white background (kind of a web standard). It requires double click to activate while
+single click can still move cursor to the word without triggering the activation. If needed, both the
+behavior of requiring double click and a keyboard modifier can be configured in Papyrus.ini. Be warned,
+single click behavior usually causes large amount of text gets selected in the newly opened file window.
+
+### Papyrus Script Lexer styles
+These styles can be configured from Notepad++'s Style Configurator dialog under Settings menu. A convenient
+link is provided.
+
 ## Error Annotator tab
 When Papyrus compiler reports compilation errors, original plugin can show the list of errors in a window,
 where user can click on a row to jump to the error line of that file. In addition to this behavior, this
@@ -39,7 +52,7 @@ operator where error is, similar to what a spell checker does. There are many st
 
 Usually the default indicator ID won't conflict with other plugins. However, there is no guarantee that
 will never happen, so this plugin allows you to choose a different indicator if there is a conflict. The
-valid numbers are between 9 and 31. Keep in mind other plugins may use indicator IDs as well, for example,
+valid numbers are between 9 and 20. Keep in mind other plugins may use indicator IDs as well, for example,
 DSpellCheck uses 19. Make sure you **do not** touch it if everything works fine.
 
 *Note*, after changing it, existing indications may be rendered incorrectly if edits have been made. You

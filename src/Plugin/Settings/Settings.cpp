@@ -135,7 +135,7 @@ namespace papyrus {
     if (storage.getString(L"lexer.classLinkClickModifier", value)) {
       lexerSettings.classLinkClickModifier = std::stoi(value);
     } else {
-      lexerSettings.classLinkClickModifier = SCMOD_NORM;
+      lexerSettings.classLinkClickModifier = SCMOD_CTRL;
       updated = true;
     }
 
@@ -214,7 +214,7 @@ namespace papyrus {
     auto [sseConfigured, sseSettingsUpdated] = readGameSettings(storage, Game::SkyrimSE, compilerSettings.sse, defaultSseImportDirectories, L"TESV_Papyrus_Flags.flg");
     updated = updated || sseSettingsUpdated;
 
-    const std::vector<const wchar_t*>  defaultFo4ImportDirectories { L"Data\\Scripts\\Source\\User", L"Data\\Scripts\\Source\\Base" };
+    const std::vector<const wchar_t*>  defaultFo4ImportDirectories { L"Data\\Scripts\\Source\\User", L"Data\\Scripts\\Source\\Base", L"Data\\Scripts\\Source" };
     auto [fo4Configured, fo4SettingsUpdated] = readGameSettings(storage, Game::Fallout4, compilerSettings.fo4, defaultFo4ImportDirectories, L"Institute_Papyrus_Flags.flg");
     updated = updated || fo4SettingsUpdated;
 

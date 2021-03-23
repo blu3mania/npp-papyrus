@@ -32,8 +32,10 @@ using npp_position_t  = intptr_t;
 // These definitions are copied from Notepad++'s menuCmdID.h.
 // They are unlikely to change but make sure they are checked and updated as needed
 // with each new Notepad++ releases.
-#define IDM           40000
-#define IDM_ABOUT    (IDM  + 7000)
+#define IDM                       40000
+#define IDM_LANG                  (IDM + 6000)
+#define IDM_LANGSTYLE_CONFIG_DLG  (IDM_LANG + 1)
+#define IDM_ABOUT                 (IDM  + 7000)
 
 // These definitions are copied from Notepad++'s Parameters.h.
 // They are unlikely to change but make sure they are checked and updated as needed
