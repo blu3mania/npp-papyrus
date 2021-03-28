@@ -36,6 +36,8 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Lexer] Proper syntax highlighting with strings that contain double quote escapes.
 - [Lexer] Proper syntax highlighting with integers literals that start with minus sign.
 - [Lexer] Proper syntax highlighting with float literals that contain decimal point.
+- [Lexer] Word "property" in comments is now correctly excluded from property handling.
+- [Lexer] White spaces are now styled correctly.
 - [Compiler] Only run compiler if active file is using Papyrus Script lexer. Configurable behavior, default on.
 
 ### Improvements

@@ -97,30 +97,6 @@ namespace papyrus {
         for (auto iterTokens = tokens.begin(); iterTokens != tokens.end(); iterTokens++) {
           std::string tokenString = (*iterTokens).content;
 
-             // Check if a new property needs to be added
-          if (tokenString == "property" && std::next(iterTokens) != tokens.end() && !isComment(accessor.StyleAt((*iterTokens).startPos)) && !isComment(accessor.StyleAt((*std::next(iterTokens)).startPos))) {
-            bool found = false;
-            for (auto iterProperties = propertyLines.begin(); iterProperties != propertyLines.end(); iterProperties++) {
-              if ((*iterProperties).line == line) {
-                found = true;
-                break;
-              }
-            }
-
-            if (!found) {
-              Property property {
-                .name = (*std::next(iterTokens)).content,
-                .line = line
-              };
-              propertyLines.push_back(property);
-              propertyNames.insert(property.name);
-
-              // Always style "property" keyword as KEYWORD
-              colorToken(styleContext, *iterTokens, State::Keyword);
-              continue;
-            }
-          }
-
           if (messageState == State::CommentDoc) {
             colorToken(styleContext, *iterTokens, State::CommentDoc);
             if (tokenString == "}") {
@@ -177,6 +153,26 @@ namespace papyrus {
               } else if (wordListFlowControl.InList(tokenString.c_str())) {
                 colorToken(styleContext, *iterTokens, State::FlowControl);
               } else if (wordListKeywords.InList(tokenString.c_str())) {
+                // Check if a new property needs to be added
+                if (tokenString == "property" && std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content != ";") {
+                  bool found = false;
+                  for (auto iterProperties = propertyLines.begin(); iterProperties != propertyLines.end(); iterProperties++) {
+                    if ((*iterProperties).line == line) {
+                      found = true;
+                      break;
+                    }
+                  }
+
+                  if (!found) {
+                    Property property {
+                      .name = (*std::next(iterTokens)).content,
+                      .line = line
+                    };
+                    propertyLines.push_back(property);
+                    propertyNames.insert(property.name);
+                  }
+                }
+
                 colorToken(styleContext, *iterTokens, State::Keyword);
               } else if (wordListKeywords2.InList(tokenString.c_str())) {
                 colorToken(styleContext, *iterTokens, State::Keyword2);
@@ -372,6 +368,7 @@ namespace papyrus {
 
     styleContext.SetState(utility::underlying(state));
     styleContext.Forward(token.content.size());
+    styleContext.SetState(utility::underlying(State::Default));
   }
 
   int Lexer::getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const {
