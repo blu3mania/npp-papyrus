@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "CompilationErrorHandling\ErrorsWindow.hpp"
 #include "Compiler\Compiler.hpp"
 #include "Compiler\CompilerSettings.hpp"
+#include "KeywordMatcher\KeywordMatcher.hpp"
 #include "Settings\Settings.hpp"
 #include "Settings\SettingsDialog.hpp"
 #include "UI\AboutDialog.hpp"
@@ -89,12 +90,18 @@ namespace papyrus {
       // Scintilla notification SCN_HOTSPOTCLICK handler
       void handleHotspotClick(SCNotification* notification);
 
+      // Scintilla notification SCN_UPDATEUI handler, when selection updated
+      void handleSelectionChange(SCNotification* notification);
+
       // Handle setting changes
       void onSettingsUpdated();
       void updateLexerDataGameSettings(Game game, const CompilerSettings::GameSettings& gameSettings);
 
       // Find out langID assigned to Papyrus Script lexer
       void detectLangID();
+
+      // Check if current buffer on given Scintilla view is active and is managed by this plugin's lexer
+      bool isCurrentBufferManaged(HWND scintillaHandle);
 
       // Find out game type based on file path and settings
       std::pair<Game, bool> detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings);
@@ -152,6 +159,8 @@ namespace papyrus {
       std::unique_ptr<utility::Timer> jumpToErrorLineTimer;
 
       npp_lang_type_t scriptLangID {0};
+      
+      KeywordMatcher keywordMatcher;
 
       AboutDialog aboutDialog;
 

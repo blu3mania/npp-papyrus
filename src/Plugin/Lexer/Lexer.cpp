@@ -96,8 +96,8 @@ namespace papyrus {
         // Styling
         for (auto iterTokens = tokens.begin(); iterTokens != tokens.end(); iterTokens++) {
           std::string tokenString = (*iterTokens).content;
-          
-          // Check if a new property needs to be added
+
+             // Check if a new property needs to be added
           if (tokenString == "property" && std::next(iterTokens) != tokens.end() && !isComment(accessor.StyleAt((*iterTokens).startPos)) && !isComment(accessor.StyleAt((*std::next(iterTokens)).startPos))) {
             bool found = false;
             for (auto iterProperties = propertyLines.begin(); iterProperties != propertyLines.end(); iterProperties++) {
@@ -126,14 +126,14 @@ namespace papyrus {
             if (tokenString == "}") {
               messageState = State::Default;
             }
-          } else if(messageState == State::CommentMultiLine) {
+          } else if (messageState == State::CommentMultiLine) {
             colorToken(styleContext, *iterTokens, State::CommentMultiLine);
             if (tokenString == ";" && iterTokens != tokens.begin() && (*std::prev(iterTokens)).content == "/") {
               messageState = State::Default;
             }
-          } else if(messageState == State::Comment) {
+          } else if (messageState == State::Comment) {
             colorToken(styleContext, *iterTokens, State::Comment);
-          } else if(messageState == State::String) {
+          } else if (messageState == State::String) {
             colorToken(styleContext, *iterTokens, State::String);
             if (tokenString == "\"") {
               // This may be an escape for double quote. Check previous tokens
@@ -284,6 +284,11 @@ namespace papyrus {
     }
   }
 
+  bool Lexer::isComment(int style) {
+    State styleState = static_cast<State>(style);
+    return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
+  }
+
   // Protected methods
   //
 
@@ -319,7 +324,7 @@ namespace papyrus {
           .tokenType = TokenType::Identifier,
           .startPos = index
         };
-        while (isalnum(ch) || ch == '_') {
+        while (isalnum(ch) || ch == '_' || ch == ':') {
           token.content.push_back(tolower(ch));
           ch = getNextChar(accessor, index, indexNext);
         }
@@ -369,11 +374,6 @@ namespace papyrus {
     styleContext.Forward(token.content.size());
   }
 
-  bool Lexer::isComment(int style) const {
-    State styleState = static_cast<State>(style);
-    return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
-  }
-
   int Lexer::getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const {
     index = indexNext;
     if (accessor.Encoding() != EncodingType::eightBit) {
@@ -398,7 +398,8 @@ namespace papyrus {
       }
     });
 
-    lexerData->settings.enableClassLink.subscribe([&](auto eventData) {
+    LexerSettings& lexerSettings = const_cast<LexerSettings&>(lexerData->settings);
+    lexerSettings.enableClassLink.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
           ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_STYLESETHOTSPOT, utility::underlying(State::Class), eventData.newValue);
@@ -409,7 +410,7 @@ namespace papyrus {
       }
     });
 
-    lexerData->settings.classLinkForegroundColor.subscribe([&](auto eventData) {
+    lexerSettings.classLinkForegroundColor.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
           ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEFORE, true, eventData.newValue);
@@ -420,7 +421,7 @@ namespace papyrus {
       }
     });
 
-    lexerData->settings.classLinkBackgroundColor.subscribe([&](auto eventData) {
+    lexerSettings.classLinkBackgroundColor.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
           ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEBACK, true, eventData.newValue);
@@ -431,7 +432,7 @@ namespace papyrus {
       }
     });
 
-    lexerData->settings.classLinkUnderline.subscribe([&](auto eventData) {
+    lexerSettings.classLinkUnderline.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
           ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEUNDERLINE, eventData.newValue, 0);
@@ -446,9 +447,9 @@ namespace papyrus {
       handleHotspotClick(eventData.first, eventData.second);
     });
 
-    lexerData->settings.enableFoldMiddle.subscribe([&](auto eventData) { restyleDocument(); });
+    lexerSettings.enableFoldMiddle.subscribe([&](auto eventData) { restyleDocument(); });
 
-    lexerData->settings.enableClassNameCache.subscribe([&](auto eventData) { 
+    lexerSettings.enableClassNameCache.subscribe([&](auto eventData) { 
       if (!eventData.newValue) {
         classNames.clear();
         nonClassNames.clear();

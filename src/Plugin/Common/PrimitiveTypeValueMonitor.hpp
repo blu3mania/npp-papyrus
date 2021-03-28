@@ -48,8 +48,8 @@ namespace utility {
       const PrimitiveTypeValueMonitor& operator=(const T& newValue) {
         if (value != newValue) {
           event_data_t eventData {
-            std::exchange(value, newValue),
-            newValue
+            .oldValue = std::exchange(value, newValue),
+            .newValue = newValue
           };
           topic.publish(eventData);
         }

@@ -79,6 +79,9 @@ namespace papyrus {
       void SCI_METHOD Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
       void SCI_METHOD Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
 
+      // Utility method to check whether a style (from StyleContext) is a comment style defined by this lexer
+      static bool isComment(int style);
+
     protected:
       // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used
       bool isUsable() const override;
@@ -134,9 +137,6 @@ namespace papyrus {
 
       // Get next character (wide char supported)
       int getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const;
-
-      // If a style (from StyleContext) is a comment style defined by this lexer
-      bool isComment(int style) const;
 
       // Private members
       //

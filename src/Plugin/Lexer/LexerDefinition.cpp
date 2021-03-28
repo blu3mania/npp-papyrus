@@ -31,9 +31,10 @@ namespace papyrus {
     // From NPP's Parameters.h:
     // #define MAX_EXTERNAL_LEXER_NAME_LEN 16
     switch (index) {
-      case 0:
+      case 0: {
         strncpy_s(name, length, Lexer::name(), _TRUNCATE);
         break;
+      }
     }
   }
 
@@ -41,16 +42,18 @@ namespace papyrus {
     // From NPP's Parameters.h:
     // #define MAX_EXTERNAL_LEXER_DESC_LEN 32
     switch (index) {
-      case 0:
+      case 0: {
         wcsncpy_s(text, length, Lexer::statusText(), _TRUNCATE);
         break;
+      }
     }
   }
 
   LexerFactoryFunction SCI_METHOD GetLexerFactory(int index) {
     switch (index) {
-      case 0:
+      case 0: {
         return Lexer::factory;
+      }
     }
     return nullptr;
   }

@@ -27,6 +27,7 @@ https://community.notepad-plus-plus.org/category/5/plugin-development
 
 #include "Plugin.hpp"
 
+#include "Common\Logger.hpp"
 #include "Common\Utility.hpp"
 #include "Common\Version.hpp"
 #include "Compiler\CompilationRequest.hpp"
@@ -65,7 +66,7 @@ namespace papyrus {
       FuncItem{ L"Advanced", advancedMenuFunc, 0, false, nullptr },
       FuncItem{}, // Separator2
       FuncItem{ L"About...", aboutMenuFunc, 0, false, nullptr }
-    } {
+    }, keywordMatcher(settings.keywordMatcherSettings) {
   }
 
   void Plugin::onInit(HINSTANCE instance) {
@@ -98,9 +99,16 @@ namespace papyrus {
             break;
           }
 
+          case SCN_UPDATEUI: {
+            if (notification->updated & SC_UPDATE_SELECTION) {
+              handleSelectionChange(notification);
+            }
+            break;
+          }
+
           case SCN_MODIFIED: {
             if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-              // TODO
+              // TODO: update property lines
             }
             break;
           }
@@ -136,7 +144,7 @@ namespace papyrus {
 
   LRESULT Plugin::handleNppMessage(UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
-      case WM_COMMAND:
+      case WM_COMMAND: {
         // Menu command relayed by NPP
         UINT cmdId = static_cast<UINT>(wParam);
         if (cmdId >= advancedMenuBaseCmdID) {
@@ -152,9 +160,18 @@ namespace papyrus {
             case AdvancedMenu::InstallFunctionList:
               installFunctionList();
               break;
+
+            default: {
+              break;
+            }
           }
         }
         break;
+      }
+
+      default: {
+        break;
+      }
     }
     return TRUE;
   }
@@ -177,6 +194,7 @@ namespace papyrus {
       ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, configPathLength + 1, reinterpret_cast<LPARAM>(configPathCharArray));
       std::wstring configPath(configPathCharArray);
 
+      utility::logger.init(std::filesystem::path(configPath) / PLUGIN_NAME L".log");
       checkLexerConfigFile(configPath);
 
       // Load settings
@@ -291,7 +309,7 @@ namespace papyrus {
           // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
           isManagedBuffer = true;
 
-          // If not compiling current file, check its game type (if applicable)
+          // If not compiling current file, check its game type and update status message (if applicable)
           if (!isComplingCurrentFile && detectedGame != Game::Auto) {
             std::wstring gameSpecificStatus(L"[" + game::gameNames[utility::underlying(detectedGame)].second + L"] " + Lexer::statusText());
             ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
@@ -311,19 +329,17 @@ namespace papyrus {
   }
 
   void Plugin::handleHotspotClick(SCNotification* notification) {
-    if (lexerData) {
-      if ((notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick && notification->modifiers == lexerData->settings.classLinkClickModifier) {
-        // Make sure Papyrus script langID is detected
-        if (scriptLangID == 0) {
-          detectLangID();
-        }
+    if (lexerData
+      && (notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick
+      && notification->modifiers == lexerData->settings.classLinkClickModifier
+      && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
+      lexerData->clickEventData = std::make_pair(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position);
+    }
+  }
 
-        npp_lang_type_t currentFileLangID;
-        ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
-        if (currentFileLangID == scriptLangID) {
-          lexerData->clickEventData = std::make_pair(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position);
-        }
-      }
+  void Plugin::handleSelectionChange(SCNotification* notification) {
+    if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
+      keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
     }
   }
 
@@ -370,6 +386,23 @@ namespace papyrus {
         }
       }
     }
+  }
+
+  bool Plugin::isCurrentBufferManaged(HWND scintillaHandle) {
+    // Check if current view matches Scintilla handle
+    npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
+    if ((currentView == MAIN_VIEW && scintillaHandle != nppData._scintillaMainHandle) || (currentView == SUB_VIEW && scintillaHandle != nppData._scintillaSecondHandle)) {
+      return false;
+    }
+
+    // Make sure Papyrus script langID is detected
+    if (scriptLangID == 0) {
+      detectLangID();
+    }
+
+    npp_lang_type_t currentFileLangID;
+    ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
+    return (currentFileLangID == scriptLangID);
   }
 
   std::pair<Game, bool> Plugin::detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings) {

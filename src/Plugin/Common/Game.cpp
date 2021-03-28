@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\..\external\gsl\include\gsl\util"
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -52,6 +53,10 @@ namespace papyrus {
         case Game::Fallout4: {
           regKey = REGKEY_SOFTWARE(L"Bethesda Softworks\\Fallout4");
           break;
+        }
+
+        default: {
+          throw std::runtime_error("Should not get here");
         }
       }
 

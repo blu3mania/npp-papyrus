@@ -33,33 +33,37 @@ namespace papyrus {
   //
 
   INT_PTR CALLBACK DialogBase::run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) {
-    switch (message) {
-      case WM_INITDIALOG: {
-        goToCenter();
+    if (!initializing) {
+      switch (message) {
+        case WM_INITDIALOG: {
+          initializing = true;
+          goToCenter();
 
-        auto EnableDlgTheme = reinterpret_cast<ETDTProc>(::SendMessage(getHParent(), NPPM_GETENABLETHEMETEXTUREFUNC, 0, 0));
-        if (EnableDlgTheme != nullptr) {
-          EnableDlgTheme(getHSelf(), ETDT_ENABLETAB);
+          auto EnableDlgTheme = reinterpret_cast<ETDTProc>(::SendMessage(getHParent(), NPPM_GETENABLETHEMETEXTUREFUNC, 0, 0));
+          if (EnableDlgTheme != nullptr) {
+            EnableDlgTheme(getHSelf(), ETDT_ENABLETAB);
+          }
+
+          initControls();
+          initializing = false;
+          break;
         }
 
-        initControls();
-        break;
-      }
+        case WM_COMMAND: {
+          return handleCommandMessage(wParam, lParam);
+        }
 
-      case WM_COMMAND: {
-        return handleCommandMessage(wParam, lParam);
-      }
+        case WM_NOTIFY: {
+          return handleNotifyMessage(wParam, lParam);
+        }
 
-      case WM_NOTIFY: {
-        return handleNotifyMessage(wParam, lParam);
-      }
+        case WM_CLOSE: {
+          return handleCloseMessage(wParam, lParam);
+        }
 
-      case WM_CLOSE: {
-        return handleCloseMessage(wParam, lParam);
-      }
-
-      default: {
-        break;
+        default: {
+          break;
+        }
       }
     }
 
@@ -70,9 +74,13 @@ namespace papyrus {
     return ::GetDlgItem(getHSelf(), controlID);
   }
 
-  void DialogBase::initDropdownList(int controlID, const dropdown_options_t& options) const {
+  void DialogBase::initDropdownList(int controlID, const dropdown_options_t& options, int selectedIndex) const {
     for (const auto& option : options) {
       ::SendDlgItemMessage(getHSelf(), controlID, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(option));
+    }
+    if (selectedIndex >= 0) {
+      selectedIndex = min(selectedIndex, static_cast<int>(options.size() - 1));
+      setDropdownSelectedIndex(controlID, selectedIndex);
     }
   }
 
@@ -89,7 +97,7 @@ namespace papyrus {
     ::MoveWindow(colorPicker.getHSelf(), p.x + xOffset, p.y + yOffset, width, height, TRUE);
   }
 
-  HWND DialogBase::createToolTip(int controlID, std::wstring toolTip, int delayTime) const {
+  HWND DialogBase::createToolTip(int controlID, LPCWSTR toolTip, int delayTime) const {
     auto control = getControl(controlID);
     if (!control) {
       return nullptr;
@@ -107,7 +115,7 @@ namespace papyrus {
       .uFlags = TTF_IDISHWND | TTF_SUBCLASS,
       .hwnd = getHSelf(),
       .uId = reinterpret_cast<UINT_PTR>(control),
-      .lpszText = const_cast<LPWSTR>(toolTip.c_str())
+      .lpszText = const_cast<LPWSTR>(toolTip)
     };
     if (!::SendMessage(hwndToolTip, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&toolInfo))) {
       DestroyWindow(hwndToolTip);
@@ -130,6 +138,12 @@ namespace papyrus {
     ::GetWindowText(control, const_cast<LPWSTR>(content.c_str()), static_cast<int>(content.size()));
     content.pop_back(); // Remove trailing NULL
     return content;
+  }
+
+  LPCWSTR DialogBase::loadResourceString(int stringID) const {
+    LPCWSTR str;
+    ::LoadString(getHinst(), stringID, reinterpret_cast<LPWSTR>(&str), 0);
+    return str;
   }
 
 } // namespace

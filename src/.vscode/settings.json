@@ -46,11 +46,13 @@
       "regex": "cpp",
       "set": "cpp",
       "span": "cpp",
+      "span_ext": "cpp",
       "sstream": "cpp",
       "stdexcept": "cpp",
       "stop_token": "cpp",
       "streambuf": "cpp",
       "string": "cpp",
+      "string_span": "cpp"
       "system_error": "cpp",
       "thread": "cpp",
       "tuple": "cpp",

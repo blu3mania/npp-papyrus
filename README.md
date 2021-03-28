@@ -70,9 +70,11 @@ enhancements, and made to work with the latest Notepad++ release.
   behavior, default on.
 - [Compiler] Skyrim SE and Fallout 4 support.
 - [Compiler] Auto detection of game/compiler settings to be used based on source script file location.
+- [Lexer] Support of new Papyrus syntax/keywords of Fallout 4.
 - [Lexer] Syntax highlighting of function names.
 - [Lexer] Class names can be styled as links to open the script files. Configurable behavior, default on (with
   double click).
+- [Lexer] Highlight on matching keywords.
 - [Lexer] A new "Advanced" submenu with:
   - Show langID - can be used to find out internal langID assigned to Papyrus Script lexer, which is useful if
     you need to manually configure Notepad++'s functionList feature.
@@ -133,6 +135,7 @@ for VS 2019 by running "code ." from src directory, so that environment needed b
         ├── CompilationErrorHandling - show/annotate compilation errors
         ├── Compiler - invoke Papyrus compiler in a separate thread
         ├── Lexer - Papyrus script lexer that provides syntax highlighting
+        ├── KeywordMatcher - matching keywords highlighter
         ├── Settings - read/write Papyrus.ini and provide configuration support to other modules
         └── UI - other UI dialogs, such as About dialog
 ```

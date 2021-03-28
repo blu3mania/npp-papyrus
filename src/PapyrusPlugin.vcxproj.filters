@@ -16,90 +16,306 @@
     <Filter Include="External">
       <UniqueIdentifier>{4d3df1ce-f9fc-4635-afc9-5030dd19ffe1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="exports">
+    <Filter Include="External\GSL">
+      <UniqueIdentifier>{b8b80660-f726-4457-8025-d074dafb931b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Notepad++">
+      <UniqueIdentifier>{4b1737a4-b34d-479c-b904-56cb2b78fa6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Scintilla">
+      <UniqueIdentifier>{5df7bb62-4a0e-4c82-a780-738f3e47028f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\TinyXML">
+      <UniqueIdentifier>{f3c1be1f-0315-4d9b-adb5-5ad628efd7fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exports">
       <UniqueIdentifier>{252ac3d4-3227-4ff1-842c-470f6cd55a73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Config">
+    <Filter Include="Config Files">
       <UniqueIdentifier>{604915ca-b223-4905-8754-467ee7a31eb9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="papyrus++.hpp">
+    <ClInclude Include="Plugin\Common\EnumUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="settings.hpp">
+    <ClInclude Include="Plugin\Common\Game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="messages.hpp">
+    <ClInclude Include="Plugin\Common\Logger.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resources.hpp">
+    <ClInclude Include="Plugin\Common\NotepadPlusPlus.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="papyrusLexer.hpp">
+    <ClInclude Include="Plugin\Common\PrimitiveTypeValueMonitor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="plbridge.hpp">
+    <ClInclude Include="Plugin\Common\Resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windowErrors.hpp">
+    <ClInclude Include="Plugin\Common\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windowSettings.hpp">
+    <ClInclude Include="Plugin\Common\Topic.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Compiler.hpp">
+    <ClInclude Include="Plugin\Common\Utility.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Common\Version.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\CompilationErrorHandling\Error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\CompilationErrorHandling\ErrorAnnotator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\CompilationErrorHandling\ErrorAnnotatorSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\CompilationErrorHandling\ErrorsWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Compiler\CompilationRequest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Compiler\Compiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Compiler\CompilerMessages.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Compiler\CompilerSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Lexer\Lexer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Lexer\LexerData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Lexer\LexerIDs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Lexer\LexerSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Lexer\SimpleLexerBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\KeywordMatcher\KeywordMatcher.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\KeywordMatcher\KeywordMatcherSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Plugin.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Settings\Settings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Settings\SettingsDialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Settings\SettingsStorage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\UI\AboutDialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\UI\DialogBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="papyrus++.cpp">
+    <ClCompile Include="DllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="settings.cpp">
+    <ClCompile Include="External\Notepad++\ColourPicker.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
+    <ClCompile Include="External\Notepad++\ColourPopup.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
+    <ClCompile Include="External\Notepad++\Common.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
+    <ClCompile Include="External\Notepad++\StaticDialog.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
+    <ClCompile Include="External\Notepad++\URLCtrl.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
+    <ClCompile Include="external\scintilla\Accessor.cxx">
+      <Filter>External\Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="external\scintilla\PropSetSimple.cxx">
+      <Filter>External\Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="external\scintilla\WordList.cxx">
+      <Filter>External\Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="external\tinyxml2\tinyxml2.cpp">
+      <Filter>External\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Common\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="npp\StaticDialog.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="papyrusLexer.cpp">
+    <ClCompile Include="Plugin\Common\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scintilla\Accessor.cxx">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="scintilla\PropSetSimple.cxx">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="scintilla\WordList.cxx">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="plbridge.cpp">
+    <ClCompile Include="Plugin\Common\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowErrors.cpp">
+    <ClCompile Include="Plugin\Common\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowSettings.cpp">
+    <ClCompile Include="Plugin\Common\Version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Compiler.cpp">
+    <ClCompile Include="Plugin\CompilationErrorHandling\ErrorAnnotator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\CompilationErrorHandling\ErrorsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Compiler\Compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Compiler\CompilerSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Lexer\Lexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Lexer\LexerDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Lexer\SimpleLexerBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\KeywordMatcher\KeywordMatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\PluginDefinition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Settings\Settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Settings\SettingsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Settings\SettingsStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\UI\AboutDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\UI\DialogBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resources.rc">
+    <ResourceCompile Include="Plugin\Resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="exports.def">
-      <Filter>exports</Filter>
+    <None Include="Exports.def">
+      <Filter>Exports</Filter>
+    </None>
+    <None Include="external\gsl\include\gsl\assert">
+      <Filter>External\GSL</Filter>
+    </None>
+    <None Include="external\gsl\include\gsl\util">
+      <Filter>External\GSL</Filter>
+    </None>
+    <None Include="external\npp\ColourPicker.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\ColourPopup.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\ColourPopupResource.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\Common.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\Docking.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\DockingDlgInterface.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\dockingResource.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\Notepad_plus_msgs.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\PluginInterface.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\StaticDialog.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\URLCtrl.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\Utf8.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\Window.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\scintilla\Accessor.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\ILexer.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\LexAccessor.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\LexerModule.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\PropSetSimple.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\Sci_Position.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\SciLexer.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\Scintilla.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\StringCopy.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\StyleContext.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\scintilla\WordList.h">
+      <Filter>External\Scintilla</Filter>
+    </None>
+    <None Include="external\tinyxml2\tinyxml2.h">
+      <Filter>External\TinyXML</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Papyrus++.xml">
-      <Filter>Config</Filter>
+    <Xml Include="..\dist\Papyrus.xml">
+      <Filter>Config Files</Filter>
     </Xml>
   </ItemGroup>
 </Project>

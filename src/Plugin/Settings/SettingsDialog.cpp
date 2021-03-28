@@ -37,6 +37,7 @@ namespace papyrus {
   namespace {
     dropdown_options_t tabNames {
       L"Lexer",
+      L"Keyword Matcher",
       L"Error Annotator",
       L"Compiler"
     };
@@ -94,6 +95,30 @@ namespace papyrus {
     stylerConfigLink.init(getHinst(), getHSelf());
     stylerConfigLink.create(getControl(IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK), IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK);
 
+    // Keyword matcher settings
+    //
+    setChecked(IDC_SETTINGS_MATCHER, settings.keywordMatcherSettings.enableKeywordMatching);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_FUNCTION);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_STATE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_STATE);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_EVENT, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_EVENT);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_PROPERTY, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_PROPERTY);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_GROUP, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_GROUP);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_STRUCT, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_STRUCT);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_IF, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_IF);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_ELSE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_ELSE);
+    setChecked(IDC_SETTINGS_MATCHER_KEYWORD_WHILE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_WHILE);
+
+    matcherIndicatorIdTooltip = createToolTip(IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP);
+    setText(IDC_SETTINGS_MATCHER_INDICATOR_ID, std::to_wstring(settings.keywordMatcherSettings.indicatorID));
+
+    initDropdownList(IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, indicatorStyles, settings.keywordMatcherSettings.matchedIndicatorStyle);
+    initColorPicker(matchedIndicatorFgColorPicker, IDC_SETTINGS_MATCHER_MATCHED_FGCOLOR_LABEL);
+    matchedIndicatorFgColorPicker.setColour(settings.keywordMatcherSettings.matchedIndicatorForegroundColor);
+
+    initDropdownList(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_DROPDOWN, indicatorStyles, settings.keywordMatcherSettings.unmatchedIndicatorStyle);
+    initColorPicker(unmatchedIndicatorFgColorPicker, IDC_SETTINGS_MATCHER_UNMATCHED_FGCOLOR_LABEL);
+    unmatchedIndicatorFgColorPicker.setColour(settings.keywordMatcherSettings.unmatchedIndicatorForegroundColor);
+
     // Error annotator settings
     //
     setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, settings.errorAnnotatorSettings.enableAnnotation);
@@ -105,22 +130,12 @@ namespace papyrus {
     setChecked(IDC_SETTINGS_ANNOTATOR_ANNOTATION_BOLD, settings.errorAnnotatorSettings.isAnnotationBold);
     setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
 
-    indicatorIdTooltip = createToolTip(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL,
-      L"Choose a number between 9 and 20. Keep in mind other plugins may use indiator IDs as well, "
-      L"e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number.\r\n"
-      L"Note, if changes have been made after indications were shown, changing ID again may cause "
-      L"indications to be rendered incorrectly. Trigger recompilation to fix them if needed."
-    );
+    errorIndicatorIdTooltip = createToolTip(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP);
     setText(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, std::to_wstring(settings.errorAnnotatorSettings.indicatorID));
 
-    initDropdownList(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, indicatorStyles);
-    if (settings.errorAnnotatorSettings.indicatorStyle > INDIC_GRADIENTCENTRE) {
-      settings.errorAnnotatorSettings.indicatorStyle = INDIC_SQUIGGLEPIXMAP;
-    }
-    ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, CB_SETCURSEL, settings.errorAnnotatorSettings.indicatorStyle, 0);
-
-    initColorPicker(indicatorFgColorPicker, IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL);
-    indicatorFgColorPicker.setColour(settings.errorAnnotatorSettings.indicatorForegroundColor);
+    initDropdownList(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, indicatorStyles, settings.errorAnnotatorSettings.indicatorStyle);
+    initColorPicker(errorIndicatorFgColorPicker, IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL);
+    errorIndicatorFgColorPicker.setColour(settings.errorAnnotatorSettings.indicatorForegroundColor);
 
     // Compiler settings
     //
@@ -137,12 +152,7 @@ namespace papyrus {
       }
     }
 
-    autoModeTooltip = createToolTip(IDC_SETTINGS_COMPILER_RADIO_AUTO,
-      L"In this mode, Papyrus compiler to be used is determined by the path of source script file. "
-      L"If it's under a detected game's directory, that game's settings will be used. If not, default "
-      L"game's settings will be used, except that default output directory will be used instead of "
-      L"default game's."
-    );
+    autoModeTooltip = createToolTip(IDC_SETTINGS_COMPILER_RADIO_AUTO, IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP);
 
     // Set tab texts
     TCITEM item {
@@ -190,6 +200,35 @@ namespace papyrus {
 
         case IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE: {
           settings.lexerSettings.classLinkUnderline = getChecked(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_MATCHER: {
+          settings.keywordMatcherSettings.enableKeywordMatching = getChecked(IDC_SETTINGS_MATCHER);
+          enableGroup(Group::Matcher, settings.keywordMatcherSettings.enableKeywordMatching);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_MATCHER_KEYWORD_IF: {
+          // Enable/disable Else/ElseIf support based on If/EndIf support
+          bool allowIf = getChecked(IDC_SETTINGS_MATCHER_KEYWORD_IF);
+          setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_ELSE, allowIf);
+          if (!allowIf) {
+            setChecked(IDC_SETTINGS_MATCHER_KEYWORD_ELSE, false);
+          }
+
+          // Let it fall through to the next block
+        }
+
+        case IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION:
+        case IDC_SETTINGS_MATCHER_KEYWORD_STATE:
+        case IDC_SETTINGS_MATCHER_KEYWORD_EVENT:
+        case IDC_SETTINGS_MATCHER_KEYWORD_PROPERTY:
+        case IDC_SETTINGS_MATCHER_KEYWORD_GROUP:
+        case IDC_SETTINGS_MATCHER_KEYWORD_STRUCT:
+        case IDC_SETTINGS_MATCHER_KEYWORD_ELSE:
+        case IDC_SETTINGS_MATCHER_KEYWORD_WHILE: {
+          updateEnabledKeywords();
           return FALSE;
         }
 
@@ -251,24 +290,48 @@ namespace papyrus {
             settings.lexerSettings.classLinkForegroundColor = classLinkFgColorPicker.getColour();
           } else if (window == classLinkBgColorPicker.getHSelf()) {
             settings.lexerSettings.classLinkBackgroundColor = classLinkBgColorPicker.getColour();
+          } else if (window == matchedIndicatorFgColorPicker.getHSelf()) {
+            settings.keywordMatcherSettings.matchedIndicatorForegroundColor = matchedIndicatorFgColorPicker.getColour();
+          } else if (window == unmatchedIndicatorFgColorPicker.getHSelf()) {
+            settings.keywordMatcherSettings.unmatchedIndicatorForegroundColor = unmatchedIndicatorFgColorPicker.getColour();
           } else if (window == annotationFgColorPicker.getHSelf()) {
             settings.errorAnnotatorSettings.annotationForegroundColor = annotationFgColorPicker.getColour();
           } else if (window == annotationBgColorPicker.getHSelf()) {
             settings.errorAnnotatorSettings.annotationBackgroundColor = annotationBgColorPicker.getColour();
-          } else if (window == indicatorFgColorPicker.getHSelf()) {
-            settings.errorAnnotatorSettings.indicatorForegroundColor = indicatorFgColorPicker.getColour();
+          } else if (window == errorIndicatorFgColorPicker.getHSelf()) {
+            settings.errorAnnotatorSettings.indicatorForegroundColor = errorIndicatorFgColorPicker.getColour();
           }
           return FALSE;
         }
       }
     } else if (HIWORD(wParam) == CBN_SELCHANGE) {
       switch (LOWORD(wParam)) {
-        case IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN: {
-          auto selectedIndex = ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, CB_GETCURSEL, 0, 0);
+        case IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN: {
+          int selectedIndex = getDropdownSelectedIndex(IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN);
           if (selectedIndex != CB_ERR) {
-            settings.errorAnnotatorSettings.indicatorStyle = static_cast<int>(selectedIndex);
+            settings.keywordMatcherSettings.matchedIndicatorStyle = selectedIndex;
           }
           return FALSE;
+        }
+
+        case IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_DROPDOWN: {
+          int selectedIndex = getDropdownSelectedIndex(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_DROPDOWN);
+          if (selectedIndex != CB_ERR) {
+            settings.keywordMatcherSettings.unmatchedIndicatorStyle = selectedIndex;
+          }
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN: {
+          int selectedIndex = getDropdownSelectedIndex(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN);
+          if (selectedIndex != CB_ERR) {
+            settings.errorAnnotatorSettings.indicatorStyle = selectedIndex;
+          }
+          return FALSE;
+        }
+
+        default: {
+          break;
         }
       }
     }
@@ -309,12 +372,18 @@ namespace papyrus {
   void SettingsDialog::cleanup() {
     classLinkFgColorPicker.destroy();
     classLinkBgColorPicker.destroy();
+    matchedIndicatorFgColorPicker.destroy();
+    unmatchedIndicatorFgColorPicker.destroy();
     annotationFgColorPicker.destroy();
     annotationBgColorPicker.destroy();
-    indicatorFgColorPicker.destroy();
-    if (indicatorIdTooltip) {
-      ::DestroyWindow(indicatorIdTooltip);
-      indicatorIdTooltip = nullptr;
+    errorIndicatorFgColorPicker.destroy();
+    if (matcherIndicatorIdTooltip) {
+      ::DestroyWindow(matcherIndicatorIdTooltip);
+      matcherIndicatorIdTooltip = nullptr;
+    }
+    if (errorIndicatorIdTooltip) {
+      ::DestroyWindow(errorIndicatorIdTooltip);
+      errorIndicatorIdTooltip = nullptr;
     }
     if (autoModeTooltip) {
       ::DestroyWindow(autoModeTooltip);
@@ -356,6 +425,34 @@ namespace papyrus {
         break;
       }
 
+      case Tab::KeywordMatcher: {
+        if (show) {
+          enableGroup(Group::Matcher, settings.keywordMatcherSettings.enableKeywordMatching);
+        }
+        setControlVisibility(IDC_SETTINGS_MATCHER, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORDS_LABEL, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_STATE, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_EVENT, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_PROPERTY, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_GROUP, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_STRUCT, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_IF, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_ELSE, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_WHILE, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_INDICATOR_ID, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_MATCHED_STYLE_LABEL, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_MATCHED_FGCOLOR_LABEL, show);
+        matchedIndicatorFgColorPicker.display(show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_LABEL, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_DROPDOWN, show);
+        setControlVisibility(IDC_SETTINGS_MATCHER_UNMATCHED_FGCOLOR_LABEL, show);
+        unmatchedIndicatorFgColorPicker.display(show);
+        break;
+      }
+
       case Tab::ErrorAnnotator: {
         if (show) {
           enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
@@ -378,7 +475,7 @@ namespace papyrus {
         setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_LABEL, show);
         setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, show);
         setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL, show);
-        indicatorFgColorPicker.display(show);
+        errorIndicatorFgColorPicker.display(show);
         break;
       }
 
@@ -417,11 +514,7 @@ namespace papyrus {
 
           // Only handle current game tab settings after UI initialization
           if (!intializing) {
-            if (show) {
-              loadGameSettings(settings.compilerSettings.gameSettings(game), isFallout4);
-            } else {
-              saveGameSettings(settings.compilerSettings.gameSettings(game), isFallout4);
-            }
+            show ? loadGameSettings(settings.compilerSettings.gameSettings(game), isFallout4) : saveGameSettings(settings.compilerSettings.gameSettings(game), isFallout4);
           }
 
           setControlVisibility(IDC_SETTINGS_TAB_GAME_INSTALL_PATH_LABEL, show);
@@ -460,6 +553,30 @@ namespace papyrus {
         break;
       }
 
+      case Group::Matcher: {
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORDS_LABEL, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_STATE, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_EVENT, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_PROPERTY, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_GROUP, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_STRUCT, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_IF, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_ELSE, enabled && getChecked(IDC_SETTINGS_MATCHER_KEYWORD_IF));
+        setControlEnabled(IDC_SETTINGS_MATCHER_KEYWORD_WHILE, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_INDICATOR_ID, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_MATCHED_STYLE_LABEL, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_MATCHED_FGCOLOR_LABEL, enabled);
+        ::EnableWindow(matchedIndicatorFgColorPicker.getHSelf(), enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_LABEL, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_DROPDOWN, enabled);
+        setControlEnabled(IDC_SETTINGS_MATCHER_UNMATCHED_FGCOLOR_LABEL, enabled);
+        ::EnableWindow(unmatchedIndicatorFgColorPicker.getHSelf(), enabled);
+        break;
+      }
+
       case Group::Annotation: {
         setControlEnabled(IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL, enabled);
         ::EnableWindow(annotationFgColorPicker.getHSelf(), enabled);
@@ -476,7 +593,7 @@ namespace papyrus {
         setControlEnabled(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_LABEL, enabled);
         setControlEnabled(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, enabled);
         setControlEnabled(IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL, enabled);
-        ::EnableWindow(indicatorFgColorPicker.getHSelf(), enabled);
+        ::EnableWindow(errorIndicatorFgColorPicker.getHSelf(), enabled);
         break;
       }
 
@@ -509,7 +626,24 @@ namespace papyrus {
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_FO4_TOGGLE, enabled);
         break;
       }
+
+      default: {
+        break;
+      }
     }
+  }
+
+  void SettingsDialog::updateEnabledKeywords() const {
+    settings.keywordMatcherSettings.enabledKeywords =
+      (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION) ? KEYWORD_FUNCTION : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_STATE) ? KEYWORD_STATE : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_EVENT) ? KEYWORD_EVENT : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_PROPERTY) ? KEYWORD_PROPERTY : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_GROUP) ? KEYWORD_GROUP : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_STRUCT) ? KEYWORD_STRUCT : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_IF) ? KEYWORD_IF : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_ELSE) ? KEYWORD_ELSE : KEYWORD_NONE)
+      | (getChecked(IDC_SETTINGS_MATCHER_KEYWORD_WHILE) ? KEYWORD_WHILE : KEYWORD_NONE);
   }
 
   Game SettingsDialog::getGame(Tab tab) const {
@@ -669,19 +803,32 @@ namespace papyrus {
   }
 
   bool SettingsDialog::saveSettings() {
-    std::wstring indicatorIDStr = getText(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
-    if (!utility::isNumber(indicatorIDStr)) {
+    std::wstring errorIndicatorIDStr = getText(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
+    if (!utility::isNumber(errorIndicatorIDStr)) {
       ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
       return false;
     }
-    int indicatorID {};
-    std::wistringstream(indicatorIDStr) >> indicatorID;
-    if (indicatorID < 9 || indicatorID > 20) {
-      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_OK);
+    int errorIndicatorID {};
+    std::wistringstream(errorIndicatorIDStr) >> errorIndicatorID;
+    if (errorIndicatorID < 9 || errorIndicatorID > 20) {
+      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
       return false;
     }
 
-    settings.errorAnnotatorSettings.indicatorID = indicatorID;
+    std::wstring matcherIndicatorIDStr = getText(IDC_SETTINGS_MATCHER_INDICATOR_ID);
+    if (!utility::isNumber(matcherIndicatorIDStr)) {
+      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+      return false;
+    }
+    int matcherIndicatorID {};
+    std::wistringstream(matcherIndicatorIDStr) >> matcherIndicatorID;
+    if (matcherIndicatorID < 9 || matcherIndicatorID > 20) {
+      ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+      return false;
+    }
+
+    settings.errorAnnotatorSettings.indicatorID = errorIndicatorID;
+    settings.keywordMatcherSettings.indicatorID = matcherIndicatorID;
 
     settings.lexerSettings.enableClassNameCache = getChecked(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
     settings.lexerSettings.classLinkClickModifier = SCMOD_NORM

@@ -19,23 +19,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "..\Common\PrimitiveTypeValueMonitor.hpp"
-
+#include <fstream>
 #include <string>
 
-#include <windows.h>
+namespace utility {
 
-namespace papyrus {
+  class Logger {
+    public:
+      ~Logger();
 
-  struct LexerSettings {
-    utility::PrimitiveTypeValueMonitor<bool>     enableFoldMiddle;
-    utility::PrimitiveTypeValueMonitor<bool>     enableClassNameCache;
-    utility::PrimitiveTypeValueMonitor<bool>     enableClassLink;
-    utility::PrimitiveTypeValueMonitor<bool>     classLinkUnderline;
-    utility::PrimitiveTypeValueMonitor<COLORREF> classLinkForegroundColor;
-    utility::PrimitiveTypeValueMonitor<COLORREF> classLinkBackgroundColor;
-    utility::PrimitiveTypeValueMonitor<bool>     classLinkRequiresDoubleClick;
-    utility::PrimitiveTypeValueMonitor<int>      classLinkClickModifier;
+      void init(const std::wstring& filePath);
+      void log(const std::wstring& message);
+
+    private:
+#ifdef _DEBUG
+      std::wofstream logFile;
+#endif
   };
+
+  extern Logger logger;
 
 } // namespace

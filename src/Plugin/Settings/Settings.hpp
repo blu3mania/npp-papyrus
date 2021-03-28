@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\CompilationErrorHandling\ErrorAnnotatorSettings.hpp"
 #include "..\Compiler\CompilerSettings.hpp"
 #include "..\Lexer\LexerSettings.hpp"
+#include "..\KeywordMatcher\KeywordMatcherSettings.hpp"
 
 namespace papyrus {
 
@@ -34,6 +35,7 @@ namespace papyrus {
     CompilerSettings        compilerSettings;
     ErrorAnnotatorSettings  errorAnnotatorSettings;
     LexerSettings           lexerSettings;
+    KeywordMatcherSettings  keywordMatcherSettings;
 
     bool loadSettings(SettingsStorage& storage, utility::Version currentVersion);
     void saveSettings(SettingsStorage& storage);

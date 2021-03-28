@@ -53,6 +53,14 @@ namespace papyrus {
     storage.putString(L"lexer.classLinkRequiresDoubleClick", utility::boolToStr(lexerSettings.classLinkRequiresDoubleClick));
     storage.putString(L"lexer.classLinkClickModifier", std::to_wstring(lexerSettings.classLinkClickModifier));
 
+    storage.putString(L"keywordMatcher.enableKeywordMatching", utility::boolToStr(keywordMatcherSettings.enableKeywordMatching));
+    storage.putString(L"keywordMatcher.enabledKeywords", std::to_wstring(keywordMatcherSettings.enabledKeywords));
+    storage.putString(L"keywordMatcher.indicatorID", std::to_wstring(keywordMatcherSettings.indicatorID));
+    storage.putString(L"keywordMatcher.matchedIndicatorStyle", std::to_wstring(keywordMatcherSettings.matchedIndicatorStyle));
+    storage.putString(L"keywordMatcher.matchedIndicatorForegroundColor", utility::colorToHexStr(keywordMatcherSettings.matchedIndicatorForegroundColor));
+    storage.putString(L"keywordMatcher.unmatchedIndicatorStyle", std::to_wstring(keywordMatcherSettings.unmatchedIndicatorStyle));
+    storage.putString(L"keywordMatcher.unmatchedIndicatorForegroundColor", utility::colorToHexStr(keywordMatcherSettings.unmatchedIndicatorForegroundColor));
+
     storage.putString(L"errorAnnotator.enableAnnotation", utility::boolToStr(errorAnnotatorSettings.enableAnnotation));
     storage.putString(L"errorAnnotator.annotationForegroundColor", utility::colorToHexStr(errorAnnotatorSettings.annotationForegroundColor));
     storage.putString(L"errorAnnotator.annotationBackgroundColor", utility::colorToHexStr(errorAnnotatorSettings.annotationBackgroundColor));
@@ -139,6 +147,69 @@ namespace papyrus {
       updated = true;
     }
 
+    // Keyword matcher settings
+    //
+    if (storage.getString(L"keywordMatcher.enableKeywordMatching", value)) {
+      keywordMatcherSettings.enableKeywordMatching = utility::strToBool(value);
+    } else {
+      keywordMatcherSettings.enableKeywordMatching = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.enabledKeywords", value)) {
+      keywordMatcherSettings.enabledKeywords = std::stoi(value);
+    } else {
+      keywordMatcherSettings.enabledKeywords = KEYWORD_ALL;
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.indicatorID", value)) {
+      keywordMatcherSettings.indicatorID = std::stoi(value);
+      if (keywordMatcherSettings.indicatorID < 9 || keywordMatcherSettings.indicatorID > 20) {
+        keywordMatcherSettings.indicatorID = DEFAULT_MATCHER_INDICATOR;
+        updated = true;
+      }
+    } else {
+      keywordMatcherSettings.indicatorID = DEFAULT_MATCHER_INDICATOR;
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.matchedIndicatorStyle", value)) {
+      keywordMatcherSettings.matchedIndicatorStyle = std::stoi(value);
+      if (keywordMatcherSettings.matchedIndicatorStyle > INDIC_GRADIENTCENTRE) {
+        keywordMatcherSettings.matchedIndicatorStyle = INDIC_ROUNDBOX;
+        updated = true;
+      }
+    } else {
+      keywordMatcherSettings.matchedIndicatorStyle = INDIC_ROUNDBOX;
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.matchedIndicatorForegroundColor", value)) {
+      keywordMatcherSettings.matchedIndicatorForegroundColor = utility::hexStrToColor(value);
+    } else {
+      keywordMatcherSettings.matchedIndicatorForegroundColor = 0xFF0080; // BGR
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.unmatchedIndicatorStyle", value)) {
+      keywordMatcherSettings.unmatchedIndicatorStyle = std::stoi(value);
+      if (keywordMatcherSettings.unmatchedIndicatorStyle > INDIC_GRADIENTCENTRE) {
+        keywordMatcherSettings.unmatchedIndicatorStyle = INDIC_BOX;
+        updated = true;
+      }
+    } else {
+      keywordMatcherSettings.unmatchedIndicatorStyle = INDIC_BOX;
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.unmatchedIndicatorForegroundColor", value)) {
+      keywordMatcherSettings.unmatchedIndicatorForegroundColor = utility::hexStrToColor(value);
+    } else {
+      keywordMatcherSettings.unmatchedIndicatorForegroundColor = 0x0000FF; // BGR
+      updated = true;
+    }
+
     // Error annotator settings
     //
     if (storage.getString(L"errorAnnotator.enableAnnotation", value)) {
@@ -185,13 +256,21 @@ namespace papyrus {
 
     if (storage.getString(L"errorAnnotator.indicatorID", value)) {
       errorAnnotatorSettings.indicatorID = std::stoi(value);
+      if (errorAnnotatorSettings.indicatorID < 9 || errorAnnotatorSettings.indicatorID > 20) {
+        errorAnnotatorSettings.indicatorID = DEFAULT_ERROR_INDICATOR;
+        updated = true;
+      }
     } else {
-      errorAnnotatorSettings.indicatorID = DEFAULT_INDICATOR;
+      errorAnnotatorSettings.indicatorID = DEFAULT_ERROR_INDICATOR;
       updated = true;
     }
 
     if (storage.getString(L"errorAnnotator.indicatorStyle", value)) {
       errorAnnotatorSettings.indicatorStyle = std::stoi(value);
+      if (errorAnnotatorSettings.indicatorStyle > INDIC_GRADIENTCENTRE) {
+        errorAnnotatorSettings.indicatorStyle = INDIC_SQUIGGLEPIXMAP;
+        updated = true;
+      }
     } else {
       errorAnnotatorSettings.indicatorStyle = INDIC_SQUIGGLEPIXMAP;
       updated = true;

@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
+#define DEFAULT_ERROR_INDICATOR 18
+
 namespace papyrus {
 
   struct ErrorAnnotatorSettings {

@@ -44,6 +44,7 @@ namespace papyrus {
     private:
       enum class Tab {
         Lexer,
+        KeywordMatcher,
         ErrorAnnotator,
         Compiler,
         GameBase
@@ -51,6 +52,7 @@ namespace papyrus {
 
       enum class Group {
         ClassLink,
+        Matcher,
         Annotation,
         Indication,
         GameAuto,
@@ -65,6 +67,8 @@ namespace papyrus {
       void showTab(Tab tab, bool show, bool intializing = false) const;
 
       void enableGroup(Group group, bool enabled) const;
+
+      void updateEnabledKeywords() const;
 
       Game getGame(Tab tab) const;
       int getGameTab(Game game) const;
@@ -85,16 +89,19 @@ namespace papyrus {
       Settings& settings;
       Tab currentTab { Tab::Lexer };
 
-      HWND indicatorIdTooltip {};
+      HWND matcherIndicatorIdTooltip {};
+      HWND errorIndicatorIdTooltip {};
       HWND autoModeTooltip {};
 
       URLCtrl stylerConfigLink;
 
       ColourPicker classLinkFgColorPicker;
       ColourPicker classLinkBgColorPicker;
+      ColourPicker matchedIndicatorFgColorPicker;
+      ColourPicker unmatchedIndicatorFgColorPicker;
       ColourPicker annotationFgColorPicker;
       ColourPicker annotationBgColorPicker;
-      ColourPicker indicatorFgColorPicker;
+      ColourPicker errorIndicatorFgColorPicker;
   };
 
 } // namespace

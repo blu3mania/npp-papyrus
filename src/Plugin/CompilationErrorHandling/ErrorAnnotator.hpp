@@ -30,13 +30,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <string>
 
-#define DEFAULT_INDICATOR 18
-
 namespace papyrus {
 
   class ErrorAnnotator {
     public:
-      ErrorAnnotator(const NppData& nppData, ErrorAnnotatorSettings& settings);
+      ErrorAnnotator(const NppData& nppData, const ErrorAnnotatorSettings& settings);
       ~ErrorAnnotator();
 
       // Clear the whole map and all annotations/indications on both views
@@ -66,6 +64,7 @@ namespace papyrus {
 
       void clearAnnotations(HWND handle) const;
       void clearIndications(HWND handle) const;
+      void clearIndications(HWND handle, int indicator) const;
 
       void showAnnotations(HWND handle) const;
       void hideAnnotations(HWND handle) const;
@@ -78,10 +77,10 @@ namespace papyrus {
       void drawAnnotations(HWND handle, const LineError& lineError) const;
 
       // Change indiator ID.
-      // Scintilla reserves indicator 8-31 for containers. Notepad++ itself uses 8.
-      // By default 18 is used ny this plugin, but other plugins could cause conflicts,
-      // e.g. DSpellCheck uses 19.
-      void changeIndicator(int indicator);
+      // Scintilla reserves indicator 8-31 for containers. Notepad++ itself uses 8, and SciLexher.h defines most
+      // of IDs above 20, which NPP uses.
+      // By default 18 is used ny this plugin, but other plugins could cause conflicts, e.g. DSpellCheck uses 19.
+      void changeIndicator(int oldIndicator);
 
       void updateIndicatorStyle();
       void updateIndicatorStyle(HWND handle) const;
@@ -92,12 +91,11 @@ namespace papyrus {
       // Private members
       //
       const NppData& nppData;
-      ErrorAnnotatorSettings& settings;
+      const ErrorAnnotatorSettings& settings;
       std::map<std::wstring, FileErrors> errors;
 
       int mainViewStyleAssigned {0};
       int secondViewStyleAssigned {0};
-      int indicatorID {0};
   };
 
 } // namespace

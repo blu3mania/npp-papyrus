@@ -17,25 +17,43 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "Logger.hpp"
 
-#include "..\Common\PrimitiveTypeValueMonitor.hpp"
+#include "Utility.hpp"
 
-#include <string>
+#include "..\..\external\gsl\include\gsl\util"
 
-#include <windows.h>
+#include <fstream>
+#include <sstream>
 
-namespace papyrus {
+namespace utility {
 
-  struct LexerSettings {
-    utility::PrimitiveTypeValueMonitor<bool>     enableFoldMiddle;
-    utility::PrimitiveTypeValueMonitor<bool>     enableClassNameCache;
-    utility::PrimitiveTypeValueMonitor<bool>     enableClassLink;
-    utility::PrimitiveTypeValueMonitor<bool>     classLinkUnderline;
-    utility::PrimitiveTypeValueMonitor<COLORREF> classLinkForegroundColor;
-    utility::PrimitiveTypeValueMonitor<COLORREF> classLinkBackgroundColor;
-    utility::PrimitiveTypeValueMonitor<bool>     classLinkRequiresDoubleClick;
-    utility::PrimitiveTypeValueMonitor<int>      classLinkClickModifier;
-  };
+  Logger logger;
+
+  Logger::~Logger() {
+#ifdef _DEBUG
+    if (logFile.is_open()) {
+      logFile.close();
+    }
+#endif
+  }
+
+  void Logger::init(const std::wstring& filePath) {
+#ifdef _DEBUG
+  if (fileExists(filePath)) {
+    logFile.open(filePath, std::ios::out | std::ios::app);
+  } else {
+    logFile.open(filePath, std::ios::out);
+  }
+#endif
+  }
+
+  void Logger::log(const std::wstring& message) {
+#ifdef _DEBUG
+    if (logFile.is_open() && !logFile.fail()) {
+      logFile << message << std::endl;
+    }
+#endif
+  }
 
 } // namespace

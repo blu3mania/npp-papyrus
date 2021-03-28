@@ -107,6 +107,9 @@
       <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
+    <ResourceCompile>
+      <AdditionalOptions>/n</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -124,6 +127,9 @@
       <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
+    <ResourceCompile>
+      <AdditionalOptions>/n</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -147,6 +153,9 @@
       <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
+    <ResourceCompile>
+      <AdditionalOptions>/n</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -170,10 +179,14 @@
       <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
+    <ResourceCompile>
+      <AdditionalOptions>/n</AdditionalOptions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Plugin\Common\EnumUtil.hpp" />
     <ClInclude Include="Plugin\Common\Game.hpp" />
+    <ClInclude Include="Plugin\Common\Logger.hpp" />
     <ClInclude Include="Plugin\Common\NotepadPlusPlus.hpp" />
     <ClInclude Include="Plugin\Common\PrimitiveTypeValueMonitor.hpp" />
     <ClInclude Include="Plugin\Common\Resources.hpp" />
@@ -194,6 +207,8 @@
     <ClInclude Include="Plugin\Lexer\LexerIDs.hpp" />
     <ClInclude Include="Plugin\Lexer\LexerSettings.hpp" />
     <ClInclude Include="Plugin\Lexer\SimpleLexerBase.hpp" />
+    <ClInclude Include="Plugin\KeywordMatcher\KeywordMatcher.hpp" />
+    <ClInclude Include="Plugin\KeywordMatcher\KeywordMatcherSettings.hpp" />
     <ClInclude Include="Plugin\Plugin.hpp" />
     <ClInclude Include="Plugin\Settings\Settings.hpp" />
     <ClInclude Include="Plugin\Settings\SettingsDialog.hpp" />
@@ -213,6 +228,7 @@
     <ClCompile Include="external\scintilla\WordList.cxx" />
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Plugin\Common\Game.cpp" />
+    <ClCompile Include="Plugin\Common\Logger.cpp" />
     <ClCompile Include="Plugin\Common\Timer.cpp" />
     <ClCompile Include="Plugin\Common\Utility.cpp" />
     <ClCompile Include="Plugin\Common\Version.cpp" />
@@ -223,6 +239,7 @@
     <ClCompile Include="Plugin\Lexer\Lexer.cpp" />
     <ClCompile Include="Plugin\Lexer\LexerDefinition.cpp" />
     <ClCompile Include="Plugin\Lexer\SimpleLexerBase.cpp" />
+    <ClCompile Include="Plugin\KeywordMatcher\KeywordMatcher.cpp" />
     <ClCompile Include="Plugin\Plugin.cpp" />
     <ClCompile Include="Plugin\PluginDefinition.cpp" />
     <ClCompile Include="Plugin\Settings\Settings.cpp" />
@@ -235,10 +252,37 @@
     <ResourceCompile Include="Plugin\Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Esxports.def" />
+    <None Include="Exports.def" />
+    <None Include="external\gsl\include\gsl\assert" />
+    <None Include="external\gsl\include\gsl\util" />
+    <None Include="external\npp\ColourPicker.h" />
+    <None Include="external\npp\ColourPopup.h" />
+    <None Include="external\npp\ColourPopupResource.h" />
+    <None Include="external\npp\Common.h" />
+    <None Include="external\npp\Docking.h" />
+    <None Include="external\npp\DockingDlgInterface.h" />
+    <None Include="external\npp\dockingResource.h" />
+    <None Include="external\npp\Notepad_plus_msgs.h" />
+    <None Include="external\npp\PluginInterface.h" />
+    <None Include="external\npp\StaticDialog.h" />
+    <None Include="external\npp\URLCtrl.h" />
+    <None Include="external\npp\Utf8.h" />
+    <None Include="external\npp\Window.h" />
+    <None Include="external\scintilla\Accessor.h" />
+    <None Include="external\scintilla\ILexer.h" />
+    <None Include="external\scintilla\LexAccessor.h" />
+    <None Include="external\scintilla\LexerModule.h" />
+    <None Include="external\scintilla\PropSetSimple.h" />
+    <None Include="external\scintilla\SciLexer.h" />
+    <None Include="external\scintilla\Scintilla.h" />
+    <None Include="external\scintilla\Sci_Position.h" />
+    <None Include="external\scintilla\StringCopy.h" />
+    <None Include="external\scintilla\StyleContext.h" />
+    <None Include="external\scintilla\WordList.h" />
+    <None Include="external\tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Papyrus.xml">
+    <Xml Include="..\dist\Papyrus.xml">
       <SubType>Designer</SubType>
     </Xml>
   </ItemGroup>

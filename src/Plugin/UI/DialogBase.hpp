@@ -49,9 +49,16 @@ namespace papyrus {
       inline virtual void hide() const { display(false); }
 
       virtual HWND getControl(int controlID) const;
-      virtual void initDropdownList(int controlID, const dropdown_options_t& options) const;
+
+      virtual void initDropdownList(int controlID, const dropdown_options_t& options, int selectedIndex = -1) const;
+      inline virtual void setDropdownSelectedIndex(int controlID, int index) const { ::SendDlgItemMessage(getHSelf(), controlID, CB_SETCURSEL, index, 0); }
+      inline virtual int getDropdownSelectedIndex(int controlID) const { return static_cast<int>(::SendDlgItemMessage(getHSelf(), controlID, CB_GETCURSEL, 0, 0)); }
+
       virtual void initColorPicker(ColourPicker& colorPicker, int labelControlID, int width = 30, int height = 30, int xOffset = 8, int yOffset = -8) const;
-      virtual HWND createToolTip(int controlID, std::wstring toolTip, int delayTime = 15) const;
+
+      virtual HWND createToolTip(int controlID, LPCWSTR toolTip, int delayTime = 15) const;
+      inline virtual HWND createToolTip(int controlID, std::wstring toolTip, int delayTime = 15) const { return createToolTip(controlID, toolTip.c_str(), delayTime); }
+      inline virtual HWND createToolTip(int controlID, int tooltipStringID, int delayTime = 15) const { return createToolTip(controlID, loadResourceString(tooltipStringID), delayTime); }
 
       inline virtual void setControlVisibility(int controlID, bool show) const { ::ShowWindow(getControl(controlID), show ? SW_SHOW : SW_HIDE); }
       inline virtual void showControl(int controlID) const { setControlVisibility(controlID, true); }
@@ -68,9 +75,12 @@ namespace papyrus {
       inline virtual void setText(int controlID, LPCWSTR text) const { ::SetWindowText(getControl(controlID), text); }
       virtual std::wstring getText(int controlID) const;
 
+      virtual LPCWSTR loadResourceString(int stringID) const;
+
       // Private members
       //
       int dialogID;
+      bool initializing {false};
   };
 
 } // namespace
