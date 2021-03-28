@@ -61,8 +61,6 @@ namespace papyrus {
         GameFO4
       };
 
-      void cleanup();
-
       void switchTab(Tab newTab);
       void showTab(Tab tab, bool show, bool intializing = false) const;
 

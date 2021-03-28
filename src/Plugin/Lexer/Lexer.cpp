@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Lexer.hpp"
 
-#include "LexerData.hpp"
 #include "LexerIDs.hpp"
 #include "..\Common\EnumUtil.hpp"
 #include "..\Common\Utility.hpp"
@@ -57,35 +56,32 @@ namespace papyrus {
     if (isUsable() && !subscriptionHelper) {
       subscriptionHelper = std::make_unique<SubscriptionHelper>();
     }
+
+    changeEventSubscription = lexerData->changeEventData.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        HWND handle = std::get<0>(eventData);
+        if (docPointer == reinterpret_cast<npp_ptr_t>(::SendMessage(handle, SCI_GETDOCPOINTER, 0, 0))) {
+          // Change happened on current file
+          handleContentChange(handle, std::get<1>(eventData), std::get<2>(eventData));
+        }
+      }
+    });
+  }
+
+  Lexer::~Lexer() {
+    changeEventSubscription->unsubscribe();
   }
 
   void SCI_METHOD Lexer::Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) {
     if (isUsable()) {
+      if (docPointer == nullptr) {
+        npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
+        HWND handle = (currentView == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
+        docPointer = reinterpret_cast<npp_ptr_t>(::SendMessage(handle, SCI_GETDOCPOINTER, 0, 0));
+      }
+
       Accessor accessor(pAccess, nullptr);
       StyleContext styleContext(startPos, lengthDoc, accessor.StyleAt(startPos - 1), accessor);
-
-      // Check if the properties still exist and update the content
-      for (auto iterProperties = propertyLines.begin(); iterProperties != propertyLines.end();) {
-        auto tokens = tokenize(accessor, (*iterProperties).line);
-        bool found = false;
-        for (auto iterToken = tokens.begin(); iterToken != tokens.end(); iterToken++) {
-          if ((*iterToken).content == "property" && std::next(iterToken) != tokens.end() && !isComment(accessor.StyleAt((*iterToken).startPos)) && !isComment(accessor.StyleAt((*std::next(iterToken)).startPos))) {
-            std::string currentName = (*std::next(iterToken)).content;
-            if ((*iterProperties).name != currentName) {
-              propertyNames.erase((*iterProperties).name);
-              (*iterProperties).name = currentName;
-              propertyNames.insert(currentName);
-            }
-            found = true;
-            break;
-          }
-        }
-        if (found) {
-          iterProperties++;
-        } else {
-          iterProperties = propertyLines.erase(iterProperties);
-        }
-      }
 
       // This state is saved in the line feed character. It can be used to initialize the state of the next line
       State messageStateLast = static_cast<State>(accessor.StyleAt(startPos - 1));
@@ -95,7 +91,7 @@ namespace papyrus {
 
         // Styling
         for (auto iterTokens = tokens.begin(); iterTokens != tokens.end(); iterTokens++) {
-          std::string tokenString = (*iterTokens).content;
+          std::string tokenString = iterTokens->content;
 
           if (messageState == State::CommentDoc) {
             colorToken(styleContext, *iterTokens, State::CommentDoc);
@@ -116,7 +112,7 @@ namespace papyrus {
               int numBackslash = 0;
               auto iterCheck = iterTokens;
               while (iterCheck != tokens.begin()) {
-                if ((*(--iterCheck)).content == "\\") {
+                if ((--iterCheck)->content == "\\") {
                   numBackslash++;
                 } else {
                   break;
@@ -142,9 +138,9 @@ namespace papyrus {
             } else if (tokenString == "\"") {
               colorToken(styleContext, *iterTokens, State::String);
               messageState = State::String;
-            } else if ((*iterTokens).tokenType == TokenType::Numeric) {
+            } else if (iterTokens->tokenType == TokenType::Numeric) {
               colorToken(styleContext, *iterTokens, State::Number);
-            } else if ((*iterTokens).tokenType == TokenType::Identifier) {
+            } else if (iterTokens->tokenType == TokenType::Identifier) {
               if (!wordListFlowControl.InList(tokenString.c_str()) && isalnum(tokenString.back()) && std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content == "(") {
                 // If next token is ( and current token is an identifier but not if/elseif/while, it is a function name.
                 colorToken(styleContext, *iterTokens, State::Function);
@@ -153,23 +149,34 @@ namespace papyrus {
               } else if (wordListFlowControl.InList(tokenString.c_str())) {
                 colorToken(styleContext, *iterTokens, State::FlowControl);
               } else if (wordListKeywords.InList(tokenString.c_str())) {
-                // Check if a new property needs to be added
-                if (tokenString == "property" && std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content != ";") {
-                  bool found = false;
-                  for (auto iterProperties = propertyLines.begin(); iterProperties != propertyLines.end(); iterProperties++) {
-                    if ((*iterProperties).line == line) {
-                      found = true;
-                      break;
+                // Check if a new property needs to be added, and update existing property list
+                if (tokenString == "property" && std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content != ";") {
+                  std::string propertyName = std::next(iterTokens)->content;
+                  auto iter = std::find_if(propertyLines.begin(), propertyLines.end(),
+                    [&](const auto& property) {
+                      return property.name == propertyName;
                     }
-                  }
-
-                  if (!found) {
+                  );
+                  if (iter != propertyLines.end()) {
+                    // See if there are properties marked as need to re-check due to line addition
+                    if (iter->line < line) {
+                      iter = std::find_if(++iter, propertyLines.end(),
+                        [&](const auto& property) {
+                         return property.name == propertyName && iter->line > line; // Due to line addition
+                        }
+                      );                      
+                    }
+                    if (iter != propertyLines.end() && iter->needRecheck) {
+                      iter->line = line;
+                      iter->needRecheck = false;
+                    }
+                  } else {
                     Property property {
-                      .name = (*std::next(iterTokens)).content,
+                      .name = propertyName,
                       .line = line
                     };
                     propertyLines.push_back(property);
-                    propertyNames.insert(property.name);
+                    propertyNames.insert(propertyName);
                   }
                 }
 
@@ -191,16 +198,12 @@ namespace papyrus {
                     } else {
                       auto currentGameNonClassNames = nonClassNames[lexerData->currentGame];
                       if (currentGameNonClassNames.find(tokenString) == currentGameNonClassNames.end()) {
-                        // Check all import directories for a source file with given name
-                        for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
-                          if (utility::fileExists(std::filesystem::path(path) / (tokenString + ".psc"))) {
-                            colorToken(styleContext, *iterTokens, State::Class);
-                            if (lexerData->settings.enableClassNameCache) {
-                              currentGameClassNames.insert(tokenString);
-                            }
-                            found = true;
-                            break;
+                        if (!getClassFilePath(tokenString).empty()) {
+                          colorToken(styleContext, *iterTokens, State::Class);
+                          if (lexerData->settings.enableClassNameCache) {
+                            currentGameClassNames.insert(tokenString);
                           }
+                          found = true;
                         }
                       }
 
@@ -215,8 +218,8 @@ namespace papyrus {
                   }
                 }
               }
-            } else if ((*iterTokens).tokenType == TokenType::Special) {
-              if (wordListOperators.InList((*iterTokens).content.c_str())) {
+            } else if (iterTokens->tokenType == TokenType::Special) {
+              if (wordListOperators.InList(iterTokens->content.c_str())) {
                 colorToken(styleContext, *iterTokens, State::Operator);
               } else {
                 colorToken(styleContext, *iterTokens, State::Default);
@@ -283,6 +286,27 @@ namespace papyrus {
   bool Lexer::isComment(int style) {
     State styleState = static_cast<State>(style);
     return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
+  }
+
+  std::wstring Lexer::getClassFilePath(std::string className) {
+    // Find relative path from current directory. Support FO4's namespace
+    std::filesystem::path relativePath;
+    auto pathComponents = utility::split(className, ":");
+    for (const auto& pathComponent : pathComponents) {
+      relativePath /= pathComponent;
+    } 
+    relativePath.replace_extension(".psc");
+
+    // Find the relative path in configured import directories
+    for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
+      std::wstring filePath = std::filesystem::path(path) / relativePath;
+      if (utility::fileExists(filePath)) {
+        return filePath;
+      }
+    }
+
+    // Not found
+    return std::wstring();
   }
 
   // Protected methods
@@ -381,6 +405,34 @@ namespace papyrus {
     } else {
       indexNext = index + 1;
       return accessor.SafeGetCharAt(index);
+    }
+  }
+
+  void Lexer::handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded) {
+    Sci_Position line = static_cast<Sci_Position>(::SendMessage(handle, SCI_LINEFROMPOSITION, position, 0));
+
+    // Update property list
+    for (auto iter = propertyLines.begin(); iter != propertyLines.end();) {
+      if (iter->line >= line) {
+        // If property is within the # of lines deleted, or is on the line when changes were made, delete the property
+        // Note that deleting the property on the line being edited won't be an issue because Lex will be called later
+        if ((linesAdded < 0 && iter->line <= line - linesAdded) || (linesAdded == 0 && iter->line == line)) {
+          // Delete this property
+          propertyNames.erase(iter->name);
+          iter = propertyLines.erase(iter);
+          continue;
+        }
+
+        if (iter->line == line) {
+          // Since it's not clear if the addition of lines happened before property definition or after, the property defined
+          // on the exact line where changes happened need to be re-checked in Lex
+          iter->needRecheck = true;
+        }
+
+        // Update line #
+        iter->line += linesAdded;
+      }
+      ++iter;
     }
   }
 
@@ -488,26 +540,37 @@ namespace papyrus {
 
   void SubscriptionHelper::handleHotspotClick(HWND handle, Sci_Position position) const {
     if (isUsable() && lexerData->currentGame != game::Game::Auto) {
+      // Change Scintilla word chars to include ':' to support FO4's namespaces
+      int length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
+      char* wordChars = new char[length + 2]; // To add ':' and also null teminator
+      auto autoCleanupWordChars = gsl::finally([&] { delete[] wordChars; });
+      ::SendMessage(handle, SCI_GETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars + 1));
+
+      wordChars[0] = ':';
+      wordChars[length + 1] = '\0';
+      ::SendMessage(handle, SCI_SETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars));
+
       Sci_Position start = ::SendMessage(handle, SCI_WORDSTARTPOSITION, position, true);
       Sci_Position end = ::SendMessage(handle, SCI_WORDENDPOSITION, position, true);
-      char* word = new char[end - start + 1];
-      auto autoCleanup = gsl::finally([&] { delete[] word; });
+
+      // Restore previous word chars setting after search
+      ::SendMessage(handle, SCI_SETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars + 1));
+
+      char* className = new char[end - start + 1];
+      auto autoCleanupClassName = gsl::finally([&] { delete[] className; });
 
       Sci_TextRange textRange {
         .chrg = {
           .cpMin = static_cast<Sci_PositionCR>(start),
           .cpMax = static_cast<Sci_PositionCR>(end)
         },
-        .lpstrText = word
+        .lpstrText = className
       };
       ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&textRange));
-      std::string fileName = std::string(word) + ".psc";
-      for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
-        std::wstring filePath = std::filesystem::path(path) / fileName;
-        if (utility::fileExists(filePath)) {
-          ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
-          break;
-        }
+
+      std::wstring filePath = getClassFilePath(className);
+      if (!filePath.empty()) {
+        ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
       }
     }
   }

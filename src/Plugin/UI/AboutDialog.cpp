@@ -83,7 +83,6 @@ namespace papyrus {
         case IDOK: {
         case IDCANCEL:
           hide();
-          ::EndDialog(getHSelf(), IDOK);
         }
 
         default: {

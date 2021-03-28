@@ -93,6 +93,9 @@ namespace papyrus {
       // Scintilla notification SCN_UPDATEUI handler, when selection updated
       void handleSelectionChange(SCNotification* notification);
 
+      // Scintilla notification SCN_MODIFIED handler, when texts are added/deleted
+      void handleContentUpdate(SCNotification* notification);
+
       // Handle setting changes
       void onSettingsUpdated();
       void updateLexerDataGameSettings(Game game, const CompilerSettings::GameSettings& gameSettings);

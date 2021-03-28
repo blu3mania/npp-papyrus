@@ -3,6 +3,7 @@
 [Bb]in/
 x64/
 x86/
+*.aps
 
 .vs/
 *.vcxproj.user

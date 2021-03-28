@@ -107,12 +107,28 @@ namespace utility {
     );
   }
 
+  bool startsWith(const std::string& str1, const std::string& str2, bool ignoreCase) noexcept {
+    if (str1.length() < str2.length()) {
+      return false;
+    }
+
+    return compare(str1.substr(0, str2.length()), str2, ignoreCase);
+  }
+
   bool startsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase) noexcept {
     if (str1.length() < str2.length()) {
       return false;
     }
 
     return compare(str1.substr(0, str2.length()), str2, ignoreCase);
+  }
+
+  bool endsWith(const std::string& str1, const std::string& str2, bool ignoreCase) noexcept {
+    if (str1.length() < str2.length()) {
+      return false;
+    }
+
+    return compare(str1.substr(str1.length() - str2.length(), std::string::npos), str2, ignoreCase);
   }
 
   bool endsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase) noexcept {
@@ -123,12 +139,42 @@ namespace utility {
     return compare(str1.substr(str1.length() - str2.length(), std::string::npos), str2, ignoreCase);
   }
 
-  size_t findIndex(const std::wstring& str1, const std::wstring& str2, bool ignoreCase) noexcept {
-    if (!ignoreCase) {
-      return str1.find(str2);
+  size_t indexOf(const std::string& str1, const std::string& str2, size_t startIndex, bool ignoreCase) noexcept {
+    if (startIndex >= str1.size()) {
+      return std::string::npos;
     }
 
-    auto iter = std::search(str1.begin(), str1.end(), str2.begin(), str2.end(),
+    if (!ignoreCase) {
+      return str1.find(str2, startIndex);
+    }
+
+    auto start = str1.begin();
+    std::advance(start, startIndex);
+    auto iter = std::search(start, str1.end(), str2.begin(), str2.end(),
+      [](const char ch1, const char ch2) {
+        return toupper(ch1) == toupper(ch2);
+      }
+    );
+
+    if (iter != str1.end()) {
+      return iter - str1.begin();
+    } else {
+      return std::string::npos;
+    }
+  }
+
+  size_t indexOf(const std::wstring& str1, const std::wstring& str2, size_t startIndex, bool ignoreCase) noexcept {
+    if (startIndex >= str1.size()) {
+      return std::string::npos;
+    }
+
+    if (!ignoreCase) {
+      return str1.find(str2, startIndex);
+    }
+
+    auto start = str1.begin();
+    std::advance(start, startIndex);
+    auto iter = std::search(start, str1.end(), str2.begin(), str2.end(),
       [](const wchar_t ch1, const wchar_t ch2) {
         return towupper(ch1) == towupper(ch2);
       }
@@ -139,6 +185,34 @@ namespace utility {
     } else {
       return std::string::npos;
     }
+  }
+
+  std::vector<std::string> split(const std::string& str, const std::string& delimiter, bool ignoreCase) noexcept {
+    std::vector<std::string> result;
+    size_t prevPos = 0;
+    size_t pos = 0;
+    while ((pos = indexOf(str, delimiter, prevPos)) != std::string::npos) {
+      result.push_back(str.substr(prevPos, pos));
+      pos += delimiter.size();
+      prevPos = pos;
+    }
+    result.push_back(str.substr(prevPos, pos));
+
+    return result;
+  }
+
+  std::vector<std::wstring> split(const std::wstring& str, const std::wstring& delimiter, bool ignoreCase) noexcept {
+    std::vector<std::wstring> result;
+    size_t prevPos = 0;
+    size_t pos = 0;
+    while ((pos = indexOf(str, delimiter, prevPos)) != std::string::npos) {
+      result.push_back(str.substr(prevPos, pos));
+      pos += delimiter.size();
+      prevPos = pos;
+    }
+    result.push_back(str.substr(prevPos, pos));
+
+    return result;
   }
 
   std::wstring toUpper(const std::wstring& str) noexcept {

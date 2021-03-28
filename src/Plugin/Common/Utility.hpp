@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "windows.h"
 
@@ -40,9 +41,14 @@ namespace utility {
   inline bool isHexNumber(const std::wstring& str) noexcept { return !str.empty() && std::find_if(str.begin(), str.end(), [](wchar_t ch) { return !iswxdigit(ch); }) == str.end(); }
   bool compare(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept;
   bool compare(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
+  bool startsWith(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept;
   bool startsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
+  bool endsWith(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept;
   bool endsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
-  size_t findIndex(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
+  size_t indexOf(const std::string& str1, const std::string& str2, size_t startIndex = 0, bool ignoreCase = true) noexcept;
+  size_t indexOf(const std::wstring& str1, const std::wstring& str2, size_t startIndex = 0, bool ignoreCase = true) noexcept;
+  std::vector<std::string> split(const std::string& str, const std::string& delimiter, bool ignoreCase = true) noexcept;
+  std::vector<std::wstring> split(const std::wstring& str, const std::wstring& delimiter, bool ignoreCase = true) noexcept;
   std::wstring toUpper(const std::wstring& str) noexcept;
   std::wstring toLower(const std::wstring& str) noexcept;
 

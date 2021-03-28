@@ -81,7 +81,7 @@ namespace papyrus {
 
       auto& errorList = errors[key];
       auto iter = std::find_if(errorList.begin(), errorList.end(),
-        [&](LineError& lineError) {
+        [&](const auto& lineError) {
           // Scintilla's line # is zero-based
           return lineError.line == error.line - 1;
         }

@@ -69,8 +69,28 @@ namespace papyrus {
   }
 
   SettingsDialog::~SettingsDialog() {
-    cleanup();
+    classLinkFgColorPicker.destroy();
+    classLinkBgColorPicker.destroy();
+    matchedIndicatorFgColorPicker.destroy();
+    unmatchedIndicatorFgColorPicker.destroy();
+    annotationFgColorPicker.destroy();
+    annotationBgColorPicker.destroy();
+    errorIndicatorFgColorPicker.destroy();
+
     stylerConfigLink.destroy();
+
+    if (matcherIndicatorIdTooltip) {
+      ::DestroyWindow(matcherIndicatorIdTooltip);
+      matcherIndicatorIdTooltip = nullptr;
+    }
+    if (errorIndicatorIdTooltip) {
+      ::DestroyWindow(errorIndicatorIdTooltip);
+      errorIndicatorIdTooltip = nullptr;
+    }
+    if (autoModeTooltip) {
+      ::DestroyWindow(autoModeTooltip);
+      autoModeTooltip = nullptr;
+    }
   }
 
   // Protected methods
@@ -162,11 +182,8 @@ namespace papyrus {
       item.pszText = const_cast<LPWSTR>(tabNames[i]);
       item.cchTextMax = static_cast<int>(_tcslen(tabNames[i]));
       ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_INSERTITEM, i, reinterpret_cast<LPARAM>(&item));
-      showTab(static_cast<Tab>(i), false, true);
+      showTab(static_cast<Tab>(i), static_cast<Tab>(i) == currentTab, true);
     }
-
-     // During initialization, hide game tab controls
-    showTab(Tab::GameBase, false, true);
 
     for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
       auto game = static_cast<Game>(i);
@@ -176,8 +193,15 @@ namespace papyrus {
       }
     }
 
-    currentTab = Tab::Lexer;
-    showTab(currentTab, true);
+    if (currentTab != Tab::Lexer) {
+      ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_SETCURSEL, utility::underlying(currentTab), 0);
+    }
+
+    if (currentTab >= Tab::GameBase) {
+      showTab(currentTab, true, true);
+    } else {
+      showTab(Tab::GameBase, false, true);
+    }
   }
 
   INT_PTR SettingsDialog::handleCommandMessage(WPARAM wParam, LPARAM lParam) {
@@ -359,8 +383,7 @@ namespace papyrus {
 
   INT_PTR SettingsDialog::handleCloseMessage(WPARAM wParam, LPARAM lParam) {
     if (saveSettings()) {
-      cleanup();
-      ::EndDialog(getHSelf(), IDOK);
+      hide();
     }
 
     return FALSE;
@@ -368,28 +391,6 @@ namespace papyrus {
 
   // Private methods
   //
-
-  void SettingsDialog::cleanup() {
-    classLinkFgColorPicker.destroy();
-    classLinkBgColorPicker.destroy();
-    matchedIndicatorFgColorPicker.destroy();
-    unmatchedIndicatorFgColorPicker.destroy();
-    annotationFgColorPicker.destroy();
-    annotationBgColorPicker.destroy();
-    errorIndicatorFgColorPicker.destroy();
-    if (matcherIndicatorIdTooltip) {
-      ::DestroyWindow(matcherIndicatorIdTooltip);
-      matcherIndicatorIdTooltip = nullptr;
-    }
-    if (errorIndicatorIdTooltip) {
-      ::DestroyWindow(errorIndicatorIdTooltip);
-      errorIndicatorIdTooltip = nullptr;
-    }
-    if (autoModeTooltip) {
-      ::DestroyWindow(autoModeTooltip);
-      autoModeTooltip = nullptr;
-    }
-  }
 
   void SettingsDialog::switchTab(Tab newTab) {
     if (newTab != currentTab) {

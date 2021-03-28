@@ -100,7 +100,7 @@ namespace utility {
 
       bool unsubscribe(Subscription<T>* subscriptionToRemove) noexcept {
         auto iter = std::find_if(subscriptions.begin(), subscriptions.end(),
-          [&](subscription_t& subscription) {
+          [&](const auto& subscription) {
             return subscription.get() == subscriptionToRemove;
           }
         );

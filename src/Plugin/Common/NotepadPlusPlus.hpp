@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <stdint.h>
 #include <windows.h>
 
 using npp_view_t      = int;
@@ -29,6 +28,7 @@ using npp_buffer_t    = intptr_t;
 using npp_size_t      = size_t;
 using npp_length_t    = intptr_t;
 using npp_position_t  = intptr_t;
+using npp_ptr_t       = void*;
 
 // These definitions are copied from Notepad++'s menuCmdID.h.
 // They are unlikely to change but make sure they are checked and updated as needed

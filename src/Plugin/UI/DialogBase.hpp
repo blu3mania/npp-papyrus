@@ -36,7 +36,7 @@ namespace papyrus {
       inline DialogBase(int dialogID) : StaticDialog(), dialogID(dialogID) {}
       inline virtual ~DialogBase() {}
 
-      virtual INT_PTR doDialog();
+      virtual void doDialog();
 
     protected:
       virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;

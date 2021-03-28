@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "LexerSettings.hpp"
 #include "..\Common\Game.hpp"
+#include "..\Common\NotepadPlusPlus.hpp"
 #include "..\Common\Topic.hpp"
 
 #include "..\..\external\npp\PluginInterface.h"
@@ -34,6 +35,9 @@ namespace papyrus {
 
   using Game = game::Game;
   using game_import_dirs_t = std::map<Game, std::vector<std::wstring>>;
+  using buffer_activated_topic_t = utility::Topic<std::pair<npp_view_t, bool>>;
+  using click_event_topic_t = utility::Topic<std::pair<HWND, Sci_Position>>;
+  using change_event_topic_t = utility::Topic<std::tuple<HWND, Sci_Position, Sci_Position>>;
 
   struct LexerData {
     LexerData(const NppData& nppData, const LexerSettings& settings, Game currentGame = Game::Auto, game_import_dirs_t importDirectories = game_import_dirs_t(), bool usable = true)
@@ -45,8 +49,9 @@ namespace papyrus {
     Game currentGame;
     game_import_dirs_t importDirectories;
     npp_lang_type_t scriptLangID;
-    utility::Topic<std::pair<npp_view_t, bool>> bufferActivated;
-    utility::Topic<std::pair<HWND, Sci_Position>> clickEventData;
+    buffer_activated_topic_t bufferActivated;
+    click_event_topic_t clickEventData;
+    change_event_topic_t changeEventData;
     bool usable;
   };
 

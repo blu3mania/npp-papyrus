@@ -31,7 +31,7 @@ jobs:
         uses: github/codeql-action/init@v1
         with:
           languages: cpp
-          tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-20210304/codeql-bundle-win64.tar.gz
+          tools: https://github.com/github/codeql-action/releases/download/codeql-bundle-20210326/codeql-bundle-win64.tar.gz
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1

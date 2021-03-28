@@ -25,8 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
-  INT_PTR DialogBase::doDialog() {
-    return ::DialogBoxParam(getHinst(), MAKEINTRESOURCE(dialogID), getHParent(), dlgProc, reinterpret_cast<LPARAM>(this));
+  void DialogBase::doDialog() {
+    if (!isCreated()) {
+      create(dialogID);
+    }
+    display();
   }
 
   // Protected methods

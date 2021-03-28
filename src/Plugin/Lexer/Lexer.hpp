@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SimpleLexerBase.hpp"
 
+#include "LexerData.hpp"
+
 #include "..\Common\NotepadPlusPlus.hpp"
 
 #include "..\..\external\scintilla\Accessor.h"
@@ -46,7 +48,7 @@ namespace papyrus {
   class Lexer : public SimpleLexerBase {
     public:
       // A class that helps with subscription to shared Lexer data, since the handling are all static, and not
-      // tied to a specific Lexer instance. Fro example, restyle currently displayed document, regardless if it's
+      // tied to a specific Lexer instance. For example, restyle currently displayed document, regardless if it's
       // lexed by current Lexer instance.
       //
       class SubscriptionHelper {
@@ -69,6 +71,7 @@ namespace papyrus {
       };
 
       Lexer();
+      ~Lexer();
 
       // Interface functions with Notepad++
       inline static char* name() { return const_cast<char*>(LEXER_NAME); }
@@ -81,6 +84,9 @@ namespace papyrus {
 
       // Utility method to check whether a style (from StyleContext) is a comment style defined by this lexer
       static bool isComment(int style);
+
+      // Utility method to retrieve full path of a class. It supports FO4's namespaces
+      static std::wstring getClassFilePath(std::string className);
 
     protected:
       // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used
@@ -116,6 +122,7 @@ namespace papyrus {
       struct Property {
         std::string name;
         Sci_Position line;
+        bool needRecheck {false};
       };
 
       enum class TokenType {
@@ -137,6 +144,9 @@ namespace papyrus {
 
       // Get next character (wide char supported)
       int getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const;
+
+      // Content change handler. Update property list to make sure it's correct
+      void handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded);
 
       // Private members
       //
@@ -160,6 +170,12 @@ namespace papyrus {
 
       // Cache property names defined in current file, for better performance
       std::set<std::string> propertyNames;
+
+      // Document pointer managed by Scintilla
+      npp_ptr_t docPointer {nullptr};
+
+      // Supscriptions
+      change_event_topic_t::subscription_t changeEventSubscription;
   };
 
 } // namespace

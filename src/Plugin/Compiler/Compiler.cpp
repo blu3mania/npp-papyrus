@@ -261,9 +261,9 @@ namespace papyrus {
           error.file = L"<unknown>";
           lineError.erase(0, 10);
         } else {
-          size_t fileExtIndex = utility::findIndex(lineError, L".psc(");
+          size_t fileExtIndex = utility::indexOf(lineError, L".psc(");
           if (fileExtIndex == std::string::npos && gameSettings.optimizeFlag) {
-            fileExtIndex = utility::findIndex(lineError, L".pas(");
+            fileExtIndex = utility::indexOf(lineError, L".pas(");
             isScriptError = true;
           }
 
@@ -293,7 +293,7 @@ namespace papyrus {
 
           // Discard duplicate errors
           auto iter = std::find_if(errors.begin(), errors.end(),
-            [&](Error& comparisionError) {
+            [&](const auto& comparisionError) {
               return comparisionError.file == error.file
                 && comparisionError.message == error.message
                 && comparisionError.line == error.line

@@ -108,7 +108,7 @@ namespace papyrus {
 
           case SCN_MODIFIED: {
             if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-              // TODO: update property lines
+              handleContentUpdate(notification);
             }
             break;
           }
@@ -278,7 +278,7 @@ namespace papyrus {
         if (!activatedErrorsTrackingList.empty()) {
           // Check if activated file is in the tracking list
           auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
-            [&](Error& error) {
+            [&](const auto& error) {
               return utility::compare(error.file, filePath);
             }
           );
@@ -294,7 +294,7 @@ namespace papyrus {
             while (iter != activatedErrorsTrackingList.end()) {
               activatedErrorsTrackingList.erase(iter++);
               iter = std::find_if(iter, activatedErrorsTrackingList.end(),
-                [&](Error& error) {
+                [&](const auto& error) {
                   return utility::compare(error.file, filePath);
                 }
               );
@@ -329,6 +329,7 @@ namespace papyrus {
   }
 
   void Plugin::handleHotspotClick(SCNotification* notification) {
+    // Only handle hotspot click if it's from a document buffer shown on current view and is managed by this plugin's lexer, and key modifier/mouse click match configuration
     if (lexerData
       && (notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick
       && notification->modifiers == lexerData->settings.classLinkClickModifier
@@ -338,8 +339,16 @@ namespace papyrus {
   }
 
   void Plugin::handleSelectionChange(SCNotification* notification) {
+    // Only handle selection change if it's from a document buffer shown on current view and is managed by this plugin's lexer
     if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
       keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
+    }
+  }
+
+  void Plugin::handleContentUpdate(SCNotification* notification) {
+    // Only handle content change if it's from a document buffer shown on current view and is managed by this plugin's lexer
+    if (lexerData && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
+      lexerData->changeEventData = std::make_tuple(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position, notification->linesAdded);
     }
   }
 
@@ -518,7 +527,7 @@ namespace papyrus {
       case PPM_JUMP_TO_ERROR: {
         Error* error = reinterpret_cast<Error*>(wParam);
         auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
-          [&](Error& comparisionError) {
+          [&](const auto& comparisionError) {
             return comparisionError.file == error->file && comparisionError.line == error->line;
           }
         );

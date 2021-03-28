@@ -74,8 +74,8 @@ enhancements, and made to work with the latest Notepad++ release.
 - [Compiler] Auto detection of game/compiler settings to be used based on source script file location.
 - [Lexer] Support of new Papyrus syntax/keywords of Fallout 4.
 - [Lexer] Syntax highlighting of function names.
-- [Lexer] Class names can be styled as links to open the script files. Configurable behavior, default on (with
-  double click).
+- [Lexer] Class names can be styled as links to open the script files. FO4's namespace support is included.
+  Configurable behavior, default on (Ctrl + double click).
 - [Lexer] Highlight on matching keywords.
 - [Lexer] A new "Advanced" submenu with:
   - Show langID - can be used to find out internal langID assigned to Papyrus Script lexer, which is useful if
