@@ -69,15 +69,21 @@ namespace papyrus {
     match();
   }
 
+  void KeywordMatcher::clear() {
+    if (handle != 0) {
+      docLength = static_cast<Sci_PositionCR>(::SendMessage(handle, SCI_GETLENGTH, 0, 0));
+      ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
+      ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
+    }
+  }
+
   // Private methods
   //
 
   void KeywordMatcher::match() {
     if (handle != 0) {
       // Clear existing matches
-      docLength = static_cast<Sci_PositionCR>(::SendMessage(handle, SCI_GETLENGTH, 0, 0));
-      ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
-      ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
+      clear();
 
       if (settings.enableKeywordMatching && settings.enabledKeywords != KEYWORD_NONE) {
         // Get current word at caret

@@ -48,6 +48,7 @@ namespace papyrus {
       KeywordMatcher(const KeywordMatcherSettings& settings);
 
       void match(HWND scintillaHandle);
+      void clear();
 
     private:
       void match();

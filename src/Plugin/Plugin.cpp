@@ -134,6 +134,10 @@ namespace papyrus {
             break;
           }
 
+          case NPPN_LANGCHANGED: {
+            handleBufferActivation(notification->nmhdr.idFrom, true);
+          }
+
           default: {
             break;
           }
@@ -246,11 +250,9 @@ namespace papyrus {
     }
   }
 
-  void Plugin::handleBufferActivation(npp_buffer_t bufferID) {
+  void Plugin::handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange) {
     // Make sure Papyrus script langID is detected
-    if (scriptLangID == 0) {
-      detectLangID();
-    }
+    detectLangID();
 
     npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
     npp_size_t filePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), 0));
@@ -262,20 +264,21 @@ namespace papyrus {
 
         // Set detected game for lexer
         auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);
-        if (lexerData) {
+        if (lexerData && !fromLangChange) {
           lexerData->currentGame = detectedGame;
         }
 
         // Check if active compilation file is still the current one on either view
         if (activeCompilationRequest.bufferID != 0) {
           isComplingCurrentFile = utility::compare(activeCompilationRequest.filePath, filePath);
-          if (isComplingCurrentFile) {
+          if (isComplingCurrentFile && !fromLangChange) {
             ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(L"Compiling..."));
           }
         }
 
         // Check if we are waiting for a file to open as a result of user selecting an error from list
-        if (!activatedErrorsTrackingList.empty()) {
+        HWND scintillaHandle = (currentView == MAIN_VIEW) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
+        if (!activatedErrorsTrackingList.empty() && !fromLangChange) {
           // Check if activated file is in the tracking list
           auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
             [&](const auto& error) {
@@ -285,10 +288,9 @@ namespace papyrus {
           if (iter != activatedErrorsTrackingList.end()) {
             // Scintilla's line numberis zero-based
             int line = iter->line - 1;
-            HWND handle = (currentView == MAIN_VIEW) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
 
             // When the buffer is big, asking Scintilla to scroll immediately doesn't always work, so use a short timer
-            jumpToErrorLineTimer = utility::startTimer(100, [=] { ::SendMessage(handle, SCI_GOTOLINE, line, 0); });
+            jumpToErrorLineTimer = utility::startTimer(100, [=] { ::SendMessage(scintillaHandle, SCI_GOTOLINE, line, 0); });
 
             // Get rid of other errors in the list for the same file
             while (iter != activatedErrorsTrackingList.end()) {
@@ -303,6 +305,7 @@ namespace papyrus {
         }
 
         bool isManagedBuffer = false;
+        bool isPapyrusScriptFile = utility::endsWith(filePath, L".psc");
         npp_lang_type_t currentFileLangID;
         ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
         if (currentFileLangID == scriptLangID) {
@@ -314,10 +317,17 @@ namespace papyrus {
             std::wstring gameSpecificStatus(L"[" + game::gameNames[utility::underlying(detectedGame)].second + L"] " + Lexer::statusText());
             ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
           }
+
+          if (fromLangChange) {
+            keywordMatcher.match(scintillaHandle);
+          }
+        } else if (isPapyrusScriptFile && fromLangChange) {
+          // Papyrus script file changed to other language, clear keyword matching
+          keywordMatcher.clear();
         }
 
         // Only Papyrus script and assembly files can be annotated
-        if (errorAnnotator && (utility::endsWith(filePath, L".psc") || utility::endsWith(filePath, L".pas"))) {
+        if (errorAnnotator && (isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange) {
           errorAnnotator->annotate(currentView, filePath);
         }
 
@@ -405,9 +415,7 @@ namespace papyrus {
     }
 
     // Make sure Papyrus script langID is detected
-    if (scriptLangID == 0) {
-      detectLangID();
-    }
+    detectLangID();
 
     npp_lang_type_t currentFileLangID;
     ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
@@ -722,9 +730,7 @@ namespace papyrus {
         wchar_t filePath[MAX_PATH];
         if (::SendMessage(nppData._nppHandle, NPPM_GETFULLCURRENTPATH, MAX_PATH, reinterpret_cast<LPARAM>(filePath))) {
           // Check if current file is handled by Papyrus Script lexer
-          if (scriptLangID == 0) {
-            detectLangID();
-          }
+          detectLangID();
           npp_lang_type_t currentFileLangID;
           ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
 

@@ -84,8 +84,8 @@ namespace papyrus {
       // Check if lexer's config file exists, and attempt to fix it if not
       void checkLexerConfigFile(const std::wstring& configPath);
 
-      // Notepad++ notification NPPN_BUFFERACTIVATED handler
-      void handleBufferActivation(npp_buffer_t bufferID);
+      // Notepad++ notification NPPN_BUFFERACTIVATED and NPPN_LANGCHANGED handler
+      void handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange = false);
 
       // Scintilla notification SCN_HOTSPOTCLICK handler
       void handleHotspotClick(SCNotification* notification);
