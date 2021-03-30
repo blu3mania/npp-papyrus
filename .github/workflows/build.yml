@@ -27,7 +27,7 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1
 
-      - name: Update build numner
+      - name: Update build number
         working-directory: ${{ github.workspace }}\src\Plugin\Common
         run: (gc Resources.hpp) -replace 'BUILD_NUMBER    0', 'BUILD_NUMBER    ${{ github.run_number }}' | Out-File -encoding ASCII Resources.hpp
 

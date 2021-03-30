@@ -48,7 +48,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 {
   LTEXT         "Papyrus Plugin for Notepad++" , IDC_ABOUT_PRODUCT_NAME, 16, 12, 106, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "v[VERSION] (Build [BUILD])", IDC_ABOUT_PRODUCT_VERSION, 128, 12, 80, 12, SS_NOTIFY, WS_EX_TRANSPARENT
-  LTEXT         "Copyright 2016 - [YEAR]", IDC_ABOUT_COPYRIGHT, 16, 24, 200, 12, SS_NOTIFY, WS_EX_TRANSPARENT
+  LTEXT         "Copyright 2016, 2021", IDC_ABOUT_COPYRIGHT, 16, 24, 200, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "Homepage:", IDC_ABOUT_HOMEPAGE, 16, 48, 108, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "https://github.com/blu3mania/npp-papyrus", IDC_ABOUT_HOMEPAGE_LINK, 128, 48, 160, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "License:", IDC_ABOUT_LICENSE, 16, 60, 108, 10, SS_NOTIFY, WS_EX_TRANSPARENT
@@ -58,6 +58,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
   LTEXT         "tschilkroete@gmail.com", IDC_ABOUT_ORIG_AUTHOR_EMAIL, 128, 84, 160, 10
   LTEXT         "blu3mania", IDC_ABOUT_AUTHOR, 32, 96, 92, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "blu3mania@hotmail.com", IDC_ABOUT_AUTHOR_EMAIL, 128, 96, 160, 10
+  CONTROL       "", IDC_ABOUT_SEPARATOR, "Static", SS_ETCHEDHORZ, 16, 113, 264, 1
   LTEXT         "This plugin includes source code (original/modified) from the following libraries:", IDC_ABOUT_LIBRARIES, 16, 120, 264, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "Notepad++", IDC_ABOUT_LIBRARY_NPP, 32, 132, 92, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "See ? -> About Notepad++ for more information", IDC_ABOUT_LIBRARY_NPP_LINK, 128, 132, 160, 10

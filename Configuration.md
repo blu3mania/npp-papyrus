@@ -1,7 +1,7 @@
 # Configuration
 Most of the plugin's behavior can be modified in Settings dialog. However, if it's needed to change the
-settings file *Papyrus.ini* directly, it can be found in *plugins\config* directory under Notepad++'s data
-folder, which by default is *"%APPDATA%\Notepad++"*.
+settings file *Papyrus.ini* directly, it can be found in *"plugins\config"* directory under Notepad++'s
+data folder, which by default is *"%APPDATA%\Notepad++"*.
 
 The following are settings that can be changed in Settings dialog.
 

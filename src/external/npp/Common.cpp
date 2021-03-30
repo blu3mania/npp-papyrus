@@ -48,6 +48,8 @@ generic_string commafyInt(size_t n)
 	return ss.str();
 }
 
+// PapyrusPlugin modification -- not used, and causing secure warnings
+/*
 std::string getFileContent(const TCHAR *file2read)
 {
 	if (!::PathFileExists(file2read))
@@ -70,6 +72,8 @@ std::string getFileContent(const TCHAR *file2read)
 	fclose(fp);
 	return wholeFileContent;
 }
+*/
+// End of PapyrusPlugin modification
 
 char getDriveLetter()
 {
@@ -111,6 +115,8 @@ generic_string relativeFilePathToFullFilePath(const TCHAR *relativeFilePath)
 }
 
 
+// PapyrusPlugin modification -- not used, and causing secure warnings
+/*
 void writeFileContent(const TCHAR *file2write, const char *content2write)
 {
 	FILE *f = generic_fopen(file2write, TEXT("w+c"));
@@ -128,6 +134,8 @@ void writeLog(const TCHAR *logFileName, const char *log2write)
 	fflush(f);
 	fclose(f);
 }
+*/
+// End of PapyrusPlugin modification
 
 // PapyrusPlugin modification -- not used
 /*

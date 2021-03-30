@@ -39,7 +39,7 @@ namespace papyrus {
   bool SettingsStorage::load() {
     if (!settingsPath.empty()) {
       std::wifstream settingsFile(settingsPath);
-      settingsFile.imbue(std::locale(settingsFile.getloc(), new std::codecvt_utf8<wchar_t>())); // Use UTF-8 enoding
+      settingsFile.imbue(std::locale(settingsFile.getloc(), new std::codecvt_utf8<wchar_t>())); // Use UTF-8 encoding
       std::wstring line;
       while (std::getline(settingsFile, line)) {
         size_t equalsIndex = line.find_first_of(L'=');
@@ -65,7 +65,7 @@ namespace papyrus {
     if (!settingsPath.empty()) {
       std::wofstream settingsFile(settingsPath, std::wofstream::trunc);
       auto autoCleanup = gsl::finally([&] { settingsFile.close(); });
-      settingsFile.imbue(std::locale(settingsFile.getloc(), new std::codecvt_utf8<wchar_t>())); // Use UTF-8 enoding
+      settingsFile.imbue(std::locale(settingsFile.getloc(), new std::codecvt_utf8<wchar_t>())); // Use UTF-8 encoding
       settingsFile << VERSION_KEY << L'=' << version << std::endl;
       for (const auto& p : data) {
         settingsFile << p.first << L'=' << p.second << std::endl;

@@ -12,7 +12,7 @@
 This plugin adds support of [Bethesda](https://bethesdagamestudios.com/)'s Papyrus scripting language to
 [Notepad++](https://notepad-plus-plus.org/).
 It provides syntax highlighting with automatic recognition of ***class names/functions/properties***,
-supports ***keywords matching***, and ***links to scripts from class names***.
+supports ***keywords matching***, and ***hyperlinks to referenced scripts***.
 It also comes with a compiler that can provide ***compilation errors*** in a separate list window, as well
 as ***inline annotation*** and ***indication*** where errors are reported, plus support ***anonymization***
 of compiled *.pex* files.
@@ -131,7 +131,7 @@ is set up properly.
 │       ├── autoCompletion - auto completion configuration file for Papyrus scripts
 │       ├── functionList - function list configuration file for Papyrus scripts
 │       └── userDefineLangs - user-defined Papyrus language instead of this plugin's lexer
-└── src - source codes
+└── src - source code
     ├── .vscode - configuration files for VS Code
     ├── external - source files from external projects (may be modified)
     │   ├── gsl - references GSL as submodule

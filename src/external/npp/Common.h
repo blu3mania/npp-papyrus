@@ -68,7 +68,7 @@ void printInt(int int2print);
 void printStr(const TCHAR *str2print);
 generic_string commafyInt(size_t n);
 
-void writeLog(const TCHAR *logFileName, const char *log2write);
+//void writeLog(const TCHAR *logFileName, const char *log2write); // PapyrusPlugin modification -- not used, and causing secure warnings
 int filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
 generic_string purgeMenuItemString(const TCHAR * menuItemStr, bool keepAmpersand = false);
 std::vector<generic_string> tokenizeString(const generic_string & tokenString, const char delim);
@@ -81,9 +81,9 @@ std::string wstring2string(const std::wstring & rwString, UINT codepage);
 bool isInList(const TCHAR *token, const TCHAR *list);
 generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generic_string &filename);
 
-std::string getFileContent(const TCHAR *file2read);
+//std::string getFileContent(const TCHAR *file2read); // PapyrusPlugin modification -- not used, and causing secure warnings
 generic_string relativeFilePathToFullFilePath(const TCHAR *relativeFilePath);
-void writeFileContent(const TCHAR *file2write, const char *content2write);
+//void writeFileContent(const TCHAR *file2write, const char *content2write); // PapyrusPlugin modification -- not used, and causing secure warnings
 bool matchInList(const TCHAR *fileName, const std::vector<generic_string> & patterns);
 bool allPatternsAreExclusion(const std::vector<generic_string> patterns);
 

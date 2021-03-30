@@ -173,7 +173,9 @@ namespace papyrus {
     auto autoCleanup = gsl::finally([&] { file.close(); });
 
     if (file.fail()) {
-      errorMsg = std::wstring(_wcserror(errno));
+      wchar_t errorMsgBuffer[512];
+      _wcserror_s(errorMsgBuffer, errno);
+      errorMsg = std::wstring(errorMsgBuffer);
       noError = false;
     } else {
       // PEX file format (Skyrim & SSE in big endian, FO4 in little endian):

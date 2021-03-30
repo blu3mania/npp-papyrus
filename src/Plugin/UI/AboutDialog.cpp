@@ -50,12 +50,6 @@ namespace papyrus {
     }
     setText(IDC_ABOUT_PRODUCT_VERSION, versionText);
 
-    std::wstring copyrightText = getText(IDC_ABOUT_COPYRIGHT);
-    macroIndex = copyrightText.find(L"[YEAR]");
-    if (macroIndex != std::wstring::npos) {
-      setText(IDC_ABOUT_COPYRIGHT, copyrightText.replace(macroIndex, 6, std::to_wstring(utility::currentYear())));
-    }
-
     homePageLink.init(getHinst(), getHSelf());
     homePageLink.create(getControl(IDC_ABOUT_HOMEPAGE_LINK));
     gpl3Link.init(getHinst(), getHSelf());

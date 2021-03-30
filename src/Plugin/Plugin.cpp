@@ -23,6 +23,9 @@ Useful links:
 https://www.scintilla.org/ScintillaDoc.html
 https://npp-user-manual.org/docs/plugin-communication/
 https://community.notepad-plus-plus.org/category/5/plugin-development
+
+https://www.creationkit.com/index.php?title=Category:Papyrus
+https://www.creationkit.com/fallout4/index.php?title=Category:Papyrus
 */
 
 #include "Plugin.hpp"
