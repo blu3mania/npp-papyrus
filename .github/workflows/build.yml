@@ -22,7 +22,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          fetch-depth: 2
           submodules: recursive
+
+      - name: Run git diff check
+        run: git diff --check HEAD^
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v1

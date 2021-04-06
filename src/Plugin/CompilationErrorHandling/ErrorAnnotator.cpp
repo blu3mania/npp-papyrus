@@ -322,9 +322,8 @@ namespace papyrus {
             search++;
             length++;
           }
-        } else if (!isblank(line[search]) && line[search] != '\r' && line[search] != '\n') {
-          while (search < filledLength
-            && !isalnum(line[search]) && !isblank(line[search]) && line[search] != '\r' && line[search] != '\n') {
+        } else if (!isspace(line[search])) {
+          while (search < filledLength && !isalnum(line[search]) && !isspace(line[search])) {
             search++;
             length++;
           }
