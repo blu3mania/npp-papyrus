@@ -100,7 +100,8 @@ namespace papyrus {
             }
           } else if (messageState == State::CommentMultiLine) {
             colorToken(styleContext, *iterTokens, State::CommentMultiLine);
-            if (tokenString == ";" && iterTokens != tokens.begin() && (*std::prev(iterTokens)).content == "/") {
+              // A multi-line comment ends with "/;" and there can't be spaces in between
+            if (tokenString == ";" && iterTokens != tokens.begin() && std::prev(iterTokens)->content == "/" && iterTokens->startPos == std::prev(iterTokens)->startPos + 1) {
               messageState = State::Default;
             }
           } else if (messageState == State::Comment) {
@@ -128,7 +129,8 @@ namespace papyrus {
               colorToken(styleContext, *iterTokens, State::CommentDoc);
               messageState = State::CommentDoc;
             } else if (tokenString == ";") {
-              if (std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content == "/") {
+              // A multi-line comment starts with ";/" and there can't be spaces in between
+              if (std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content == "/" && iterTokens->startPos == std::next(iterTokens)->startPos - 1) {
                 colorToken(styleContext, *iterTokens, State::CommentMultiLine);
                 messageState = State::CommentMultiLine;
               } else {
@@ -141,7 +143,7 @@ namespace papyrus {
             } else if (iterTokens->tokenType == TokenType::Numeric) {
               colorToken(styleContext, *iterTokens, State::Number);
             } else if (iterTokens->tokenType == TokenType::Identifier) {
-              if (!wordListFlowControl.InList(tokenString.c_str()) && isalnum(tokenString.back()) && std::next(iterTokens) != tokens.end() && (*std::next(iterTokens)).content == "(") {
+              if (!wordListFlowControl.InList(tokenString.c_str()) && isalnum(tokenString.back()) && std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content == "(") {
                 // If next token is ( and current token is an identifier but not if/elseif/while, it is a function name.
                 colorToken(styleContext, *iterTokens, State::Function);
               } else if (wordListTypes.InList(tokenString.c_str())) {
@@ -281,6 +283,16 @@ namespace papyrus {
         levelPrev += levelDelta;
       }
     }
+  }
+
+  bool Lexer::isKeyword(int style) {
+    State styleState = static_cast<State>(style);
+    return styleState == State::Keyword || styleState == State::Keyword2;
+  }
+
+  bool Lexer::isFlowControl(int style) {
+    State styleState = static_cast<State>(style);
+    return styleState == State::FlowControl;
   }
 
   bool Lexer::isComment(int style) {

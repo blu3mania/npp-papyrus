@@ -82,7 +82,9 @@ namespace papyrus {
       void SCI_METHOD Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
       void SCI_METHOD Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
 
-      // Utility method to check whether a style (from StyleContext) is a comment style defined by this lexer
+      // Utility method to check whether a style (from StyleContext) is certain style type defined by this lexer
+      static bool isKeyword(int style);
+      static bool isFlowControl(int style);
       static bool isComment(int style);
 
       // Utility method to retrieve full path of a class. It supports FO4's namespaces
