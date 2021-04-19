@@ -26,8 +26,8 @@ enhancements, and made to work with the latest Notepad++ release.
 ### Bug fixes
 - **[Lexer]** Syntax highlighting with lexer now properly works with the latest Notepad++ version, so you no
   longer need to use a separate user-defined language XML, which defeats the purpose of a *lexer*.
-- **[Compiler]** Can handle huge compilation error list (this usually happens when a referenced script has
-  errors or referenced script source does not exist), so that status message no longer gets stuck at
+- **[Compiler]** Can now handle huge compilation error list (this usually happens when a referenced script
+  has errors or referenced script source does not exist), so that status message no longer gets stuck at
   *"Compiling..."*.
 - **[Compiler]** In error list window, clicking on an error from a file that has not been opened yet will now
   correctly move cursor to the error line.
@@ -36,8 +36,10 @@ enhancements, and made to work with the latest Notepad++ release.
 - **[Lexer]** Operators are now correctly styled with defined *Operator* style, instead of the wrong *Type*
   style.
 - **[Lexer]** Proper syntax highlighting with strings that contain double quote escapes.
-- **[Lexer]** Proper syntax highlighting with integers literals that start with minus sign.
+- **[Lexer]** Proper syntax highlighting with integer literals that start with minus sign.
 - **[Lexer]** Proper syntax highlighting with float literals that contain decimal point.
+- **[Lexer]** Proper syntax highlighting with comments where "/" appears before/after ";" with spaces in
+  between.
 - **[Lexer]** Word *"property"* in comments is now correctly excluded from property handling.
 - **[Lexer]** Correctly detect properties in edge cases like copying property lines and then editing.
 - **[Lexer]** White spaces are now styled correctly.
@@ -55,6 +57,10 @@ enhancements, and made to work with the latest Notepad++ release.
 - **[Compiler]** Support more compilation flags:
   - -optimize (all games)
   - -release and -final (*Fallout 4*)
+- **[Compiler]** Handle the rare compilation error cases with "-op" flag when errors are reported on *.pas*
+  files.
+- **[Compiler]** Handle generic compilation errors that are not reported on source files or *.pas* files, e.g.
+  when one of the import directories is invalid.
 - **[Lexer]** Separate the list of Papyrus language defined keywords into 2, so *Parent/Self/True/False/None*
   can be styled differently.
 - **[Compiler]** Status bar shows the game name for current Papyrus script file.
@@ -62,9 +68,10 @@ enhancements, and made to work with the latest Notepad++ release.
 - **[Compiler]** When compilation succeeds or fails, status bar shows the file name alongside result message,
   if current file window is not the same as the one that got compiled.
 - **[Lexer]** Slightly better performance in syntax highlighting with property name caching, especially with
-  big script files. In addition, class name caching can be turned on in Settings menu. However, there is a
-  caveat. See [configuration guide](Configuration.md#class-names-caching) for details. Configurable behavior,
-  default off.
+  big script files.
+- **[Lexer]** In addition, class name caching can be turned on in Settings menu. However, there is a caveat.
+  See [configuration guide](Configuration.md#class-names-caching) for details. Configurable behavior, default
+  off.
 - **[Settings]** No more forced setup on startup.
 - **[Settings]** Revamped UI with many more settings now configurable.
 
@@ -72,7 +79,7 @@ enhancements, and made to work with the latest Notepad++ release.
 - **[Compiler]** Anonymize compiled *.pex* file. In case you are not aware, when you use PapyrusCompiler to
   compile any script your user account and machine name are stored inside the generated *.pex* file, so it's
   a big **privacy concern**.
-- **[Annotator]** Show annotation below error lines, and/or show indications where errors are. configurable
+- **[Annotator]** Show annotation below error lines, and/or show indications where errors are. Configurable
   behavior, default on.
 - **[Compiler]** *Skyrim SE* and *Fallout 4* support.
 - **[Compiler]** Auto detection of game/compiler settings to be used based on source script file location.
@@ -90,8 +97,6 @@ enhancements, and made to work with the latest Notepad++ release.
     in a Papyrus script file.
 
 ### Future plan
-- **[Lexer]** [FOMOD installer](https://fomod-docs.readthedocs.io/en/latest/tutorial.html) XML syntax
-  highlighting.
 - **[Lexer/Compiler]** [Papyrus Projects (PPJ)](https://www.creationkit.com/fallout4/index.php?title=Papyrus_Projects)
   support.
 

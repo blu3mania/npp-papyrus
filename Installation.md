@@ -24,7 +24,7 @@ features that are not part of the lexer/compiler:
 
   You can either use this plugin's *"Install auto completion support"* feature under *Advanced* menu, or
   manually copy this file to *"autoCompletion"* directory under Notepad++'s installation folder.
-  
+
   It provides auto-completion support for functions defined in base game, *SKSE*, and even *SkyUI*. Though,
   there is currently [a bug in Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997)
   that makes it case sensitive when using the default *"Function and word completion"* option for Notepad++'s
@@ -40,13 +40,13 @@ features that are not part of the lexer/compiler:
 
   You can use this plugin's *"Install function list support"* feature under *Advanced* menu, which
   automatically copies this file and also sets correct langID in *overrideMap.xml*.
-  
+
   If you want to do it manually, it is a bit tricky. First, copy this file to *functionList* directory under
   Notepad++'s data folder (again, it's not Notepad++'s installation folder, and by default it's
   *"%APPDATA%\Notepad++"*). Then, you need to update overrideMap.xml under that folder. The key is to find the
   langID assigned to Papyrus lexer, which can be obtained by using the plugin's *"Show langID"* feature under
   *Advanced* menu.
-  
+
   A sample *overrideMap.xml* is provided that works with Notepad++ v7.9.x when Papyrus plugin is the only lexer
   plugin, or it happens to be the *first one* to Notepad++ (*note*, it **may not** be based on plugins'
   alphabetic order).

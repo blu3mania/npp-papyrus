@@ -284,7 +284,7 @@ namespace papyrus {
     // Get line start position and length
     npp_position_t lineStart = ::SendMessage(handle, SCI_POSITIONFROMLINE, lineError.line, 0);
     npp_position_t lineLength = ::SendMessage(handle, SCI_LINELENGTH, lineError.line, 0);
-    
+
     // Scintilla does not use wide char, also returned line length does not include the ending null char
     char* line = new char[lineLength + 1];
     auto autoCleanup = gsl::finally([&] { delete[] line; });

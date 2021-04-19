@@ -127,7 +127,7 @@ namespace papyrus {
 
     ::SendMessage(hwndToolTip, TTM_ACTIVATE, TRUE, 0);
     ::SendMessage(hwndToolTip, TTM_SETMAXTIPWIDTH, 0, 200);
-    
+
     // Convert delay time to milliseconds
     delayTime *= 1000;
     ::SendMessage(hwndToolTip, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM((delayTime), (0)));

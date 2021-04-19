@@ -451,7 +451,7 @@ namespace papyrus {
   void Plugin::clearActiveCompilation() {
     activeCompilationRequest = {
       .game = Game::Auto,
-      .bufferID = 0 
+      .bufferID = 0
     };
     isComplingCurrentFile = false;
   }
@@ -537,15 +537,21 @@ namespace papyrus {
 
       case PPM_JUMP_TO_ERROR: {
         Error* error = reinterpret_cast<Error*>(wParam);
-        auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
-          [&](const auto& comparisionError) {
-            return comparisionError.file == error->file && comparisionError.line == error->line;
+        if (!error->file.empty()) {
+          // Error message with file name. Check if the file is already being actively tracked
+          auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
+            [&](const auto& comparisionError) {
+              return comparisionError.file == error->file && comparisionError.line == error->line;
+            }
+          );
+          if (iter == activatedErrorsTrackingList.end()) {
+            // The most recent error selection always takes priority so push it to the front of the queue
+            activatedErrorsTrackingList.push_front(*error);
+            ::SendMessage(nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(error->file.c_str()));
           }
-        );
-        if (iter == activatedErrorsTrackingList.end()) {
-          // The most recent error selection always takes priority so push it to the front of the queue
-          activatedErrorsTrackingList.push_front(*error);
-          ::SendMessage(nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(error->file.c_str()));
+        } else {
+          // Generic error message that is not file specific. Show it in a message box
+          ::MessageBox(nppData._nppHandle, error->message.c_str(), PLUGIN_NAME L" Compilation Error", MB_OK);
         }
         return 0;
       }

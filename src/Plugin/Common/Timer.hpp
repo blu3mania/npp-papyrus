@@ -47,7 +47,7 @@ namespace utility {
 
   // Timer allows you to get a callback after some specific time. Naturally, the callback happens on a
   // separate thread so the client function should take synchronization between threads into consideration.
-  // 
+  //
   // Due to the nature of this class, it usually should not be discarded before timer callback is invoked,
   // as that will trigger the destructor and cause unexpected behavior. If the actions defined in the callback
   // are no longer needed, the returned value can be disposed at that time. In such a case it is recommended

@@ -166,7 +166,7 @@ namespace papyrus {
                         [&](const auto& property) {
                          return property.name == propertyName && iter->line > line; // Due to line addition
                         }
-                      );                      
+                      );
                     }
                     if (iter != propertyLines.end() && iter->needRecheck) {
                       iter->line = line;
@@ -306,7 +306,7 @@ namespace papyrus {
     auto pathComponents = utility::split(className, ":");
     for (const auto& pathComponent : pathComponents) {
       relativePath /= pathComponent;
-    } 
+    }
     relativePath.replace_extension(".psc");
 
     // Find the relative path in configured import directories
@@ -510,7 +510,7 @@ namespace papyrus {
 
     lexerSettings.enableFoldMiddle.subscribe([&](auto eventData) { restyleDocument(); });
 
-    lexerSettings.enableClassNameCache.subscribe([&](auto eventData) { 
+    lexerSettings.enableClassNameCache.subscribe([&](auto eventData) {
       if (!eventData.newValue) {
         classNames.clear();
         nonClassNames.clear();

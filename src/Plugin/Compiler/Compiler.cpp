@@ -194,7 +194,7 @@ namespace papyrus {
       file.read(reinterpret_cast<char *>(&signature), 4);
       if (signature == 0xDEC057FA || signature == 0xFA57C0DE) {
         bool isBigEndian = (signature == 0xDEC057FA);
-        
+
         // Skip to "Script path size"
         file.seekg(16);
 
@@ -211,7 +211,7 @@ namespace papyrus {
         noError = false;
       }
     }
-    
+
     return noError;
   }
 
@@ -312,6 +312,12 @@ namespace papyrus {
       }
     }
 
+    if (errors.empty()) {
+      // In the rare case when error cannot be parsed (likely some errors dumped on stdout that are not related to specific files), send the whole output to error window
+      errors.push_back(Error {
+        .message = errorText
+      });
+    }
     ::SendMessage(messageWindow, messages.compilationFailureMessage, reinterpret_cast<WPARAM>(&errors), hasUnparsableLines);
   }
 

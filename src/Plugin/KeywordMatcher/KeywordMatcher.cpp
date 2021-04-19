@@ -267,7 +267,7 @@ namespace papyrus {
         return nestedFlowControlEnd;
       }
 
-      // Use nested flow control block's end postion as new start search position 
+      // Use nested flow control block's end postion as new start search position
       searchStart = searchForward ? nestedFlowControlEnd.cpMax : nestedFlowControlEnd.cpMin;
     }
 

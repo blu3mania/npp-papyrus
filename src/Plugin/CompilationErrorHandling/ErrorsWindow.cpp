@@ -54,7 +54,7 @@ namespace papyrus {
     column.pszText = const_cast<LPWSTR>(L"Message");
     ListView_InsertColumn(listView, 1, &column);
     column.cx = 45;
-    column.pszText = const_cast<LPWSTR>(L"Ln");
+    column.pszText = const_cast<LPWSTR>(L"Line");
     ListView_InsertColumn(listView, 2, &column);
     column.cx = 45;
     column.pszText = const_cast<LPWSTR>(L"Col");

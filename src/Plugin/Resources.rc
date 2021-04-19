@@ -97,7 +97,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
   LTEXT         "To configure lexer's styles, please use Notepad++'s", IDC_SETTINGS_LEXER_STYLER_CONFIG_TEXT1, 12, 156, 168, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "Style Configurator", IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK, 180, 156, 60, 10
   LTEXT         "Select Papyrus Script from Language list, likely the last one", IDC_SETTINGS_LEXER_STYLER_CONFIG_TEXT2, 12, 172, 200, 10, SS_NOTIFY, WS_EX_TRANSPARENT
-  
+
   //
   // Keyword matcher tab
   //
@@ -176,7 +176,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
   EDITTEXT      IDC_SETTINGS_TAB_GAME_COMPILER_PATH, 84, 44, 296, 12, ES_LEFT | ES_AUTOHSCROLL
   LTEXT         "Import directories:", IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL1, 12, 64, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "(One per line)", IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL2, 12, 84, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
-  EDITTEXT      IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES, 84, 64, 296, 48, ES_LEFT | ES_MULTILINE | ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL | WS_VSCROLL 
+  EDITTEXT      IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES, 84, 64, 296, 48, ES_LEFT | ES_MULTILINE | ES_WANTRETURN | ES_AUTOHSCROLL | ES_AUTOVSCROLL | WS_VSCROLL
   LTEXT         "Output directory:", IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY_LABEL, 12, 120, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   EDITTEXT      IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY, 84, 120, 296, 12, ES_LEFT | ES_AUTOHSCROLL
   LTEXT         "Flag file:", IDC_SETTINGS_TAB_GAME_FLAG_FILE_LABEL, 12, 140, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
@@ -209,7 +209,7 @@ Note, if changes have been made after indications were shown, changing ID again 
 
   IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP, L"In this mode, Papyrus compiler to be used is determined by the path of source script file. If it's under a detected game's directory, that game's settings will be used. Otherwise, \
 default game's settings will be used, except for output directory, which will use the one configured for auto mode."
-} 
+}
 
 /////////////////////////////////////////////////////////////////////////////
 //

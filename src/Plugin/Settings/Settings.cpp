@@ -398,7 +398,7 @@ namespace papyrus {
     } else if (gamePath.empty()) {
       gameConfigured = false;
     }
-    
+
     if (gameSettings.installPath.empty() && !gamePath.empty()) {
       gameSettings.installPath = gamePath;
       updated = true;
@@ -417,7 +417,7 @@ namespace papyrus {
     } else if (gameSettings.installPath.empty()) {
       gameConfigured = false;
     }
-    
+
     if (gameSettings.compilerPath.empty() && !gameSettings.installPath.empty()) {
       gameSettings.compilerPath = gameSettings.installPath + L"Papyrus Compiler\\PapyrusCompiler.exe";
       updated = true;

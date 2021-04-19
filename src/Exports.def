@@ -17,13 +17,13 @@
 ;along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 EXPORTS
-	getName
-	isUnicode
-	setInfo
-	getFuncsArray
-	beNotified
-	messageProc
-	GetLexerCount
-	GetLexerName
-	GetLexerStatusText
-	GetLexerFactory
+  getName
+  isUnicode
+  setInfo
+  getFuncsArray
+  beNotified
+  messageProc
+  GetLexerCount
+  GetLexerName
+  GetLexerStatusText
+  GetLexerFactory
