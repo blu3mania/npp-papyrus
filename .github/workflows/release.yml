@@ -57,7 +57,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: VirusTotal Scan
-        uses: crazy-max/ghaction-virustotal@v2
+        uses: crazy-max/ghaction-virustotal@v2.4.1
         with:
           vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           github_token: ${{ github.token }}
