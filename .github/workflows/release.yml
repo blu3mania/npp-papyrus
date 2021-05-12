@@ -37,7 +37,7 @@ jobs:
           & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.build_platform }}-with-manuals.zip Papyrus.dll Papyrus.xml extras ..\*.md
 
       - name: Upload release package
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -47,7 +47,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload release package with manuals included
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
