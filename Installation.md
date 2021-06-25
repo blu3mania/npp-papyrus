@@ -1,12 +1,12 @@
 # Installation
 ## Install the plugin
-This plugin can be installed from Notepad++'s *Plugins Admin*, in which case the configuration will be handled
-automatically. In the rare case when permission is required on Notepad++'s configuration folder, which by
-default is *"%APPDATA%\Notepad++"*, this plugin will prompt to run the copy command with elevated privilege.
-Please accept the UAC prompt when it happens. If somehow that also fails, this plugin will show a notice and
-you can manually copy the config file. **Note**, the data folder is ***not*** under Notepad++'s installation
-folder if you used default directory. Please see [this post](https://community.notepad-plus-plus.org/topic/16996/new-plugins-home-round-2)
-for more details.
+This plugin can be installed from Notepad++'s *Plugins Admin* if you are using Notepad++ version 8+, in which
+case the configuration file will be handled automatically. In the rare case when permission is required on
+Notepad++'s configuration folder, which by default is *"%APPDATA%\Notepad++"*, this plugin will prompt to run
+the copy command with elevated privilege. When this happens, please accept the UAC prompt. If somehow that
+also fails, this plugin will show a notice and you can manually copy the config file. **Note**, the data
+folder is ***not*** under Notepad++'s installation folder if you used default directory. Please see
+[this post](https://community.notepad-plus-plus.org/topic/16996/new-plugins-home-round-2) for more details.
 
 For manual installation, extract the release package to *"plugins\Papyrus"* directory under Notepad++'s
 installation folder, which by default is *"%PROGRAMFILES%\Notepad++"* if you installed 64-bit version, or
@@ -26,12 +26,12 @@ features that are not part of the lexer/compiler:
   manually copy this file to *"autoCompletion"* directory under Notepad++'s installation folder.
 
   It provides auto-completion support for functions defined in base game, *SKSE*, and even *SkyUI*. Though,
-  there is currently [a bug in Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997)
-  that makes it case sensitive when using the default *"Function and word completion"* option for Notepad++'s
-  auto-completion feature.
-
-  The suggestion is to either change it to *"Function completion"* only (you lose auto-completion on words), or
-  always use uppercase for the first letter when typing a game defined function name.
+  if you are currently using a Notepad++ version that is older than v7.9.6, please note that there was
+  [a bug](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997) that made it case sensitive when
+  using the default *"Function and word completion"* option for Notepad++'s auto-completion feature. You
+  should update to the latest Notepad++ release, but if you have to stay with the old version, the suggestion
+  is to either change it to *"Function completion"* only (note that you will lose auto-completion on words),
+  or always use uppercase for the first letter when typing a game defined function name.
 
   *Note*, the content of this auto-completion definition file is copied from
   [Creation Kit web](https://www.creationkit.com/index.php?title=Papyrus_Autocomplete).
