@@ -70,6 +70,12 @@ namespace papyrus {
       FuncItem{}, // Separator2
       FuncItem{ L"About...", aboutMenuFunc, 0, false, nullptr }
     }, keywordMatcher(settings.keywordMatcherSettings) {
+    settingsUpdated.subscribe([&](auto eventData) {
+      if (eventData.newValue) {
+        settings.saveSettings(settingsStorage);
+        onSettingsUpdated();
+      }
+    });
   }
 
   void Plugin::onInit(HINSTANCE instance) {
@@ -798,8 +804,6 @@ namespace papyrus {
 
   void Plugin::showSettings() {
     settingsDialog.doDialog();
-    settings.saveSettings(settingsStorage);
-    onSettingsUpdated();
   }
 
   void Plugin::aboutMenuFunc() {

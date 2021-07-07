@@ -32,8 +32,10 @@ namespace papyrus {
 
   class SettingsDialog : public DialogBase {
     public:
-      inline SettingsDialog(Settings& settings) : DialogBase(IDD_SETTINGS_DIALOG), settings(settings) {}
+      inline SettingsDialog(Settings& settings, utility::PrimitiveTypeValueMonitor<bool>& settingsUpdated) : DialogBase(IDD_SETTINGS_DIALOG), settings(settings), settingsUpdated(settingsUpdated) {}
       ~SettingsDialog();
+
+      void doDialog() override;
 
     protected:
       void initControls() override;
@@ -85,6 +87,7 @@ namespace papyrus {
       // Private members
       //
       Settings& settings;
+      utility::PrimitiveTypeValueMonitor<bool>& settingsUpdated;
       Tab currentTab { Tab::Lexer };
 
       HWND matcherIndicatorIdTooltip {};

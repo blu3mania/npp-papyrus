@@ -93,6 +93,11 @@ namespace papyrus {
     }
   }
 
+  void SettingsDialog::doDialog() {
+    settingsUpdated = false;
+    DialogBase::doDialog();
+  }
+
   // Protected methods
   //
 
@@ -847,6 +852,7 @@ namespace papyrus {
       saveGameSettings(settings.compilerSettings.gameSettings(game), game == Game::Fallout4);
     }
 
+    settingsUpdated = true;
     return true;
   }
 
