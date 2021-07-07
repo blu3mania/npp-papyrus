@@ -31,11 +31,14 @@ namespace papyrus {
   using Game = game::Game;
 
   class SettingsDialog : public DialogBase {
+
     public:
-      inline SettingsDialog(Settings& settings, utility::PrimitiveTypeValueMonitor<bool>& settingsUpdated) : DialogBase(IDD_SETTINGS_DIALOG), settings(settings), settingsUpdated(settingsUpdated) {}
+      using callback_t = std::function<void()>;
+
+      inline SettingsDialog(Settings& settings) : DialogBase(IDD_SETTINGS_DIALOG), settings(settings) {}
       ~SettingsDialog();
 
-      void doDialog() override;
+      void doDialog(callback_t callback);
 
     protected:
       void initControls() override;
@@ -87,7 +90,7 @@ namespace papyrus {
       // Private members
       //
       Settings& settings;
-      utility::PrimitiveTypeValueMonitor<bool>& settingsUpdated;
+      callback_t settingsUpdatedFunc {};
       Tab currentTab { Tab::Lexer };
 
       HWND matcherIndicatorIdTooltip {};

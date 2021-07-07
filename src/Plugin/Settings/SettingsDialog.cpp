@@ -93,8 +93,8 @@ namespace papyrus {
     }
   }
 
-  void SettingsDialog::doDialog() {
-    settingsUpdated = false;
+  void SettingsDialog::doDialog(callback_t callback) {
+    settingsUpdatedFunc = callback;
     DialogBase::doDialog();
   }
 
@@ -852,7 +852,9 @@ namespace papyrus {
       saveGameSettings(settings.compilerSettings.gameSettings(game), game == Game::Fallout4);
     }
 
-    settingsUpdated = true;
+    if (settingsUpdatedFunc) {
+      settingsUpdatedFunc();
+    }
     return true;
   }
 

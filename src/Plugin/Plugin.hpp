@@ -148,10 +148,9 @@ namespace papyrus {
       HINSTANCE instance {};
       NppData nppData;
 
-      utility::PrimitiveTypeValueMonitor<bool> settingsUpdated;
       Settings settings;
       SettingsStorage settingsStorage;
-      SettingsDialog settingsDialog {settings, settingsUpdated};
+      SettingsDialog settingsDialog {settings};
 
       std::unique_ptr<Compiler> compiler;
       CompilationRequest activeCompilationRequest;
