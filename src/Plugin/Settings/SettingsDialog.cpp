@@ -79,9 +79,33 @@ namespace papyrus {
 
     stylerConfigLink.destroy();
 
+    if (foldMiddleTooltip) {
+      ::DestroyWindow(foldMiddleTooltip);
+      foldMiddleTooltip = nullptr;
+    }
+    if (classNameCachingTooltip) {
+      ::DestroyWindow(classNameCachingTooltip);
+      classNameCachingTooltip = nullptr;
+    }
+    if (classLinkTooltip) {
+      ::DestroyWindow(classLinkTooltip);
+      classLinkTooltip = nullptr;
+    }
+    if (matcherTooltip) {
+      ::DestroyWindow(matcherTooltip);
+      matcherTooltip = nullptr;
+    }
     if (matcherIndicatorIdTooltip) {
       ::DestroyWindow(matcherIndicatorIdTooltip);
       matcherIndicatorIdTooltip = nullptr;
+    }
+    if (annotationTooltip) {
+      ::DestroyWindow(annotationTooltip);
+      annotationTooltip = nullptr;
+    }
+    if (indicationTooltip) {
+      ::DestroyWindow(indicationTooltip);
+      indicationTooltip = nullptr;
     }
     if (errorIndicatorIdTooltip) {
       ::DestroyWindow(errorIndicatorIdTooltip);
@@ -105,9 +129,13 @@ namespace papyrus {
     // Lexer settings
     //
     setChecked(IDC_SETTINGS_LEXER_FOLD_MIDDLE, settings.lexerSettings.enableFoldMiddle);
+    foldMiddleTooltip = createToolTip(IDC_SETTINGS_LEXER_FOLD_MIDDLE, IDS_SETTINGS_LEXER_FOLD_MIDDLE_TOOLTIP);
+
     setChecked(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, settings.lexerSettings.enableClassNameCache);
+    classNameCachingTooltip = createToolTip(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, IDS_SETTINGS_LEXER_CLASS_NAME_CACHING_TOOLTIP);
 
     setChecked(IDC_SETTINGS_LEXER_CLASS_LINK, settings.lexerSettings.enableClassLink);
+    classLinkTooltip = createToolTip(IDC_SETTINGS_LEXER_CLASS_LINK, IDS_SETTINGS_LEXER_CLASS_LINK_TOOLTIP);
     setChecked(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, settings.lexerSettings.classLinkUnderline);
     initColorPicker(classLinkFgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL);
     classLinkFgColorPicker.setColour(settings.lexerSettings.classLinkForegroundColor);
@@ -123,6 +151,8 @@ namespace papyrus {
     // Keyword matcher settings
     //
     setChecked(IDC_SETTINGS_MATCHER, settings.keywordMatcherSettings.enableKeywordMatching);
+    matcherTooltip = createToolTip(IDC_SETTINGS_MATCHER, IDS_SETTINGS_MATCHER_TOOLTIP);
+
     setChecked(IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_FUNCTION);
     setChecked(IDC_SETTINGS_MATCHER_KEYWORD_STATE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_STATE);
     setChecked(IDC_SETTINGS_MATCHER_KEYWORD_EVENT, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_EVENT);
@@ -147,17 +177,18 @@ namespace papyrus {
     // Error annotator settings
     //
     setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, settings.errorAnnotatorSettings.enableAnnotation);
+    annotationTooltip = createToolTip(IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP);
     initColorPicker(annotationFgColorPicker, IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL);
     annotationFgColorPicker.setColour(settings.errorAnnotatorSettings.annotationForegroundColor);
     initColorPicker(annotationBgColorPicker, IDC_SETTINGS_ANNOTATOR_ANNOTATION_BGCOLOR_LABEL);
     annotationBgColorPicker.setColour(settings.errorAnnotatorSettings.annotationBackgroundColor);
     setChecked(IDC_SETTINGS_ANNOTATOR_ANNOTATION_ITALIC, settings.errorAnnotatorSettings.isAnnotationItalic);
     setChecked(IDC_SETTINGS_ANNOTATOR_ANNOTATION_BOLD, settings.errorAnnotatorSettings.isAnnotationBold);
-    setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
 
+    setChecked(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
+    indicationTooltip = createToolTip(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP);
     errorIndicatorIdTooltip = createToolTip(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP);
     setText(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, std::to_wstring(settings.errorAnnotatorSettings.indicatorID));
-
     initDropdownList(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, indicatorStyles, settings.errorAnnotatorSettings.indicatorStyle);
     initColorPicker(errorIndicatorFgColorPicker, IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL);
     errorIndicatorFgColorPicker.setColour(settings.errorAnnotatorSettings.indicatorForegroundColor);

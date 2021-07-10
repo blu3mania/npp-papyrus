@@ -93,7 +93,13 @@ namespace papyrus {
       callback_t settingsUpdatedFunc {};
       Tab currentTab { Tab::Lexer };
 
+      HWND foldMiddleTooltip {};
+      HWND classNameCachingTooltip {};
+      HWND classLinkTooltip {};
+      HWND matcherTooltip {};
       HWND matcherIndicatorIdTooltip {};
+      HWND annotationTooltip {};
+      HWND indicationTooltip {};
       HWND errorIndicatorIdTooltip {};
       HWND autoModeTooltip {};
 

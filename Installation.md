@@ -26,7 +26,7 @@ features that are not part of the lexer/compiler:
   manually copy this file to *"autoCompletion"* directory under Notepad++'s installation folder.
 
   It provides auto-completion support for functions defined in base game, *SKSE*, and even *SkyUI*. Though,
-  if you are currently using a Notepad++ version that is older than v7.9.6, please note that there was
+  if you are currently using a Notepad++ version that is older than v8, please note that there was
   [a bug](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997) that made it case sensitive when
   using the default *"Function and word completion"* option for Notepad++'s auto-completion feature. You
   should update to the latest Notepad++ release, but if you have to stay with the old version, the suggestion

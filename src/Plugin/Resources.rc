@@ -202,7 +202,21 @@ FONT 8, TEXT("MS Shell Dlg"), 0, 0, 0x0
 
 STRINGTABLE
 {
+  IDS_SETTINGS_LEXER_FOLD_MIDDLE_TOOLTIP, L"When enabled, If/Else/ElseIf blocks are folded separately. When disabled, only If blocks are folded until terminated by EndIf."
+
+  IDS_SETTINGS_LEXER_CLASS_NAME_CACHING_TOOLTIP, L"When a script file references another script (a.k.a. class), the file name is checked every time. Enabling this option will cache the check result to reduce I/O operation.\r\n\
+However, there is a caveat, that when a new script file is generated in one of the import directories, the new class name may not be dynamically recognized, if the name has already been checked and treated as not a class name.\r\n\
+When this happens, simply disable the option to force the lexer to re-check for class names. Afterwards the option can be enabled again."
+
+  IDS_SETTINGS_LEXER_CLASS_LINK_TOOLTIP, L"When enabled, referenced script (class) file can be opened by mouse double clicking while holding down the configured keyboard modifier."
+
+  IDS_SETTINGS_MATCHER_TOOLTIP, L"Highlight matching keyword pair when cursor is at one of the words in the pair. When matching If/EndIf pair, Else/ElseIf can also be optionally included in the match."
+
   IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indiator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number."
+
+  IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP, L"Show annotations under error lines. They are inside a round box. When there are multiple errors on the same line, they are grouped in the same annotation box."
+
+  IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP, L"Show indications where errors happen."
 
   IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indiator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number.\r\n\
 Note, if changes have been made after indications were shown, changing ID again may cause indications to be rendered incorrectly. Trigger recompilation to fix them if needed."
