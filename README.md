@@ -7,6 +7,7 @@
 
 ![Build Status](https://github.com/blu3mania/npp-papyrus/workflows/Build/badge.svg?branch=main)
 ![CodeQL Status](https://github.com/blu3mania/npp-papyrus/workflows/CodeQL/badge.svg?branch=main)
+![Microsoft C++ Code Analysis Status](https://github.com/blu3mania/npp-papyrus/workflows/Microsoft%20C++%20Code%20Analysis/badge.svg?branch=main)
 ![Latest Release](https://img.shields.io/github/v/release/blu3mania/npp-papyrus)
 
 This plugin adds support of [Bethesda](https://bethesdagamestudios.com/)'s Papyrus scripting language to
