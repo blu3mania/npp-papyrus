@@ -18,8 +18,6 @@ on:
     - cron: '36 2 * * 3'
 
 env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: PapyrusPlugin.sln
   # Path to the CMake build directory.
   build: '${{ github.workspace }}/build'
   config: 'Debug'
@@ -45,12 +43,12 @@ jobs:
       #   run: cmake --build ${{ env.build }} --config ${{ env.config }}
 
       - name: Run MSVC Code Analysis
-        uses: microsoft/msvc-code-analysis-action@v0.0.1
+        uses: microsoft/msvc-code-analysis-action@v0.1.0
         # Provide a unique ID to access the sarif output path
         id: run-analysis
         with:
           cmakeBuildDirectory: ${{ env.build }}
-          #buildConfiguration: ${{ env.config }}
+          buildConfiguration: ${{ env.config }}
           # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
 
