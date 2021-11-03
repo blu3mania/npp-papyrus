@@ -23,9 +23,11 @@
 
 #include "StaticDialog.h"
 //#include "CustomFileDialog.h"  // PapyrusPlugin modification -- removed as folderBrowser/getFolderName are disabled
+
+//#include "FileInterface.h"  // PapyrusPlugin modification -- not used
 #include "Common.h"
 #include "Utf8.h"
-//#include <Parameters.h>
+//#include <Parameters.h>  // PapyrusPlugin modification -- not used
 
 void printInt(int int2print)
 {
@@ -119,20 +121,19 @@ generic_string relativeFilePathToFullFilePath(const TCHAR *relativeFilePath)
 /*
 void writeFileContent(const TCHAR *file2write, const char *content2write)
 {
-	FILE *f = generic_fopen(file2write, TEXT("w+c"));
-	fwrite(content2write, sizeof(content2write[0]), strlen(content2write), f);
-	fflush(f);
-	fclose(f);
+	Win32_IO_File file(file2write, Win32_IO_File::Mode::WRITE);
+
+	if (file.isOpened())
+		file.writeStr(content2write);
 }
 
 
 void writeLog(const TCHAR *logFileName, const char *log2write)
 {
-	FILE *f = generic_fopen(logFileName, TEXT("a+c"));
-	fwrite(log2write, sizeof(log2write[0]), strlen(log2write), f);
-	fputc('\n', f);
-	fflush(f);
-	fclose(f);
+	Win32_IO_File file(logFileName, Win32_IO_File::Mode::APPEND);
+
+	if (file.isOpened())
+		file.writeStr(log2write);
 }
 */
 // End of PapyrusPlugin modification
@@ -626,21 +627,21 @@ generic_string PathAppend(generic_string& strDest, const generic_string& str2app
 		return strDest;
 	}
 
-	if (strDest.empty() && not str2append.empty()) // "" + titi
+	if (strDest.empty() && !str2append.empty()) // "" + titi
 	{
 		strDest = str2append;
 		return strDest;
 	}
 
-	if (strDest[strDest.length() - 1] == '\\' && (not str2append.empty() && str2append[0] == '\\')) // toto\ + \titi
+	if (strDest[strDest.length() - 1] == '\\' && (!str2append.empty() && str2append[0] == '\\')) // toto\ + \titi
 	{
 		strDest.erase(strDest.length() - 1, 1);
 		strDest += str2append;
 		return strDest;
 	}
 
-	if ((strDest[strDest.length() - 1] == '\\' && (not str2append.empty() && str2append[0] != '\\')) // toto\ + titi
-		|| (strDest[strDest.length() - 1] != '\\' && (not str2append.empty() && str2append[0] == '\\'))) // toto + \titi
+	if ((strDest[strDest.length() - 1] == '\\' && (!str2append.empty() && str2append[0] != '\\')) // toto\ + titi
+		|| (strDest[strDest.length() - 1] != '\\' && (!str2append.empty() && str2append[0] == '\\'))) // toto + \titi
 	{
 		strDest += str2append;
 		return strDest;
@@ -955,7 +956,7 @@ bool allPatternsAreExclusion(const std::vector<generic_string> patterns)
 			break;
 		}
 	}
-	return not oneInclusionPatternFound;
+	return !oneInclusionPatternFound;
 }
 
 generic_string GetLastErrorAsString(DWORD errorCode)
@@ -980,7 +981,7 @@ generic_string GetLastErrorAsString(DWORD errorCode)
 	return errorMsg;
 }
 
-HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText)
+HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText, bool isRTL)
 {
 	if (!toolID || !hDlg || !pszText)
 	{
@@ -995,7 +996,7 @@ HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText)
 	}
 
 	// Create the tooltip. g_hInst is the global instance handle.
-	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
+	HWND hwndTip = CreateWindowEx(isRTL ? WS_EX_LAYOUTRTL : 0, TOOLTIPS_CLASS, NULL,
 		WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
@@ -1006,6 +1007,9 @@ HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText)
 	{
 		return NULL;
 	}
+
+        // PapyrusPlugin modification -- ignore dark mode support
+	//NppDarkMode::setDarkTooltips(hwndTip, NppDarkMode::ToolTipsType::tooltip);
 
 	// Associate the tooltip with the tool.
 	TOOLINFO toolInfo = { 0 };
@@ -1028,6 +1032,48 @@ HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText)
 	return hwndTip;
 }
 
+HWND CreateToolTipRect(int toolID, HWND hWnd, HINSTANCE hInst, const PTSTR pszText, const RECT rc)
+{
+	if (!toolID || !hWnd || !pszText)
+	{
+		return NULL;
+	}
+
+	// Create the tooltip. g_hInst is the global instance handle.
+	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
+		WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		hWnd, NULL,
+		hInst, NULL);
+
+	if (!hwndTip)
+	{
+		return NULL;
+	}
+
+	// Associate the tooltip with the tool.
+	TOOLINFO toolInfo = { 0 };
+	toolInfo.cbSize = sizeof(toolInfo);
+	toolInfo.hwnd = hWnd;
+	toolInfo.uFlags = TTF_SUBCLASS;
+	toolInfo.uId = toolID;
+	toolInfo.lpszText = pszText;
+	toolInfo.rect = rc;
+	if (!SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo))
+	{
+		DestroyWindow(hwndTip);
+		return NULL;
+	}
+
+	SendMessage(hwndTip, TTM_ACTIVATE, TRUE, 0);
+	SendMessage(hwndTip, TTM_SETMAXTIPWIDTH, 0, 200);
+	// Make tip stay 15 seconds
+	SendMessage(hwndTip, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM((15000), (0)));
+
+	return hwndTip;
+}
+
 // PapyrusPlugin modification -- not used
 /*
 bool isCertificateValidated(const generic_string & fullFilePath, const generic_string & subjectName2check)
@@ -1036,10 +1082,12 @@ bool isCertificateValidated(const generic_string & fullFilePath, const generic_s
 	HCERTSTORE hStore = NULL;
 	HCRYPTMSG hMsg = NULL;
 	PCCERT_CONTEXT pCertContext = NULL;
-	BOOL result;
-	DWORD dwEncoding, dwContentType, dwFormatType;
+	BOOL result = FALSE;
+	DWORD dwEncoding = 0;
+	DWORD dwContentType = 0;
+	DWORD dwFormatType = 0;
 	PCMSG_SIGNER_INFO pSignerInfo = NULL;
-	DWORD dwSignerInfo;
+	DWORD dwSignerInfo = 0;
 	CERT_INFO CertInfo;
 	LPTSTR szName = NULL;
 
@@ -1099,7 +1147,7 @@ bool isCertificateValidated(const generic_string & fullFilePath, const generic_s
 		CertInfo.SerialNumber = pSignerInfo->SerialNumber;
 
 		pCertContext = CertFindCertificateInStore(hStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_SUBJECT_CERT, (PVOID)&CertInfo, NULL);
-		if (not pCertContext)
+		if (!pCertContext)
 		{
 			generic_string errorMessage = TEXT("Certificate context: ");
 			errorMessage += GetLastErrorAsString(GetLastError());
@@ -1270,6 +1318,18 @@ void trim(generic_string& str)
 	}
 	else str.erase(str.begin(), str.end());
 }
+
+// PapyrusPlugin modification -- not used
+/*
+bool endsWith(const generic_string& s, const generic_string& suffix)
+{
+#if defined(_MSVC_LANG) && (_MSVC_LANG > 201402L)
+#error Replace this function with basic_string::ends_with
+#endif
+	size_t pos = s.find(suffix);
+	return pos != s.npos && ((s.length() - pos) == suffix.length());
+}
+*/
 
 int nbDigitsFromNbLines(size_t nbLines)
 {
