@@ -22,7 +22,9 @@ using namespace Scintilla;
  */
 static char **ArrayFromWordList(char *wordlist, size_t slen, int *len, bool onlyLineEnds = false) {
 	int prev = '\n';
-	int words = 0;
+  // PapyrusPlugin modification -- address MSVC code analysis alert
+	//int words = 0;
+  size_t words = 0;
 	// For rapid determination of whether a character is a separator, build
 	// a look up table.
 	bool wordSeparator[256] = {};	// Initialise all to false.

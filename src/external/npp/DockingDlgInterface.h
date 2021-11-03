@@ -24,7 +24,7 @@
 #include <shlwapi.h>
 #include "Common.h"
 #include "StaticDialog.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support
+//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 
 
 
@@ -95,7 +95,7 @@ protected :
 	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message)
 		{
-      // PapyrusPlugin modification -- ignore dark mode support
+      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
       /*
 			case WM_ERASEBKGND:
 			{

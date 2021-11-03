@@ -472,7 +472,7 @@ namespace papyrus {
         if (wParam == PARAM_COMPILATION_WITH_ANONYMIZATION) {
           msg += L"and anonymization ";
         }
-        msg += L"successful";
+        msg += L"succeeded";
         if (!isComplingCurrentFile) {
           msg += L": " + activeCompilationRequest.filePath;
         }
@@ -519,7 +519,7 @@ namespace papyrus {
           errorsWindow->clear();
         }
 
-        std::wstring msg(L"Compilation successful but anonymization failed: ");
+        std::wstring msg(L"Compilation succeeded but anonymization failed: ");
         msg += *reinterpret_cast<std::wstring*>(wParam);
         if (!isComplingCurrentFile) {
           msg += L" File: " + activeCompilationRequest.filePath;

@@ -51,8 +51,8 @@ namespace papyrus {
     GameSettings skyrim;
     GameSettings sse;
     GameSettings fo4;
-    Game gameMode = Game::Auto;
-    Game autoModeDefaultGame = Game::Auto;
+    Game gameMode {Game::Auto};
+    Game autoModeDefaultGame {Game::Auto};
     std::wstring autoModeOutputDirectory;
     utility::PrimitiveTypeValueMonitor<bool> allowUnmanagedSource;
 

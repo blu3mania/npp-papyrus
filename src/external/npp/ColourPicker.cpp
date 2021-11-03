@@ -18,7 +18,7 @@
 #include <stdexcept>
 #include "ColourPicker.h"
 #include "ColourPopup.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support
+//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 
 void ColourPicker::init(HINSTANCE hInst, HWND parent)
 {
@@ -64,7 +64,7 @@ void ColourPicker::drawBackground(HDC hDC)
 	getClientRect(rc);
 	hbrush = ::CreateSolidBrush(_currentColour);
 	HGDIOBJ oldObj = ::SelectObject(hDC, hbrush);
-  // PapyrusPlugin modification -- ignore dark mode support
+  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
   /*
 	HPEN holdPen = nullptr;
 	if (NppDarkMode::isEnabled())
@@ -94,13 +94,25 @@ void ColourPicker::drawForeground(HDC hDC)
 
 	int oldMode = ::SetBkMode(hDC, TRANSPARENT);
 	getClientRect(rc);
+  // PapyrusPlugin modification -- improved luminance calculation and also only calculate luminance when not enabled
+  /*
 	COLORREF strikeOut = RGB(0,0,0);
 	if ((((_currentColour      ) & 0xFF) +
 		 ((_currentColour >>  8) & 0xFF) +
 		 ((_currentColour >> 16) & 0xFF)) < 200)	//check if the color is too dark, if so, use white strikeout
 		strikeOut = RGB(0xFF,0xFF,0xFF);
-	if (!_isEnabled)
+  */
+	if (!_isEnabled) {
+    COLORREF strikeOut = RGB(0,0,0);
+    double red = _currentColour & 0xFF;
+    double green = (_currentColour >> 8) & 0xFF;
+    double blue = (_currentColour >> 16) & 0xFF;
+    if (red * 0.299 + green * 0.587 + blue * 0.114 < 127.5) {
+      strikeOut = RGB(0xFF,0xFF,0xFF);
+    }
 		hbrush = ::CreateHatchBrush(HS_FDIAGONAL, strikeOut);
+  }
+  // PapyrusPlugin modification ends
 	HGDIOBJ oldObj = ::SelectObject(hDC, hbrush);
 	::Rectangle(hDC, 0, 0, rc.right, rc.bottom);
 	::SelectObject(hDC, oldObj);

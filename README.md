@@ -46,6 +46,7 @@ enhancements, and made to work with the latest Notepad++ release.
 - **[Lexer]** White spaces are now styled correctly.
 - **[Compiler]** Only run compiler if active file is using Papyrus Script lexer. Configurable behavior,
   default on.
+- **[Compiler]** Properly release process handle after compilation.
 
 ### Improvements
 - **[Lexer]** Upgrade to support Scintilla's *ILexer5*.
@@ -120,12 +121,16 @@ The project comes with the needed Scintilla and Notepad++ files for building. It
 which means if you clone the repository, you should specify *--recurse-submodules* to also get these modules
 in your local repository.
 
-To build the project in *Visual Studio 2019*, just open the solution file in VS2019 and build. For those who
-use *Visual Studio Code*, a *.vscode* folder is provided at src level, with tasks defined and the default build
-task uses MSBuild to generate the *Release|x64* output. **Note**, you need to download *Build Tools or Visual
-Studio 2019* from [this page](https://visualstudio.microsoft.com/downloads/), and launch VSCode from *Developer
-Command Prompt* for VS 2019 by running *"code ."* from src directory, so that environment needed by *MSBuild*
-is set up properly.
+- To build the project in *Visual Studio 2019*, just open the solution file in VS2019 and build.
+- For those who use *Visual Studio Code*, a *.vscode* folder is provided at src level, with tasks defined and
+  the default build task uses MSBuild to generate the *Release|x64* output. **Note**, you need to download
+  *Build Tools or Visual Studio 2019* from [this page](https://visualstudio.microsoft.com/downloads/), and
+  launch VSCode from *Developer Command Prompt* for VS 2019 by running *"code ."* from src directory, so that
+  environment needed by *MSBuild* is set up properly.
+- The third option is cmake. A *CMakeLists.txt* file is provided in src directory. It is recommended to use a
+  separate build directory at top level. For example, "cmake -S src -B build" creates a build directory at top
+  level and prepares the build environment, then, "cmake --build build --config Release" builds the project in
+  release mode.
 
 
 ## Code Structure

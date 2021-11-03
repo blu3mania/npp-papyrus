@@ -18,7 +18,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "ColourPopup.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support
+//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 
 DWORD colourItems[] = {
 	RGB(  0,   0,   0),	RGB( 64,   0,   0),	RGB(128,   0,   0),	RGB(128,  64,  64),	RGB(255,   0,   0),	RGB(255, 128, 128),
@@ -83,7 +83,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 	{
 		case WM_INITDIALOG:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support
+      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 			//NppDarkMode::autoSubclassAndThemeChildControls(_hSelf);
 
 			int nColor;
@@ -97,7 +97,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 		
 		case WM_CTLCOLORLISTBOX:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support
+      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
       /*
 			if (NppDarkMode::isEnabled())
 			{
@@ -110,7 +110,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 		case WM_CTLCOLORDLG:
 		case WM_CTLCOLORSTATIC:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support
+      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
       /*
 			if (NppDarkMode::isEnabled())
 			{
@@ -120,7 +120,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 			break;
 		}
 
-    // PapyrusPlugin modification -- ignore dark mode support
+    // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
     /*
 		case NPPM_INTERNAL_REFRESHDARKMODE:
 		{
@@ -157,7 +157,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 							hbrush = CreateSolidBrush((COLORREF)cr);
 							FillRect(hdc, &rc, hbrush);
 							DeleteObject(hbrush);
-              // PapyrusPlugin modification -- ignore dark mode support
+              // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 							//hbrush = CreateSolidBrush(NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : RGB(0, 0, 0));
 							hbrush = CreateSolidBrush(RGB(0, 0, 0));
 							FrameRect(hdc, &rc, hbrush);
@@ -172,7 +172,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 						rc.bottom --;
 						rc.right --;
 						// Draw the lighted side.
-            // PapyrusPlugin modification -- ignore dark mode support
+            // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 						//HPEN hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNSHADOW));
 						HPEN hpen = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_BTNSHADOW));
 						HPEN holdPen = (HPEN)SelectObject(hdc, hpen);
@@ -182,7 +182,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 						SelectObject(hdc, holdPen);
 						DeleteObject(hpen);
 						// Draw the darkened side.
-            // PapyrusPlugin modification -- ignore dark mode support
+            // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 						//hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNHIGHLIGHT));
 						hpen = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_BTNHIGHLIGHT));
 						holdPen = (HPEN)SelectObject(hdc, hpen);
@@ -193,7 +193,7 @@ INT_PTR CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM lP
 					}
 					else 
 					{
-            // PapyrusPlugin modification -- ignore dark mode support
+            // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 						//hbrush = CreateSolidBrush(NppDarkMode::isEnabled() ? NppDarkMode::getDarkerBackgroundColor() : GetSysColor(COLOR_3DFACE));
 						hbrush = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
 						FrameRect(hdc, &rc, hbrush);

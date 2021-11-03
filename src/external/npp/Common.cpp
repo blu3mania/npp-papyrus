@@ -566,7 +566,9 @@ generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generi
 
 	if (filenameLen > 0)
 	{
-		std::vector<TCHAR> vt(filenameLen + 1);
+    // PapyrusPlugin modification -- address MSVC code analysis alert
+		//std::vector<TCHAR> vt(filenameLen + 1);
+		std::vector<TCHAR> vt(static_cast<size_t>(filenameLen) + 1);
 		// W removed from PathCompactPathExW due to compiler errors for ANSI version.
 		PathCompactPathEx(&vt[0], filename.c_str(), filenameLen + 1, 0);
 		strTemp.append(convertFileName(vt.begin(), vt.begin() + lstrlen(&vt[0])));
@@ -1008,7 +1010,7 @@ HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText, 
 		return NULL;
 	}
 
-        // PapyrusPlugin modification -- ignore dark mode support
+        // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
 	//NppDarkMode::setDarkTooltips(hwndTip, NppDarkMode::ToolTipsType::tooltip);
 
 	// Associate the tooltip with the tool.
