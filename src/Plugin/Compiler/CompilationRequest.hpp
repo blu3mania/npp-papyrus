@@ -29,10 +29,10 @@ namespace papyrus {
   using Game = game::Game;
 
   struct CompilationRequest {
-    Game game;
-    npp_buffer_t bufferID;
+    Game game = Game::Auto;
+    npp_buffer_t bufferID = 0;
     std::wstring filePath;
-    bool useAutoModeOutputDirectory;
+    bool useAutoModeOutputDirectory = false;
   };
 
 } // namespace

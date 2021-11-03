@@ -553,7 +553,7 @@ namespace papyrus {
   void SubscriptionHelper::handleHotspotClick(HWND handle, Sci_Position position) const {
     if (isUsable() && lexerData->currentGame != game::Game::Auto) {
       // Change Scintilla word chars to include ':' to support FO4's namespaces
-      int length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
+      size_t length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
       char* wordChars = new char[length + 2]; // To add ':' and also null teminator
       auto autoCleanupWordChars = gsl::finally([&] { delete[] wordChars; });
       ::SendMessage(handle, SCI_GETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars + 1));

@@ -55,6 +55,9 @@ namespace papyrus {
       // Parse compilation errors and send the result back to plugin message window
       void parseErrors(const std::wstring& errorText, const CompilerSettings::GameSettings& gameSettings, const std::wstring& outputDirectory);
 
+      // Close compilation process
+      void closeProcess(const PROCESS_INFORMATION& processInfo);
+
       // Send any unexpected "other error message" to plugin main processor, along with last error code from Win32 API
       void sendOtherErrorMessage(const wchar_t* msg);
 

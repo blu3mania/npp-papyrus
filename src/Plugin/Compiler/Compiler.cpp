@@ -103,6 +103,7 @@ namespace papyrus {
                     parseErrors(errorOutput, gameSettings, outputDirectory);
                   } else {
                     sendOtherErrorMessage(L"ReadFile failed. Compilation stopped.");
+                    closeProcess(compilationProcess);
                     return;
                   }
                 } else {
@@ -137,23 +138,27 @@ namespace papyrus {
                     }
                   } else {
                     sendOtherErrorMessage(L"PeekNamedPipe failed on stdout. Compilation stopped.");
+                    closeProcess(compilationProcess);
                     return;
                   }
                 }
               } else {
                 sendOtherErrorMessage(L"PeekNamedPipe failed on stderr. Compilation stopped.");
+                closeProcess(compilationProcess);
                 return;
               }
             } else {
               sendOtherErrorMessage(L"WaitForSingleObject failed. Compilation stopped.");
+              closeProcess(compilationProcess);
               return;
             }
+            closeProcess(compilationProcess);
           } else {
             sendOtherErrorMessage(L"CreateProcess failed. Compilation stopped.");
             return;
           }
         } else {
-            sendOtherErrorMessage(L"CreatePipe failed. Compilation stopped.");
+          sendOtherErrorMessage(L"CreatePipe failed. Compilation stopped.");
           return;
         }
       } else {
@@ -319,6 +324,11 @@ namespace papyrus {
       });
     }
     ::SendMessage(messageWindow, messages.compilationFailureMessage, reinterpret_cast<WPARAM>(&errors), hasUnparsableLines);
+  }
+
+  void Compiler::closeProcess(const PROCESS_INFORMATION& processInfo) {
+    CloseHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread);
   }
 
   void Compiler::sendOtherErrorMessage(const wchar_t* msg) {

@@ -758,7 +758,7 @@ namespace papyrus {
     // Keep current selection
     auto dropdown = getControl(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN);
     int length = ::GetWindowTextLength(dropdown);
-    wchar_t* currentSelection = new wchar_t[length + 1];
+    wchar_t* currentSelection = new wchar_t[static_cast<size_t>(length) + 1];
     auto autoCleanup = gsl::finally([&] { delete[] currentSelection; });
     ::GetWindowText(dropdown, currentSelection, length + 1);
 

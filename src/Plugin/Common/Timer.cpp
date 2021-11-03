@@ -28,6 +28,7 @@ namespace utility {
 
   TimerQueue::~TimerQueue() {
     if (queueHandle) {
+      // Cancel all timers. Ignore return value as there is no good handling of errors.
       ::DeleteTimerQueueEx(queueHandle, nullptr);
       queueHandle = nullptr;
     }
@@ -45,6 +46,7 @@ namespace utility {
 
   void Timer::cancel() noexcept {
     if (valid && timerID) {
+      // Cancel timer. Ignore return value as there is no good handling of errors.
       ::DeleteTimerQueueTimer(nullptr, timerID, nullptr);
       valid = false;
       timerID = nullptr;

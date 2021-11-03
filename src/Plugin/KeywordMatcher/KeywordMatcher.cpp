@@ -212,9 +212,11 @@ namespace papyrus {
     matched = (matchedStart != searchEnd);
 
     setupIndicator();
-    ::SendMessage(handle, SCI_INDICATORFILLRANGE, currentWordPos.cpMin, currentWordPos.cpMax - currentWordPos.cpMin);
+    Sci_PositionCR fillRange = currentWordPos.cpMax - currentWordPos.cpMin;
+    ::SendMessage(handle, SCI_INDICATORFILLRANGE, currentWordPos.cpMin, fillRange);
     if (matched) {
-      ::SendMessage(handle, SCI_INDICATORFILLRANGE, matchedStart, matchedEnd - matchedStart);
+      fillRange = matchedEnd - matchedStart;
+      ::SendMessage(handle, SCI_INDICATORFILLRANGE, matchedStart, fillRange);
     }
   }
 
@@ -225,13 +227,16 @@ namespace papyrus {
     matched = (found.cpMin != -1);
 
     setupIndicator();
-    ::SendMessage(handle, SCI_INDICATORFILLRANGE, currentWordPos.cpMin, currentWordPos.cpMax - currentWordPos.cpMin);
+    Sci_PositionCR fillRange = currentWordPos.cpMax - currentWordPos.cpMin;
+    ::SendMessage(handle, SCI_INDICATORFILLRANGE, currentWordPos.cpMin, fillRange);
     for (const auto& pos : otherWordsPosList) {
-      ::SendMessage(handle, SCI_INDICATORFILLRANGE, pos.cpMin, pos.cpMax - pos.cpMin);
+      fillRange = pos.cpMax - pos.cpMin;
+      ::SendMessage(handle, SCI_INDICATORFILLRANGE, pos.cpMin, fillRange);
     }
 
     if (matched) {
-      ::SendMessage(handle, SCI_INDICATORFILLRANGE, found.cpMin, found.cpMax - found.cpMin);
+      fillRange = found.cpMax - found.cpMin;
+      ::SendMessage(handle, SCI_INDICATORFILLRANGE, found.cpMin, fillRange);
     }
   }
 

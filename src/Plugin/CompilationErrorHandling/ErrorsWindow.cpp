@@ -124,7 +124,8 @@ namespace papyrus {
     ::GetClientRect(getHSelf(), &windowSize);
     ::SetWindowPos(listView, HWND_TOP, 2, 2, windowSize.right - windowSize.left - 4, windowSize.bottom - windowSize.top - 2, 0);
     int width = ListView_GetColumnWidth(listView, 0) + ListView_GetColumnWidth(listView, 2) + ListView_GetColumnWidth(listView, 3) + 8;
-    ListView_SetColumnWidth(listView, 1, windowSize.right - windowSize.left - width);
+    LONG messageColWidth = windowSize.right - windowSize.left - width;
+    ListView_SetColumnWidth(listView, 1, messageColWidth);
   }
 
   void ErrorsWindow::clear() {

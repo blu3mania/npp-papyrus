@@ -68,7 +68,7 @@ namespace papyrus {
           auto autoCleanup = gsl::finally([&] { ::RegCloseKey(gameRegKey); });
 
           // Get game's installation path
-          DWORD size;
+          DWORD size = 0;
           ::RegQueryValueEx(gameRegKey, L"Installed Path", 0, nullptr, nullptr, &size);
           if (size > 0) {
             std::vector<wchar_t> gamePath(size / sizeof(wchar_t));
