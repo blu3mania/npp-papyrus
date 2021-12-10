@@ -134,29 +134,29 @@
     <ClCompile Include="DllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="External\Notepad++\ColourPicker.cpp">
+    <ClCompile Include="external\lexilla\Accessor.cxx">
+      <Filter>External\Lexilla</Filter>
+    </ClCompile>
+    <ClCompile Include="external\lexilla\PropSetSimple.cxx">
+      <Filter>External\Lexilla</Filter>
+    </ClCompile>
+    <ClCompile Include="external\lexilla\WordList.cxx">
+      <Filter>External\Lexilla</Filter>
+    </ClCompile>
+    <ClCompile Include="external\npp\ColourPicker.cpp">
       <Filter>External\Notepad++</Filter>
     </ClCompile>
-    <ClCompile Include="External\Notepad++\ColourPopup.cpp">
+    <ClCompile Include="external\npp\ColourPopup.cpp">
       <Filter>External\Notepad++</Filter>
     </ClCompile>
-    <ClCompile Include="External\Notepad++\Common.cpp">
+    <ClCompile Include="external\npp\Common.cpp">
       <Filter>External\Notepad++</Filter>
     </ClCompile>
-    <ClCompile Include="External\Notepad++\StaticDialog.cpp">
+    <ClCompile Include="external\npp\StaticDialog.cpp">
       <Filter>External\Notepad++</Filter>
     </ClCompile>
-    <ClCompile Include="External\Notepad++\URLCtrl.cpp">
+    <ClCompile Include="external\npp\URLCtrl.cpp">
       <Filter>External\Notepad++</Filter>
-    </ClCompile>
-    <ClCompile Include="external\scintilla\Accessor.cxx">
-      <Filter>External\Scintilla</Filter>
-    </ClCompile>
-    <ClCompile Include="external\scintilla\PropSetSimple.cxx">
-      <Filter>External\Scintilla</Filter>
-    </ClCompile>
-    <ClCompile Include="external\scintilla\WordList.cxx">
-      <Filter>External\Scintilla</Filter>
     </ClCompile>
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp">
       <Filter>External\TinyXML</Filter>
@@ -237,6 +237,30 @@
     <None Include="external\gsl\include\gsl\util">
       <Filter>External\GSL</Filter>
     </None>
+    <None Include="external\lexilla\Accessor.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\LexAccessor.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\LexerModule.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\PropSetSimple.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\SciLexer.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\StringCopy.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\StyleContext.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
+    <None Include="external\lexilla\WordList.h">
+      <Filter>External\Lexilla</Filter>
+    </None>
     <None Include="external\npp\ColourPicker.h">
       <Filter>External\Notepad++</Filter>
     </None>
@@ -276,37 +300,13 @@
     <None Include="external\npp\Window.h">
       <Filter>External\Notepad++</Filter>
     </None>
-    <None Include="external\scintilla\Accessor.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
     <None Include="external\scintilla\ILexer.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
-    <None Include="external\scintilla\LexAccessor.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
-    <None Include="external\scintilla\LexerModule.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
-    <None Include="external\scintilla\PropSetSimple.h">
       <Filter>External\Scintilla</Filter>
     </None>
     <None Include="external\scintilla\Sci_Position.h">
       <Filter>External\Scintilla</Filter>
     </None>
-    <None Include="external\scintilla\SciLexer.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
     <None Include="external\scintilla\Scintilla.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
-    <None Include="external\scintilla\StringCopy.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
-    <None Include="external\scintilla\StyleContext.h">
-      <Filter>External\Scintilla</Filter>
-    </None>
-    <None Include="external\scintilla\WordList.h">
       <Filter>External\Scintilla</Filter>
     </None>
     <None Include="external\tinyxml2\tinyxml2.h">

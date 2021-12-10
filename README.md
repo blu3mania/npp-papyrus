@@ -1,6 +1,6 @@
 # Papyrus Plugin for Notepad++
 ![GPL v3 License](https://img.shields.io/badge/License-GPL%20v3-blue)
-![Visual Studio 2019](https://img.shields.io/badge/Visual%20Studio-2019-blue?logo=visual-studio)
+![Visual Studio 2022](https://img.shields.io/badge/Visual%20Studio-2022-blue?logo=visual-studio)
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-grey?logo=visual-studio-code)
 ![C++](https://img.shields.io/badge/c++-blue.svg?&logo=c%2B%2B)
 ![Notepad++ Plugin](https://img.shields.io/badge/Notepad++-Plugin-blue.svg?&logo=notepad%2B%2B)
@@ -125,13 +125,13 @@ The project comes with the needed Scintilla/Lexilla and Notepad++ files for buil
 which means if you clone the repository, you should specify *--recurse-submodules* to also get these modules
 in your local repository.
 
-- To build the project in *Visual Studio 2019*, just open the solution file in VS2019 and build.
+- To build the project in *Visual Studio 2022*, just open the solution file in VS2022 and build.
 - For those who use *Visual Studio Code*, a *.vscode* folder is provided at src level, with tasks defined and
   the default build task uses MSBuild to generate the *Release|x64* output. **Note**, you need to download and
-  install *Build Tools for Visual Studio 2019* from [this page](https://visualstudio.microsoft.com/downloads/).
+  install *Build Tools for Visual Studio 2022* from [this page](https://visualstudio.microsoft.com/downloads/).
   Make sure to include *Desktop development with C++* workload during installation.
 
-  Launch VSCode from *Developer Command Prompt for VS 2019* by running *"code ."* from src directory, so that
+  Launch VSCode from *Developer Command Prompt for VS 2022* by running *"code ."* from src directory, so that
   environment needed by *MSBuild* is set up properly.
 - The third option is cmake. A *CMakeLists.txt* file is provided in src directory. It is recommended to use a
   separate build directory at top level. For example, "cmake -S src -B build" creates a build directory at top
