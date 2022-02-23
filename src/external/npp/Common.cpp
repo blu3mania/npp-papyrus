@@ -1438,7 +1438,9 @@ namespace
 		midday.resize(MAX_PATH);
 		int ret = GetTimeFormatEx(localeName, 0, &st, middayFormat, &midday[0], static_cast<int>(midday.size()));
 		if (ret > 0)
-			midday.resize(ret - 1); // Remove the null-terminator.
+      // PapyrusPlugin modification -- address MSVC code analysis alert
+			//midday.resize(ret - 1); // Remove the null-terminator.
+			midday.resize(static_cast<size_t>(ret) - 1); // Remove the null-terminator.
 		else
 			midday.clear();
 		return midday;

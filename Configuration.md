@@ -122,7 +122,8 @@ provided by this plugin, or for some reason you don't want to use syntax highlig
 
 ## Games tabs
 Each enabled game will have its own configuration tab. Most configurations are self-explanatory, and you
-usually should just leave the default values untouched. There are a few checkboxes:
+usually should just leave the default values untouched. For *Import directories* and *Output directory*,
+make sure that you **do not add trailing backslash**. There are a few checkboxes:
 
 ### Anonymize generated .PEX
 This setting allows you to anonymize the generated *.pex* file. In case you are not aware, when you use
