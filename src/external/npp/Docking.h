@@ -46,8 +46,6 @@
 #define DWS_DF_FLOATING		0x80000000			// default state is floating
 
 
-// PapyrusPlugin modification -- fix invalid struct definition (refer to P1766R1)
-//typedef struct {
 struct tTbData {
 	HWND hClient = nullptr;                // client Window Handle
 	const TCHAR* pszName = nullptr;        // name of plugin (shown in window)
@@ -59,22 +57,17 @@ struct tTbData {
 	const TCHAR* pszAddInfo = nullptr;     // for plugin to display additional informations
 
 	// internal data, do not use !!!
-	RECT rcFloat = {0};                    // floating position
+	RECT rcFloat = {};                    // floating position
 	int iPrevCont = 0;                     // stores the privious container (toggling between float and dock)
 	const TCHAR* pszModuleName = nullptr;  // it's the plugin file name. It's used to identify the plugin
 };
-//} tTbData;
 
 
-// PapyrusPlugin modification -- fix invalid struct definition (refer to P1766R1)
-//typedef struct {
 struct tDockMgr {
 	HWND hWnd = nullptr;                   // the docking manager wnd
-	RECT rcRegion[DOCKCONT_MAX] = {{0}};   // position of docked dialogs
+	RECT rcRegion[DOCKCONT_MAX] = {{}};   // position of docked dialogs
 };
-//} tDockMgr;
 
 
 #define	HIT_TEST_THICKNESS		20
 #define SPLITTER_WIDTH			4
-

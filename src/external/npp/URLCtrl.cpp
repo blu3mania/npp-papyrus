@@ -95,6 +95,7 @@ static BYTE ANDMask[128] =
 };
 
 
+
 void URLCtrl::create(HWND itemHandle, const TCHAR * link, COLORREF linkColor)
 {
   // turn on notify style
@@ -119,7 +120,6 @@ void URLCtrl::create(HWND itemHandle, const TCHAR * link, COLORREF linkColor)
   // save hwnd
   _hSelf = itemHandle;
 }
-
 void URLCtrl::create(HWND itemHandle, int cmd, HWND msgDest)
 {
   // turn on notify style
@@ -212,7 +212,24 @@ LRESULT URLCtrl::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         HDC hdc = ::BeginPaint(hwnd, &ps);
 
+        // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
+        /*
+			if ((_linkColor == _visitedColor) || (_linkColor == NppDarkMode::getDarkerTextColor()))
+			{
+				_linkColor = NppDarkMode::isEnabled() ? NppDarkMode::getDarkerTextColor() : _visitedColor;
+				::SetTextColor(hdc, _linkColor);
+			}
+			else if (NppDarkMode::isEnabled())
+			{
+				::SetTextColor(hdc, NppDarkMode::getLinkTextColor());
+			}
+			else
+			{
+				::SetTextColor(hdc, _linkColor);
+			}
+        */
         ::SetTextColor(hdc, _linkColor);
+        // PapyrusPlugin modification
 
         ::SetBkColor(hdc, getCtrlBgColor(GetParent(hwnd))); ///*::GetSysColor(COLOR_3DFACE)*/);
 

@@ -10,13 +10,13 @@
 ![Microsoft C++ Code Analysis Status](https://github.com/blu3mania/npp-papyrus/workflows/Microsoft%20C++%20Code%20Analysis/badge.svg?branch=main)
 ![Latest Release](https://img.shields.io/github/v/release/blu3mania/npp-papyrus)
 
-This plugin adds support of [Bethesda](https://bethesdagamestudios.com/)'s Papyrus scripting language to
+This plugin adds support for [Bethesda](https://bethesdagamestudios.com/)'s *Papyrus* scripting language to
 [Notepad++](https://notepad-plus-plus.org/).
 It provides syntax highlighting with automatic recognition of ***class names/functions/properties***,
-supports ***keywords matching***, and ***hyperlinks to referenced scripts***.
+supports ***keywords matching*** and ***hyperlinks to referenced scripts***.
 It also comes with a compiler that can provide ***compilation errors*** in a separate list window, as well
-as ***inline annotation*** and ***indication*** where errors are reported, plus support ***anonymization***
-of compiled *.pex* files.
+as ***inline annotation*** and ***indication*** where errors are reported, plus ***anonymization*** of
+compiled *.pex* files.
 
 This plugin is derived from the original [PapyrusPlusPlus](https://github.com/tschilkroete/PapyrusPlusPlus)
 plugin created by [tschilkroete](https://www.nexusmods.com/skyrim/users/20418429), with many bug fixes,
@@ -110,6 +110,10 @@ Get the latest release from [here](https://github.com/blu3mania/npp-papyrus/rele
 ## Installation
 Please find [installation guide here](Installation.md).
 
+**WARNING:**
+- Do not install versions prior to v0.3.0 if you are using Notepad++ v8.3+.
+- Do not install v0.3.0+ if you are using a Notepad++ version prior to v8.3.
+
 
 ## Configuration
 Please find [configuration guide here](Configuration.md).
@@ -123,9 +127,11 @@ in your local repository.
 
 - To build the project in *Visual Studio 2019*, just open the solution file in VS2019 and build.
 - For those who use *Visual Studio Code*, a *.vscode* folder is provided at src level, with tasks defined and
-  the default build task uses MSBuild to generate the *Release|x64* output. **Note**, you need to download
-  *Build Tools or Visual Studio 2019* from [this page](https://visualstudio.microsoft.com/downloads/), and
-  launch VSCode from *Developer Command Prompt* for VS 2019 by running *"code ."* from src directory, so that
+  the default build task uses MSBuild to generate the *Release|x64* output. **Note**, you need to download and
+  install *Build Tools for Visual Studio 2019* from [this page](https://visualstudio.microsoft.com/downloads/).
+  Make sure to include *Desktop development with C++* workload during installation.
+
+  Launch VSCode from *Developer Command Prompt for VS 2019* by running *"code ."* from src directory, so that
   environment needed by *MSBuild* is set up properly.
 - The third option is cmake. A *CMakeLists.txt* file is provided in src directory. It is recommended to use a
   separate build directory at top level. For example, "cmake -S src -B build" creates a build directory at top

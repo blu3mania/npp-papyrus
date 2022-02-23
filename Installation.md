@@ -1,11 +1,11 @@
 # Installation
 ## Install the plugin
 This plugin can be installed from Notepad++'s *Plugins Admin* if you are using Notepad++ version 8+, in which
-case the configuration file will be handled automatically. In the rare case when permission is required on
-Notepad++'s configuration folder, which by default is *"%APPDATA%\Notepad++"*, this plugin will prompt to run
-the copy command with elevated privilege. When this happens, please accept the UAC prompt. If somehow that
-also fails, this plugin will show a notice and you can manually copy the config file. **Note**, the data
-folder is ***not*** under Notepad++'s installation folder if you used default directory. Please see
+case the configuration file *"Papyrus.xml"* will be handled automatically. In the rare case when permission
+is required on Notepad++'s configuration folder, which by default is *"%APPDATA%\Notepad++"*, this plugin will
+prompt to run the copy command with elevated privilege. When this happens, please accept the UAC prompt. If
+somehow that also fails, this plugin will show a notice and you can manually copy the config file. **Note**,
+the data folder is ***not*** under Notepad++'s installation folder if you used default directory. Please see
 [this post](https://community.notepad-plus-plus.org/topic/16996/new-plugins-home-round-2) for more details.
 
 For manual installation, extract the release package to *"plugins\Papyrus"* directory under Notepad++'s
@@ -15,6 +15,11 @@ plugin, you will need to manually create *"Papyrus"* folder under *"plugins"* di
 launch Notepad++ and the plugin should be able to automatically copy *"Papyrus.xml"* file to
 *"plugins\config"* directory under Notepad++'s data folder, similar to the handling when it's installed by
 *Plugins Admin*.
+
+**WARNING:**
+- Do not install versions prior to v0.3.0 if you are using Notepad++ v8.3+.
+- Do not install v0.3.0+ if you are using a Notepad++ version prior to v8.3.
+
 
 ## Install extra stuff
 If you want, there are a few xml files under *"extras"* directory that you can also install to provide other
@@ -30,8 +35,8 @@ features that are not part of the lexer/compiler:
   [a bug](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/3997) that made it case sensitive when
   using the default *"Function and word completion"* option for Notepad++'s auto-completion feature. You
   should update to the latest Notepad++ release, but if you have to stay with the old version, the suggestion
-  is to either change it to *"Function completion"* only (note that you will lose auto-completion on words),
-  or always use uppercase for the first letter when typing a game defined function name.
+  is to either configure auto-completion to *"Function completion"* only (*note*, you will lose auto-completion
+  on words), or always use uppercase for the first letter when typing a game defined function name.
 
   *Note*, the content of this auto-completion definition file is copied from
   [Creation Kit web](https://www.creationkit.com/index.php?title=Papyrus_Autocomplete).
@@ -48,7 +53,7 @@ features that are not part of the lexer/compiler:
   *Advanced* menu.
 
   A sample *overrideMap.xml* is provided that works with Notepad++ v7.9.x when Papyrus plugin is the only lexer
-  plugin, or it happens to be the *first one* to Notepad++ (*note*, it **may not** be based on plugins'
+  plugin, or it happens to be the *first one* to Notepad++ (*note*, it ***may not*** be based on plugins'
   alphabetic order).
 
   If you ever install another lexer plugin which results in the change of langID assigned to this plugin's
