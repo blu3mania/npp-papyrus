@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 #define LEXER_NAME "Papyrus Script"
-#define LEXER_STATUS_TEXT L"Papyrus Script"
+#define LEXER_STATUS_TEXT L"Papyrus Script"  // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
 
 using namespace Scintilla;
 
@@ -75,7 +75,7 @@ namespace papyrus {
 
       // Interface functions with Notepad++
       inline static char* name() { return const_cast<char*>(LEXER_NAME); }
-      inline static TCHAR* statusText() { return const_cast<TCHAR*>(LEXER_STATUS_TEXT); }
+      inline static TCHAR* statusText() { return const_cast<TCHAR*>(LEXER_STATUS_TEXT); }  // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
       inline static ILexer* factory() { return new Lexer(); }
 
       // Lexer functions

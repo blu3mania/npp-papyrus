@@ -38,6 +38,7 @@ namespace papyrus {
     }
   }
 
+  // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
   void SCI_METHOD GetLexerStatusText(int index, TCHAR* text, int length) {
     // From NPP's Parameters.h:
     // #define MAX_EXTERNAL_LEXER_DESC_LEN 32
@@ -49,11 +50,19 @@ namespace papyrus {
     }
   }
 
+  // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
   LexerFactoryFunction SCI_METHOD GetLexerFactory(int index) {
     switch (index) {
       case 0: {
         return Lexer::factory;
       }
+    }
+    return nullptr;
+  }
+
+  ILexer* SCI_METHOD CreateLexer(const char* name) {
+    if (strcmp(name, Lexer::name()) == 0) {
+      return Lexer::factory();
     }
     return nullptr;
   }
