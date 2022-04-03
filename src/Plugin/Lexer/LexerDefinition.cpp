@@ -38,22 +38,18 @@ namespace papyrus {
     }
   }
 
-  void SCI_METHOD GetLexerStatusText(int index, TCHAR* text, int length) {
-    // From NPP's Parameters.h:
-    // #define MAX_EXTERNAL_LEXER_DESC_LEN 32
-    switch (index) {
-      case 0: {
-        wcsncpy_s(text, length, Lexer::statusText(), _TRUNCATE);
-        break;
-      }
-    }
-  }
-
   LexerFactoryFunction SCI_METHOD GetLexerFactory(int index) {
     switch (index) {
       case 0: {
         return Lexer::factory;
       }
+    }
+    return nullptr;
+  }
+
+  ILexer5* SCI_METHOD CreateLexer(const char* name) {
+    if (strcmp(name, Lexer::name()) == 0) {
+        return Lexer::factory();
     }
     return nullptr;
   }

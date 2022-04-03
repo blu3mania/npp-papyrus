@@ -25,5 +25,5 @@ EXPORTS
   messageProc
   GetLexerCount
   GetLexerName
-  GetLexerStatusText
   GetLexerFactory
+  CreateLexer
