@@ -155,7 +155,7 @@ in your local repository.
     │   ├── npp - Notepad++ source files
     │   ├── scintilla - Scintilla source files
     │   └── tinyxml2 - references TinyXML2 as submodule
-    └── Plugin - source files of the plugin
+    └── Plugin - source files of this plugin
         ├── Common - common definitions and utilities shared by all modules
         ├── CompilationErrorHandling - show/annotate compilation errors
         ├── Compiler - invoke Papyrus compiler in a separate thread

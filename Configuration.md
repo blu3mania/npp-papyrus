@@ -1,9 +1,10 @@
 # Configuration
-Most of the plugin's behavior can be modified in *Settings* dialog. However, if it's needed to change the
-settings file *Papyrus.ini* directly, it can be found in *"plugins\config"* directory under Notepad++'s
-data folder, which by default is *"%APPDATA%\Notepad++"*.
+Most of this plugin's behavior can be modified in this plugin's *Settings* dialog. However, if it's needed
+to change the settings file *Papyrus.ini* directly, it can be found in *"plugins\config"* directory under
+Notepad++'s data folder, which by default is *"%APPDATA%\Notepad++"*. Also, this plugin's menu shortcuts
+can be remapped from Notepad++'s *Shortcut Mapper* dialog under Settings menu.
 
-The following are settings that can be changed in Settings dialog.
+The following are settings that can be changed in this plugin's *Settings* dialog.
 
 ## Lexer tab
 

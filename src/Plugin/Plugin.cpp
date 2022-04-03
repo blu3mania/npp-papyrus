@@ -133,7 +133,7 @@ namespace papyrus {
           }
 
           case NPPN_BUFFERACTIVATED: {
-            handleBufferActivation(notification->nmhdr.idFrom);
+            handleBufferActivation(notification->nmhdr.idFrom, false);
             break;
           }
 
@@ -617,7 +617,7 @@ namespace papyrus {
       HMENU advancedMenu = ::CreatePopupMenu();
       if (::ModifyMenu(menu, funcs[utility::underlying(Menu::Advanced)]._cmdID, MF_BYCOMMAND | MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(advancedMenu), funcs[utility::underlying(Menu::Advanced)]._itemName)) {
         for (UINT i = 0; i < advancedMenuItems.size(); i++) {
-          ::InsertMenu(advancedMenu, i, MF_BYPOSITION, static_cast<UINT_PTR>(advancedMenuBaseCmdID) + i, advancedMenuItems[i]);
+          ::InsertMenu(advancedMenu, i, MF_BYPOSITION | MF_STRING, static_cast<UINT_PTR>(advancedMenuBaseCmdID) + i, advancedMenuItems[i]);
         }
       }
     }
