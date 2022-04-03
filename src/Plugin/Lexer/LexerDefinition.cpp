@@ -38,6 +38,13 @@ namespace papyrus {
     }
   }
 
+  ILexer* SCI_METHOD CreateLexer(const char* name) {
+    if (strcmp(name, Lexer::name()) == 0) {
+      return Lexer::factory();
+    }
+    return nullptr;
+  }
+
   // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
   void SCI_METHOD GetLexerStatusText(int index, TCHAR* text, int length) {
     // From NPP's Parameters.h:
@@ -56,13 +63,6 @@ namespace papyrus {
       case 0: {
         return Lexer::factory;
       }
-    }
-    return nullptr;
-  }
-
-  ILexer* SCI_METHOD CreateLexer(const char* name) {
-    if (strcmp(name, Lexer::name()) == 0) {
-      return Lexer::factory();
     }
     return nullptr;
   }
