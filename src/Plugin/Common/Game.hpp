@@ -39,7 +39,7 @@ namespace papyrus {
     static std::pair<std::wstring, std::wstring> gameNames[] {
       {L"", L""},
       {L"skyrim", L"Skyrim"},
-      {L"sse", L"Skyrim SE"},
+      {L"sse", L"Skyrim SE/AE"},
       {L"fo4", L"Fallout 4"}
     };
 

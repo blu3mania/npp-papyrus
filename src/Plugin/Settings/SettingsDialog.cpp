@@ -560,6 +560,7 @@ namespace papyrus {
           setControlVisibility(IDC_SETTINGS_TAB_GAME_COMPILER_PATH, show);
           setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL1, show);
           setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL2, show);
+          setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL3, show);
           setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES, show);
           setControlVisibility(IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY_LABEL, show);
           setControlVisibility(IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY, show);

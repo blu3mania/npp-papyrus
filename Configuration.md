@@ -93,7 +93,7 @@ correctly again, or simply fix all bugs reported against your script. 😀
 ## Compiler tab
 
 ### Compiler mode
-This plugin automatically detects supported games (*Skyrim*, *Skyrim SE*, *Fallout 4*), and selects Auto
+This plugin automatically detects supported games (*Skyrim*, *Skyrim SE/AE*, *Fallout 4*), and selects Auto
 mode by default. In Auto mode, if a script is loaded from a folder under a detected game, that game's
 settings will be used to compile the script. If the script is from a location outside of any game's install
 path, the default game configured for Auto mode will be used to compile the script, and in this case, the

@@ -83,7 +83,7 @@ enhancements, and made to work with the latest Notepad++ release.
   a big **privacy concern**.
 - **[Annotator]** Show annotation below error lines, and/or show indications where errors are. Configurable
   behavior, default on.
-- **[Compiler]** *Skyrim SE* and *Fallout 4* support.
+- **[Compiler]** *Skyrim SE/AE* and *Fallout 4* support.
 - **[Compiler]** Auto detection of game/compiler settings to be used based on source script file location.
 - **[Lexer]** Support of new Papyrus syntax/keywords of *Fallout 4*.
 - **[Lexer]** Syntax highlighting of function names.
