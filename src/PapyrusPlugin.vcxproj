@@ -73,23 +73,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\lexilla;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\lexilla;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\dist\bin\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\lexilla;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Papyrus</TargetName>
-    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\external\gsl\include;$(ProjectDir)\external\lexilla;$(ProjectDir)\external\npp;$(ProjectDir)\external\scintilla;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\..\dist\bin\x64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -219,14 +219,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="external\lexilla\Accessor.cxx" />
+    <ClCompile Include="external\lexilla\PropSetSimple.cxx" />
+    <ClCompile Include="external\lexilla\WordList.cxx" />
     <ClCompile Include="external\npp\ColourPicker.cpp" />
     <ClCompile Include="external\npp\ColourPopup.cpp" />
     <ClCompile Include="external\npp\Common.cpp" />
     <ClCompile Include="external\npp\StaticDialog.cpp" />
     <ClCompile Include="external\npp\URLCtrl.cpp" />
-    <ClCompile Include="external\scintilla\Accessor.cxx" />
-    <ClCompile Include="external\scintilla\PropSetSimple.cxx" />
-    <ClCompile Include="external\scintilla\WordList.cxx" />
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Plugin\Common\Game.cpp" />
     <ClCompile Include="Plugin\Common\Logger.cpp" />
@@ -256,6 +256,14 @@
     <None Include="Exports.def" />
     <None Include="external\gsl\include\gsl\assert" />
     <None Include="external\gsl\include\gsl\util" />
+    <None Include="external\lexilla\Accessor.h" />
+    <None Include="external\lexilla\LexAccessor.h" />
+    <None Include="external\lexilla\LexerModule.h" />
+    <None Include="external\lexilla\PropSetSimple.h" />
+    <None Include="external\lexilla\SciLexer.h" />
+    <None Include="external\lexilla\StringCopy.h" />
+    <None Include="external\lexilla\StyleContext.h" />
+    <None Include="external\lexilla\WordList.h" />
     <None Include="external\npp\ColourPicker.h" />
     <None Include="external\npp\ColourPopup.h" />
     <None Include="external\npp\ColourPopupResource.h" />
@@ -269,17 +277,9 @@
     <None Include="external\npp\URLCtrl.h" />
     <None Include="external\npp\Utf8.h" />
     <None Include="external\npp\Window.h" />
-    <None Include="external\scintilla\Accessor.h" />
     <None Include="external\scintilla\ILexer.h" />
-    <None Include="external\scintilla\LexAccessor.h" />
-    <None Include="external\scintilla\LexerModule.h" />
-    <None Include="external\scintilla\PropSetSimple.h" />
-    <None Include="external\scintilla\SciLexer.h" />
     <None Include="external\scintilla\Scintilla.h" />
     <None Include="external\scintilla\Sci_Position.h" />
-    <None Include="external\scintilla\StringCopy.h" />
-    <None Include="external\scintilla\StyleContext.h" />
-    <None Include="external\scintilla\WordList.h" />
     <None Include="external\tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>

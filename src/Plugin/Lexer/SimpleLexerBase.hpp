@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "..\..\external\scintilla\Accessor.h"
+#include "..\..\external\lexilla\Accessor.h"
+#include "..\..\external\lexilla\WordList.h"
 #include "..\..\external\scintilla\ILexer.h"
 #include "..\..\external\scintilla\Scintilla.h"
-#include "..\..\external\scintilla\WordList.h"
 
 #include <vector>
 
@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
+  using namespace Lexilla;
   using namespace Scintilla;
 
   using ILexer = ILexer5;

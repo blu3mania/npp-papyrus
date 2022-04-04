@@ -8,9 +8,9 @@
 #ifndef ACCESSOR_H
 #define ACCESSOR_H
 
-#include "LexAccessor.h"  // PapyrusPlugin modification -- proper header reference 
+#include "LexAccessor.h"  // PapyrusPlugin modification -- proper header reference for LexAccessor
 
-namespace Scintilla {
+namespace Lexilla {
 
 enum { wsSpace=1, wsTab=2, wsSpaceTab=4, wsInconsistent=8 };
 
@@ -23,9 +23,9 @@ typedef bool (*PFNIsCommentLeader)(Accessor &styler, Sci_Position pos, Sci_Posit
 class Accessor : public LexAccessor {
 public:
 	PropSetSimple *pprops;
-	Accessor(IDocument *pAccess_, PropSetSimple *pprops_);
-	int GetPropertyInt(const char *, int defaultValue=0) const;
-	int IndentAmount(Sci_Position line, int *flags, PFNIsCommentLeader pfnIsCommentLeader = 0);
+	Accessor(Scintilla::IDocument *pAccess_, PropSetSimple *pprops_);
+	int GetPropertyInt(std::string_view key, int defaultValue=0) const;
+	int IndentAmount(Sci_Position line, int *flags, PFNIsCommentLeader pfnIsCommentLeader = nullptr);
 };
 
 }

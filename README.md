@@ -120,7 +120,7 @@ Please find [configuration guide here](Configuration.md).
 
 
 ## Building
-The project comes with the needed Scintilla and Notepad++ files for building. It also references
+The project comes with the needed Scintilla/Lexilla and Notepad++ files for building. It also references
 [GSL](https://github.com/microsoft/GSL) and [TinyXML2](https://github.com/leethomason/tinyxml2) as submodules,
 which means if you clone the repository, you should specify *--recurse-submodules* to also get these modules
 in your local repository.
@@ -152,6 +152,7 @@ in your local repository.
     ├── .vscode - configuration files for VS Code
     ├── external - source files from external projects (may be modified)
     │   ├── gsl - references GSL as submodule
+    │   ├── lexilla - Lexilla source files
     │   ├── npp - Notepad++ source files
     │   ├── scintilla - Scintilla source files
     │   └── tinyxml2 - references TinyXML2 as submodule

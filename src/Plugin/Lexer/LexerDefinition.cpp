@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Lexer.hpp"
 
-#include "..\..\external\scintilla\LexerModule.h"
+#include "..\..\external\lexilla\LexerModule.h"
 
 namespace papyrus {
 

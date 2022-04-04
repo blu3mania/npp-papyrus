@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\Common\NotepadPlusPlus.hpp"
 
-#include "..\..\external\scintilla\Accessor.h"
+#include "..\..\external\lexilla\Accessor.h"
+#include "..\..\external\lexilla\StyleContext.h"
+#include "..\..\external\lexilla\WordList.h"
 #include "..\..\external\scintilla\ILexer.h"
-#include "..\..\external\scintilla\StyleContext.h"
-#include "..\..\external\scintilla\WordList.h"
 
 #include <list>
 #include <set>

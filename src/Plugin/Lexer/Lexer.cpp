@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\Common\Utility.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
+#include "..\..\external\lexilla\LexerModule.h"
 #include "..\..\external\npp\Common.h"
-#include "..\..\external\scintilla\LexerModule.h"
 #include "..\..\external\scintilla\Scintilla.h"
 
 #include <filesystem>

@@ -62,7 +62,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
   LTEXT         "This plugin includes source code (original/modified) from the following libraries:", IDC_ABOUT_LIBRARIES, 16, 120, 264, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "Notepad++", IDC_ABOUT_LIBRARY_NPP, 32, 132, 92, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "See ? -> About Notepad++ for more information", IDC_ABOUT_LIBRARY_NPP_LINK, 128, 132, 160, 10
-  LTEXT         "Scintilla", IDC_ABOUT_LIBRARY_SCINTILLA, 32, 144, 92, 10, SS_NOTIFY, WS_EX_TRANSPARENT
+  LTEXT         "Scintilla/Lexilla", IDC_ABOUT_LIBRARY_SCINTILLA, 32, 144, 92, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "https://www.scintilla.org", IDC_ABOUT_LIBRARY_SCINTILLA_LINK, 128, 144, 160, 10
   LTEXT         "TinyXML2", IDC_ABOUT_LIBRARY_TINYXML, 32, 156, 92, 10, SS_NOTIFY, WS_EX_TRANSPARENT
   LTEXT         "http://www.grinninglizard.com/tinyxml2", IDC_ABOUT_LIBRARY_TINYXML_LINK, 128, 156, 160, 10
