@@ -23,10 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\Common\Resources.hpp"
 #include "..\UI\DialogBase.hpp"
+//#include "..\Plugin.hpp"
 
 #include "..\..\external\npp\URLCtrl.h"
 
+
 namespace papyrus {
+
+  //extern NppData nppData;
 
   using Game = game::Game;
 
@@ -41,10 +45,19 @@ namespace papyrus {
       void doDialog(callback_t callback);
 
     protected:
-      void initControls() override;
-      INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
-      INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
-      INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;
+        void initControls() override;
+
+        void initLexerControls();
+        void initMatcherControls();
+        void initAnnotatorControls();
+        void initCompilerControls();
+        
+        INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
+        INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
+        INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;
+
+        static INT_PTR CALLBACK tabDlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+        void onSelChange();
 
     private:
       enum class Tab {
@@ -54,6 +67,8 @@ namespace papyrus {
         Compiler,
         GameBase
       };
+
+    
 
       enum class Group {
         ClassLink,
@@ -71,7 +86,7 @@ namespace papyrus {
 
       void enableGroup(Group group, bool enabled) const;
 
-      void updateEnabledKeywords() const;
+      void updateEnabledKeywords(HWND hwnd) const;
 
       Game getGame(Tab tab) const;
       int getGameTab(Game game) const;
