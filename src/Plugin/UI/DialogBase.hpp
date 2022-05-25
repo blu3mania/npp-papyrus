@@ -68,8 +68,11 @@ namespace papyrus {
       inline virtual HWND createToolTip(int controlID, int tooltipStringID, int delayTime = 15) const { return createToolTip(controlID, loadResourceString(tooltipStringID), delayTime); }
       inline virtual HWND createToolTip(HWND hwnd, int controlID, int tooltipStringID, int delayTime = 15) const { return createToolTip(hwnd, controlID, loadResourceString(tooltipStringID), delayTime); }
 
-      inline virtual void setControlVisibility(int controlID, bool show) const { ::ShowWindow(getControl(controlID), show ? SW_SHOW : SW_HIDE); }
+      inline virtual void setControlVisibility(HWND hwnd, int controlID, bool show) const { ::ShowWindow(getControl(hwnd, controlID), show ? SW_SHOW : SW_HIDE); }
+      inline virtual void setControlVisibility(int controlID, bool show) const { setControlVisibility(getHSelf(), controlID, show); }
+      inline virtual void showControl(HWND hwnd, int controlID) const { setControlVisibility(hwnd, controlID, true); }
       inline virtual void showControl(int controlID) const { setControlVisibility(controlID, true); }
+      inline virtual void hideControl(HWND hwnd, int controlID) const { setControlVisibility(hwnd, controlID, false); }
       inline virtual void hideControl(int controlID) const { setControlVisibility(controlID, false); }
 
       inline virtual void setControlEnabled(HWND hwnd, int controlID, bool enabled) const { ::EnableWindow(getControl(hwnd, controlID), enabled); }

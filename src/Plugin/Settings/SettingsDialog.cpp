@@ -236,6 +236,14 @@ namespace papyrus {
 
       autoModeTooltip = createToolTip(tabData.tabItems[3].tabDlgHwnd, IDC_SETTINGS_COMPILER_RADIO_AUTO, IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP);
   }
+  void SettingsDialog::initGamesControls() {
+      // skyrim
+      setControlVisibility(tabData.tabItems[4].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_RELEASE, false);
+      setControlVisibility(tabData.tabItems[4].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_FINAL, false);
+      // skyrim SE
+      setControlVisibility(tabData.tabItems[5].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_RELEASE, false);
+      setControlVisibility(tabData.tabItems[5].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_FINAL, false);
+  }
 
   void SettingsDialog::initControls() {
       
@@ -280,21 +288,23 @@ namespace papyrus {
           TCITEM item{
             .mask = TCIF_TEXT
           };
+          int count = 0;
           for (int i = 0; i < tabData.tabItems.size(); i++) {
               if (tabData.tabItems[i].isVisible) {
                   item.pszText = const_cast<LPWSTR>(tabNames[i]);
                   item.cchTextMax = static_cast<int>(_tcslen(tabNames[i]));
-                  ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_INSERTITEM, i, reinterpret_cast<LPARAM>(&item));
+                  ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_INSERTITEM, count, reinterpret_cast<LPARAM>(&item));
+                  count++;
               }
           }
           
 
-          RECT rc;//find tab control's rectangle
+          RECT rc; //find tab control's rectangle
           GetWindowRect(tabData.tabControlId, &rc);
           POINT offset = { 0 };
           ScreenToClient(_hSelf, &offset);
           OffsetRect(&rc, offset.x, offset.y); //convert to client coordinates
-          rc.top += 25;
+          rc.top += 20;
 
           for (int i = 0; i < tabData.tabItems.size(); i++) {
               SetWindowPos(tabData.tabItems[i].tabDlgHwnd, 0, (rc.left + 1), rc.top, rc.right - rc.left - 2, rc.bottom - rc.top - 2, SWP_HIDEWINDOW);
@@ -303,6 +313,7 @@ namespace papyrus {
           initMatcherControls();
           initAnnotatorControls();
           initCompilerControls();
+          initGamesControls();
 
           onSelChange();
       }
@@ -337,11 +348,13 @@ namespace papyrus {
       case utility::underlying(Tab::ErrorAnnotator): {
           enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
           enableGroup(Group::Indication, settings.errorAnnotatorSettings.enableIndication);
+          break;
       }
       case utility::underlying(Tab::Compiler): {
           enableGroup(Group::GameSkyrim, settings.compilerSettings.skyrim.enabled);
           enableGroup(Group::GameSSE, settings.compilerSettings.sse.enabled);
           enableGroup(Group::GameFO4, settings.compilerSettings.fo4.enabled);
+          break;
       }
       default:
           break;
@@ -861,19 +874,35 @@ namespace papyrus {
       }
     }
     return utility::underlying(Tab::GameBase) + count - 1;
+    
+    //for (int i = 0; i < tabData.tabItems.size(); i++) {
+    //    if (tabData.tabItems[i].game == utility::underlying(game))
+    //        return tabData.tabItems[i].curTabIdx;
+    //}
+
+    //return -1; //we should never be here
   }
 
   void SettingsDialog::addGameTab(Game game) const {
-    TCITEM item {
-      .mask = TCIF_TEXT,
-      .pszText = const_cast<LPWSTR>(game::gameNames[utility::underlying(game)].second.c_str()),
-      .cchTextMax = static_cast<int>(_tcslen(item.pszText))
-    };
-    ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_INSERTITEM, getGameTab(game), reinterpret_cast<LPARAM>(&item));
+      TCITEM item{
+        .mask = TCIF_TEXT,
+        .pszText = const_cast<LPWSTR>(game::gameNames[utility::underlying(game)].second.c_str()),
+        .cchTextMax = static_cast<int>(_tcslen(item.pszText))
+      };
+      ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_INSERTITEM, getGameTab(game), reinterpret_cast<LPARAM>(&item));
+      for (int i = 4; i < tabData.tabItems.size(); i++) {
+          if (tabData.tabItems[i].game == utility::underlying(game))
+            tabData.tabItems[i].isVisible = true;
+      }
   }
 
   void SettingsDialog::removeGameTab(Game game) const {
-    ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_DELETEITEM, getGameTab(game), 0);
+    int gameTab = getGameTab(game);
+    ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_DELETEITEM, gameTab, 0);
+    for (int i = 4; i < tabData.tabItems.size(); i++) {
+        if (tabData.tabItems[i].game == utility::underlying(game))
+            tabData.tabItems[i].isVisible = false;
+    }
   }
 
   void SettingsDialog::toggleGame(Game game, int controlID, Group group) const {
@@ -898,7 +927,8 @@ namespace papyrus {
     int gameTab = getGameTab(game);
     if (gameTab != -1) {
       ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_SETCURSEL, gameTab, 0);
-      switchTab(static_cast<Tab>(gameTab));
+      onSelChange();
+      //switchTab(static_cast<Tab>(gameTab));
     }
   }
 

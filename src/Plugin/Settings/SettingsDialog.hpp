@@ -51,6 +51,7 @@ namespace papyrus {
         void initMatcherControls();
         void initAnnotatorControls();
         void initCompilerControls();
+        void initGamesControls();
         
         INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
         INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
