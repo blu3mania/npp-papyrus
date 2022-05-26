@@ -23,14 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\Common\Resources.hpp"
 #include "..\UI\DialogBase.hpp"
-//#include "..\Plugin.hpp"
 
 #include "..\..\external\npp\URLCtrl.h"
 
 
 namespace papyrus {
-
-  //extern NppData nppData;
 
   using Game = game::Game;
 
@@ -57,6 +54,7 @@ namespace papyrus {
         INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
         INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;
 
+        // dlgproc for dialogs in tab
         static INT_PTR CALLBACK tabDlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
         void onSelChange();
 
@@ -69,8 +67,6 @@ namespace papyrus {
         GameBase
       };
 
-    
-
       enum class Group {
         ClassLink,
         Matcher,
@@ -82,9 +78,6 @@ namespace papyrus {
         GameFO4
       };
 
-      void switchTab(Tab newTab);
-      void showTab(Tab tab, bool show, bool intializing = false) const;
-
       void enableGroup(Group group, bool enabled) const;
 
       void updateEnabledKeywords(HWND hwnd) const;
@@ -94,20 +87,20 @@ namespace papyrus {
       void addGameTab(Game game) const;
       void removeGameTab(Game game) const;
       void toggleGame(Game game, int controlID, Group group) const;
+      void toggleDlgVisible(Game game, bool isVisible) const;
       void configureGame(Game game);
 
       void updateAutoModeDefaultGame() const;
       void updateGameEnableButtonText(int controlID, bool enabled) const;
 
-      void loadGameSettings(const CompilerSettings::GameSettings& gameSettings, bool isFallout4) const;
-      void saveGameSettings(CompilerSettings::GameSettings& gameSettings, bool isFallout4) const;
+      void loadGameSettings(const CompilerSettings::GameSettings& gameSettings, HWND hwnd) const;
+      void saveGameSettings(CompilerSettings::GameSettings& gameSettings, HWND hwnd) const;
       bool saveSettings();
 
       // Private members
       //
       Settings& settings;
       callback_t settingsUpdatedFunc {};
-      Tab currentTab { Tab::Lexer };
 
       HWND foldMiddleTooltip {};
       HWND classNameCachingTooltip {};

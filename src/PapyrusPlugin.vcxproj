@@ -158,7 +158,7 @@
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "C:\Program Files\Notepad++\plugins\Papyrus" /Y</Command>
+      <Command>xcopy "$(TargetPath)" "C:\NotepadPlus\plugins\Papyrus" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

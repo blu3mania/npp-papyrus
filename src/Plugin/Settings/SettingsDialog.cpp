@@ -236,13 +236,18 @@ namespace papyrus {
 
       autoModeTooltip = createToolTip(tabData.tabItems[3].tabDlgHwnd, IDC_SETTINGS_COMPILER_RADIO_AUTO, IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP);
   }
+  
   void SettingsDialog::initGamesControls() {
       // skyrim
       setControlVisibility(tabData.tabItems[4].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_RELEASE, false);
       setControlVisibility(tabData.tabItems[4].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_FINAL, false);
+      loadGameSettings(settings.compilerSettings.gameSettings(Game::Skyrim), tabData.tabItems[4].tabDlgHwnd);
       // skyrim SE
       setControlVisibility(tabData.tabItems[5].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_RELEASE, false);
       setControlVisibility(tabData.tabItems[5].tabDlgHwnd, IDC_SETTINGS_TAB_GAME_FINAL, false);
+      loadGameSettings(settings.compilerSettings.gameSettings(Game::SkyrimSE), tabData.tabItems[5].tabDlgHwnd);
+      // Fallout
+      loadGameSettings(settings.compilerSettings.gameSettings(Game::Fallout4), tabData.tabItems[6].tabDlgHwnd);
   }
 
   void SettingsDialog::initControls() {
@@ -299,12 +304,12 @@ namespace papyrus {
           }
           
 
-          RECT rc; //find tab control's rectangle
+          RECT rc;                              //find tab control's rectangle
           GetWindowRect(tabData.tabControlId, &rc);
           POINT offset = { 0 };
           ScreenToClient(_hSelf, &offset);
-          OffsetRect(&rc, offset.x, offset.y); //convert to client coordinates
-          rc.top += 20;
+          OffsetRect(&rc, offset.x, offset.y);  // convert to client coordinates
+          rc.top += 25;                         // move down to show tabs
 
           for (int i = 0; i < tabData.tabItems.size(); i++) {
               SetWindowPos(tabData.tabItems[i].tabDlgHwnd, 0, (rc.left + 1), rc.top, rc.right - rc.left - 2, rc.bottom - rc.top - 2, SWP_HIDEWINDOW);
@@ -361,23 +366,6 @@ namespace papyrus {
       }
       
   }
-   /* for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
-      auto game = static_cast<Game>(i);
-      const CompilerSettings::GameSettings& gameSettings = settings.compilerSettings.gameSettings(game);
-      if (gameSettings.enabled) {
-        addGameTab(game);
-      }
-    }
-
-    if (currentTab != Tab::Lexer) {
-      ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_SETCURSEL, utility::underlying(currentTab), 0);
-    }
-
-    if (currentTab >= Tab::GameBase) {
-      showTab(currentTab, true, true);
-    } else {
-      showTab(Tab::GameBase, false, true);
-    }*/
   
   INT_PTR CALLBACK SettingsDialog::tabDlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
       switch (msg) {
@@ -556,21 +544,6 @@ namespace papyrus {
   }
 
   INT_PTR SettingsDialog::handleNotifyMessage(WPARAM wParam, LPARAM lParam) {
-    /*auto nmhdr = *(reinterpret_cast<LPNMHDR>(lParam));
-    switch (nmhdr.idFrom) {
-      case IDC_SETTINGS_TABS: {
-        if (nmhdr.code == TCN_SELCHANGE) {
-          switchTab(static_cast<Tab>(::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_GETCURSEL, 0, 0)));
-        }
-        return TRUE;
-      }
-
-      default: {
-        break;
-      }
-    }
-
-    return FALSE;*/
     switch (((LPNMHDR)lParam)->code) {
     case TCN_SELCHANGE:
         onSelChange();
@@ -590,154 +563,6 @@ namespace papyrus {
 
   // Private methods
   //
-
-  void SettingsDialog::switchTab(Tab newTab) {
-    if (newTab != currentTab) {
-      showTab(currentTab, false);
-      showTab(newTab, true);
-      currentTab = newTab;
-    }
-  }
-
-  void SettingsDialog::showTab(Tab tab, bool show, bool intializing) const {
-    int showCommand = show ? SW_SHOW : SW_HIDE;
-    switch (tab) {
-      case Tab::Lexer: {
-        if (show) {
-          enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
-        }
-        setControlVisibility(IDC_SETTINGS_LEXER_SCRIPT_GROUP, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_FOLD_MIDDLE, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, show);
-        classLinkFgColorPicker.display(show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL, show);
-        classLinkBgColorPicker.display(show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_STYLER_CONFIG_TEXT1, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_STYLER_CONFIG_TEXT2, show);
-        setControlVisibility(IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK, show);
-        break;
-      }
-
-      case Tab::KeywordMatcher: {
-        if (show) {
-          enableGroup(Group::Matcher, settings.keywordMatcherSettings.enableKeywordMatching);
-        }
-        setControlVisibility(IDC_SETTINGS_MATCHER, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORDS_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_STATE, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_EVENT, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_PROPERTY, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_GROUP, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_STRUCT, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_IF, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_ELSE, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_KEYWORD_WHILE, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_INDICATOR_ID, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_MATCHED_STYLE_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_MATCHED_FGCOLOR_LABEL, show);
-        matchedIndicatorFgColorPicker.display(show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_UNMATCHED_STYLE_DROPDOWN, show);
-        setControlVisibility(IDC_SETTINGS_MATCHER_UNMATCHED_FGCOLOR_LABEL, show);
-        unmatchedIndicatorFgColorPicker.display(show);
-        break;
-      }
-
-      case Tab::ErrorAnnotator: {
-        if (show) {
-          enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
-          enableGroup(Group::Indication, settings.errorAnnotatorSettings.enableIndication);
-        }
-
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ANNOTATION_GROUP, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL, show);
-        annotationFgColorPicker.display(show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ANNOTATION_BGCOLOR_LABEL, show);
-        annotationBgColorPicker.display(show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ANNOTATION_ITALIC, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ANNOTATION_BOLD, show);
-
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_GROUP, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, show);
-        setControlVisibility(IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL, show);
-        errorIndicatorFgColorPicker.display(show);
-        break;
-      }
-
-      case Tab::Compiler: {
-        if (show) {
-          enableGroup(Group::GameSkyrim, settings.compilerSettings.skyrim.enabled);
-          enableGroup(Group::GameSSE, settings.compilerSettings.sse.enabled);
-          enableGroup(Group::GameFO4, settings.compilerSettings.fo4.enabled);
-          updateAutoModeDefaultGame();
-        }
-
-        setControlVisibility(IDC_SETTINGS_COMPILER_GAMES_GROUP, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_RADIO_AUTO, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_RADIO_SKYRIM, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_RADIO_SSE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_RADIO_FO4, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT_LABEL, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_SKYRIM_TOGGLE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_SKYRIM_CONFIGURE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_SSE_TOGGLE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_SSE_CONFIGURE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_FO4_TOGGLE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_FO4_CONFIGURE, show);
-        setControlVisibility(IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE, show);
-        break;
-      }
-
-      default: {
-        if (tab >= Tab::GameBase) {
-          // Update displayed values when showing, and save current values when hiding
-          auto game = getGame(tab);
-          bool isFallout4 = (game == Game::Fallout4);
-
-          // Only handle current game tab settings after UI initialization
-          if (!intializing) {
-            show ? loadGameSettings(settings.compilerSettings.gameSettings(game), isFallout4) : saveGameSettings(settings.compilerSettings.gameSettings(game), isFallout4);
-          }
-
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_INSTALL_PATH_LABEL, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_INSTALL_PATH, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_COMPILER_PATH_LABEL, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_COMPILER_PATH, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL1, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL2, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES_LABEL3, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY_LABEL, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_FLAG_FILE_LABEL, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_FLAG_FILE, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_ANONYMIZE, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_OPTIMIZE, show);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_RELEASE, show && isFallout4);
-          setControlVisibility(IDC_SETTINGS_TAB_GAME_FINAL, show && isFallout4);
-        }
-        break;
-      }
-    }
-  }
 
   void SettingsDialog::enableGroup(Group group, bool enabled) const {
     switch (group) {
@@ -863,24 +688,24 @@ namespace papyrus {
 
   int SettingsDialog::getGameTab(Game game) const {
     if (!settings.compilerSettings.gameSettings(game).enabled) {
-      return -1;
+        return -1;
     }
 
     int count = 0;
     for (int i = utility::underlying(Game::Auto) + 1; i <= utility::underlying(game); i++) {
-      const CompilerSettings::GameSettings& gameSettings = settings.compilerSettings.gameSettings(static_cast<Game>(i));
-      if (gameSettings.enabled) {
+        const CompilerSettings::GameSettings& gameSettings = settings.compilerSettings.gameSettings(static_cast<Game>(i));
+        if (gameSettings.enabled) {
         count++;
-      }
+        }
     }
     return utility::underlying(Tab::GameBase) + count - 1;
-    
-    //for (int i = 0; i < tabData.tabItems.size(); i++) {
-    //    if (tabData.tabItems[i].game == utility::underlying(game))
-    //        return tabData.tabItems[i].curTabIdx;
-    //}
+   }
 
-    //return -1; //we should never be here
+  void SettingsDialog::toggleDlgVisible(Game game, bool isVisible) const {
+      for (int i = 4; i < tabData.tabItems.size(); i++) {
+          if (tabData.tabItems[i].game == utility::underlying(game))
+              tabData.tabItems[i].isVisible = true;
+      }
   }
 
   void SettingsDialog::addGameTab(Game game) const {
@@ -890,19 +715,15 @@ namespace papyrus {
         .cchTextMax = static_cast<int>(_tcslen(item.pszText))
       };
       ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_INSERTITEM, getGameTab(game), reinterpret_cast<LPARAM>(&item));
-      for (int i = 4; i < tabData.tabItems.size(); i++) {
-          if (tabData.tabItems[i].game == utility::underlying(game))
-            tabData.tabItems[i].isVisible = true;
-      }
+
+      toggleDlgVisible(game, true);
   }
 
   void SettingsDialog::removeGameTab(Game game) const {
     int gameTab = getGameTab(game);
     ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_DELETEITEM, gameTab, 0);
-    for (int i = 4; i < tabData.tabItems.size(); i++) {
-        if (tabData.tabItems[i].game == utility::underlying(game))
-            tabData.tabItems[i].isVisible = false;
-    }
+
+    toggleDlgVisible(game, false);
   }
 
   void SettingsDialog::toggleGame(Game game, int controlID, Group group) const {
@@ -928,7 +749,6 @@ namespace papyrus {
     if (gameTab != -1) {
       ::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_SETCURSEL, gameTab, 0);
       onSelChange();
-      //switchTab(static_cast<Tab>(gameTab));
     }
   }
 
@@ -974,16 +794,16 @@ namespace papyrus {
     setText(tabData.tabItems[3].tabDlgHwnd, controlID, enabled ? L"Disable" : L"Enable");
   }
 
-  void SettingsDialog::loadGameSettings(const CompilerSettings::GameSettings& gameSettings, bool isFallout4) const {
-    setText(IDC_SETTINGS_TAB_GAME_INSTALL_PATH, gameSettings.installPath);
-    setText(IDC_SETTINGS_TAB_GAME_COMPILER_PATH, gameSettings.compilerPath);
-    setText(IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY, gameSettings.outputDirectory);
-    setText(IDC_SETTINGS_TAB_GAME_FLAG_FILE, gameSettings.flagFile);
-    setChecked(IDC_SETTINGS_TAB_GAME_ANONYMIZE, gameSettings.anonynmizeFlag);
-    setChecked(IDC_SETTINGS_TAB_GAME_OPTIMIZE, gameSettings.optimizeFlag);
-    if (isFallout4) {
-      setChecked(IDC_SETTINGS_TAB_GAME_RELEASE, gameSettings.releaseFlag);
-      setChecked(IDC_SETTINGS_TAB_GAME_FINAL, gameSettings.finalFlag);
+  void SettingsDialog::loadGameSettings(const CompilerSettings::GameSettings& gameSettings, HWND hwnd) const {
+    setText(hwnd, IDC_SETTINGS_TAB_GAME_INSTALL_PATH, gameSettings.installPath);
+    setText(hwnd, IDC_SETTINGS_TAB_GAME_COMPILER_PATH, gameSettings.compilerPath);
+    setText(hwnd, IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY, gameSettings.outputDirectory);
+    setText(hwnd, IDC_SETTINGS_TAB_GAME_FLAG_FILE, gameSettings.flagFile);
+    setChecked(hwnd, IDC_SETTINGS_TAB_GAME_ANONYMIZE, gameSettings.anonynmizeFlag);
+    setChecked(hwnd, IDC_SETTINGS_TAB_GAME_OPTIMIZE, gameSettings.optimizeFlag);
+    if (::IsWindowVisible(getControl(hwnd, IDC_SETTINGS_TAB_GAME_RELEASE))) {
+      setChecked(hwnd,IDC_SETTINGS_TAB_GAME_RELEASE, gameSettings.releaseFlag);
+      setChecked(hwnd,IDC_SETTINGS_TAB_GAME_FINAL, gameSettings.finalFlag);
     }
 
     // Import directories is a semi-colon delimited multi-line text. Make a copy of it
@@ -992,23 +812,24 @@ namespace papyrus {
     while ((index = importDirectories.find(L";", index)) != std::wstring::npos) {
       importDirectories.replace(index, 1, L"\r\n");
     }
-    setText(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES, importDirectories);
+    setText(hwnd, IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES, importDirectories);
   }
 
-  void SettingsDialog::saveGameSettings(CompilerSettings::GameSettings& gameSettings, bool isFallout4) const {
-    gameSettings.installPath = getText(IDC_SETTINGS_TAB_GAME_INSTALL_PATH);
-    gameSettings.compilerPath = getText(IDC_SETTINGS_TAB_GAME_COMPILER_PATH);
-    gameSettings.outputDirectory = getText(IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY);
-    gameSettings.flagFile = getText(IDC_SETTINGS_TAB_GAME_FLAG_FILE);
-    gameSettings.anonynmizeFlag = getChecked(IDC_SETTINGS_TAB_GAME_ANONYMIZE);
-    gameSettings.optimizeFlag = getChecked(IDC_SETTINGS_TAB_GAME_OPTIMIZE);
-    if (isFallout4) {
-      gameSettings.releaseFlag = getChecked(IDC_SETTINGS_TAB_GAME_RELEASE);
-      gameSettings.finalFlag = getChecked(IDC_SETTINGS_TAB_GAME_FINAL);
+  void SettingsDialog::saveGameSettings(CompilerSettings::GameSettings& gameSettings, HWND hwnd) const {
+    gameSettings.installPath = getText(hwnd, IDC_SETTINGS_TAB_GAME_INSTALL_PATH);
+    gameSettings.compilerPath = getText(hwnd, IDC_SETTINGS_TAB_GAME_COMPILER_PATH);
+    gameSettings.outputDirectory = getText(hwnd, IDC_SETTINGS_TAB_GAME_OUTPUT_DIRECTORY);
+    gameSettings.flagFile = getText(hwnd, IDC_SETTINGS_TAB_GAME_FLAG_FILE);
+    gameSettings.anonynmizeFlag = getChecked(hwnd, IDC_SETTINGS_TAB_GAME_ANONYMIZE);
+    gameSettings.optimizeFlag = getChecked(hwnd, IDC_SETTINGS_TAB_GAME_OPTIMIZE);
+    if (::IsWindowVisible(getControl(hwnd, IDC_SETTINGS_TAB_GAME_RELEASE))){
+    //if (isFallout4) {
+      gameSettings.releaseFlag = getChecked(hwnd, IDC_SETTINGS_TAB_GAME_RELEASE);
+      gameSettings.finalFlag = getChecked(hwnd, IDC_SETTINGS_TAB_GAME_FINAL);
     }
 
     // Import directories is a semi-colon delimited multi-line text
-    gameSettings.importDirectories = getText(IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES);
+    gameSettings.importDirectories = getText(hwnd, IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES);
     size_t index {};
     while ((index = gameSettings.importDirectories .find(L"\r\n", index)) != std::wstring::npos) {
       gameSettings.importDirectories.replace(index, 2, L";");
@@ -1061,7 +882,7 @@ namespace papyrus {
     Tab tab = static_cast<Tab>(::SendDlgItemMessage(getHSelf(), IDC_SETTINGS_TABS, TCM_GETCURSEL, 0, 0));
     if (tab >= Tab::GameBase) {
       auto game = getGame(tab);
-      saveGameSettings(settings.compilerSettings.gameSettings(game), game == Game::Fallout4);
+      saveGameSettings(settings.compilerSettings.gameSettings(game), tabData.activeTabItem.tabDlgHwnd);
     }
 
     if (settingsUpdatedFunc) {
