@@ -1,14 +1,14 @@
 # Papyrus Plugin for Notepad++
-![GPL v3 License](https://img.shields.io/badge/License-GPL%20v3-blue)
-![Visual Studio 2022](https://img.shields.io/badge/Visual%20Studio-2022-blue?logo=visual-studio)
-![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-grey?logo=visual-studio-code)
-![C++](https://img.shields.io/badge/c++-blue.svg?&logo=c%2B%2B)
-![Notepad++ Plugin](https://img.shields.io/badge/Notepad++-Plugin-blue.svg?&logo=notepad%2B%2B)
+[![GPL v3 License](https://img.shields.io/badge/License-GPL%20v3-blue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![Visual Studio 2022](https://img.shields.io/badge/Visual%20Studio-2022-blue?logo=visual-studio)](https://visualstudio.microsoft.com/downloads/)
+[![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-grey?logo=visual-studio-code)](https://code.visualstudio.com/)
+[![C++](https://img.shields.io/badge/c++-blue.svg?&logo=c%2B%2B)](https://www.open-std.org/jtc1/sc22/wg21/docs/standards)
+[![Notepad++ Plugin](https://img.shields.io/badge/Notepad++-Plugin-blue.svg?&logo=notepad%2B%2B)](https://notepad-plus-plus.org/)
 
-![Build Status](https://github.com/blu3mania/npp-papyrus/workflows/Build/badge.svg?branch=main)
-![CodeQL Status](https://github.com/blu3mania/npp-papyrus/workflows/CodeQL/badge.svg?branch=main)
-![Microsoft C++ Code Analysis Status](https://github.com/blu3mania/npp-papyrus/workflows/Microsoft%20C++%20Code%20Analysis/badge.svg?branch=main)
-![Latest Release](https://img.shields.io/github/v/release/blu3mania/npp-papyrus)
+[![Build Status](https://github.com/blu3mania/npp-papyrus/workflows/Build/badge.svg?branch=main)](https://github.com/blu3mania/npp-papyrus/actions/workflows/build.yml)
+[![CodeQL Status](https://github.com/blu3mania/npp-papyrus/workflows/CodeQL/badge.svg?branch=main)](https://github.com/blu3mania/npp-papyrus/actions/workflows/codeql-analysis.yml)
+[![Microsoft C++ Code Analysis Status](https://github.com/blu3mania/npp-papyrus/workflows/Microsoft%20C++%20Code%20Analysis/badge.svg?branch=main)](https://github.com/blu3mania/npp-papyrus/actions/workflows/msvc-analysis.yml)
+[![Latest Release](https://img.shields.io/github/v/release/blu3mania/npp-papyrus)](https://github.com/blu3mania/npp-papyrus/releases/latest)
 
 This plugin adds support for [Bethesda](https://bethesdagamestudios.com/)'s *Papyrus* scripting language to
 [Notepad++](https://notepad-plus-plus.org/).
