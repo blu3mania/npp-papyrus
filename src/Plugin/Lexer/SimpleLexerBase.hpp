@@ -85,8 +85,8 @@ namespace papyrus {
       virtual const std::vector<WordList*>& getTypeWordLists() const = 0;
 
     private:
-      const char* name;
-      int id;
+      const char* const name;
+      const int id;
   };
 
 } // namespace

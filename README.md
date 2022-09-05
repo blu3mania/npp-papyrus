@@ -1,5 +1,5 @@
 # Papyrus Plugin for Notepad++
-[![GPL v3 License](https://img.shields.io/badge/License-GPL%20v3-blue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![GPL v3 License](https://img.shields.io/badge/License-GPL%20v3-blue)](https://raw.githubusercontent.com/blu3mania/npp-papyrus/main/LICENSE)
 [![Visual Studio 2022](https://img.shields.io/badge/Visual%20Studio-2022-blue?logo=visual-studio)](https://visualstudio.microsoft.com/downloads/)
 [![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-grey?logo=visual-studio-code)](https://code.visualstudio.com/)
 [![C++](https://img.shields.io/badge/c++-blue.svg?&logo=c%2B%2B)](https://www.open-std.org/jtc1/sc22/wg21/docs/standards)

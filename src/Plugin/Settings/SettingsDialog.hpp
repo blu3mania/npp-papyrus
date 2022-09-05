@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Settings.hpp"
 
 #include "..\Common\Resources.hpp"
-#include "..\UI\DialogBase.hpp"
+#include "..\UI\MultiTabbedDialog.hpp"
 
 #include "..\..\external\npp\URLCtrl.h"
 
@@ -30,21 +30,22 @@ namespace papyrus {
 
   using Game = game::Game;
 
-  class SettingsDialog : public DialogBase {
+  class SettingsDialog : public MultiTabbedDialog {
 
     public:
       using callback_t = std::function<void()>;
 
-      inline SettingsDialog(Settings& settings) : DialogBase(IDD_SETTINGS_DIALOG), settings(settings) {}
+      inline SettingsDialog(Settings& settings) : MultiTabbedDialog(IDD_SETTINGS_DIALOG, IDC_SETTINGS_TABS), settings(settings) {}
       ~SettingsDialog();
 
       void doDialog(callback_t callback);
 
     protected:
       void initControls() override;
-      INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
-      INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
       INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;
+      INT_PTR handleTabCommandMessage(tab_id_t tab, WPARAM wParam, LPARAM lParam) override;
+
+      void onTabDialogCreated(tab_id_t tab) override;
 
     private:
       enum class Tab {
@@ -66,32 +67,27 @@ namespace papyrus {
         GameFO4
       };
 
-      void switchTab(Tab newTab);
-      void showTab(Tab tab, bool show, bool intializing = false) const;
-
       void enableGroup(Group group, bool enabled) const;
 
       void updateEnabledKeywords() const;
 
-      Game getGame(Tab tab) const;
-      int getGameTab(Game game) const;
-      void addGameTab(Game game) const;
-      void removeGameTab(Game game) const;
-      void toggleGame(Game game, int controlID, Group group) const;
+      Game getGame(tab_id_t tab) const;
+      tab_id_t getGameTab(Game game) const;
+      void addGameTab(Game game);
+      void removeGameTab(Game game);
+      void toggleGame(Game game, int controlID, Group group);
       void configureGame(Game game);
 
       void updateAutoModeDefaultGame() const;
       void updateGameEnableButtonText(int controlID, bool enabled) const;
 
-      void loadGameSettings(const CompilerSettings::GameSettings& gameSettings, bool isFallout4) const;
-      void saveGameSettings(CompilerSettings::GameSettings& gameSettings, bool isFallout4) const;
+      void saveGameSettings(tab_id_t tab, CompilerSettings::GameSettings& gameSettings) const;
       bool saveSettings();
 
       // Private members
       //
       Settings& settings;
       callback_t settingsUpdatedFunc {};
-      Tab currentTab { Tab::Lexer };
 
       HWND foldMiddleTooltip {};
       HWND classNameCachingTooltip {};

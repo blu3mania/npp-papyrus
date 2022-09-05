@@ -40,7 +40,7 @@ namespace papyrus {
       }
 
       default: {
-        throw std::runtime_error("Should not get here");
+        throw std::invalid_argument("Should not get here -- unrecognized game");
       }
     }
   }

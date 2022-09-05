@@ -13,7 +13,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
     branches: [main]
   schedule:
     - cron: '36 2 * * 3'
@@ -26,9 +26,6 @@ env:
 jobs:
   Analyze:
     runs-on: windows-latest
-
-    strategy:
-      fail-fast: false
 
     steps:
       - name: Checkout

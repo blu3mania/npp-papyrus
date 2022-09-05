@@ -34,6 +34,7 @@ namespace papyrus {
     protected:
       void initControls() override;
       INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) override;
+      INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;
 
     private:
       URLCtrl homePageLink;

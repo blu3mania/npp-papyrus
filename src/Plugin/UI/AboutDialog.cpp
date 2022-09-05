@@ -72,20 +72,14 @@ namespace papyrus {
     if (wParam == IDC_ABOUT_LIBRARY_NPP_LINK) {
       // Special link for Notepad++'s About dialog. Send a message to activate that menu
       ::SendMessage(getHParent(), NPPM_MENUCOMMAND, 0, IDM_ABOUT);
-    } else if (HIWORD(wParam) == BN_CLICKED) {
-      switch (LOWORD(wParam)) {
-        case IDOK: {
-        case IDCANCEL:
-          hide();
-        }
-
-        default: {
-          break;
-        }
-      }
     }
 
     return FALSE;
   }
 
+  INT_PTR AboutDialog::handleCloseMessage(WPARAM wParam, LPARAM lParam) {
+    hide();
+
+    return FALSE;
+  }
 } // namespace

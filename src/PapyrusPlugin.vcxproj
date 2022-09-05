@@ -216,6 +216,7 @@
     <ClInclude Include="Plugin\Settings\SettingsStorage.hpp" />
     <ClInclude Include="Plugin\UI\AboutDialog.hpp" />
     <ClInclude Include="Plugin\UI\DialogBase.hpp" />
+    <ClInclude Include="Plugin\UI\MultiTabbedDialog.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
@@ -248,6 +249,7 @@
     <ClCompile Include="Plugin\Settings\SettingsStorage.cpp" />
     <ClCompile Include="Plugin\UI\AboutDialog.cpp" />
     <ClCompile Include="Plugin\UI\DialogBase.cpp" />
+    <ClCompile Include="Plugin\UI\MultiTabbedDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Plugin\Resources.rc" />

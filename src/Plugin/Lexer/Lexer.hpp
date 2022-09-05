@@ -132,6 +132,7 @@ namespace papyrus {
         Numeric,
         Special
       };
+
       struct Token {
         std::string content;
         TokenType tokenType;

@@ -129,6 +129,9 @@
     <ClInclude Include="Plugin\UI\DialogBase.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Plugin\UI\MultiTabbedDialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">
@@ -219,6 +222,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Plugin\UI\DialogBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\UI\MultiTabbedDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

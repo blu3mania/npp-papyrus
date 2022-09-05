@@ -73,35 +73,41 @@ namespace papyrus {
     return FALSE;
   }
 
-  HWND DialogBase::getControl(int controlID) const {
-    return ::GetDlgItem(getHSelf(), controlID);
-  }
-
-  void DialogBase::initDropdownList(int controlID, const dropdown_options_t& options, int selectedIndex) const {
+  void DialogBase::initDropdownList(HWND hwnd, int controlID, const dropdown_options_t& options, int selectedIndex) const {
     for (const auto& option : options) {
-      ::SendDlgItemMessage(getHSelf(), controlID, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(option));
+      ::SendDlgItemMessage(hwnd, controlID, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(option));
     }
     if (selectedIndex >= 0) {
       selectedIndex = min(selectedIndex, static_cast<int>(options.size() - 1));
-      setDropdownSelectedIndex(controlID, selectedIndex);
+      setDropdownSelectedIndex(hwnd, controlID, selectedIndex);
     }
   }
 
-  void DialogBase::initColorPicker(ColourPicker& colorPicker, int labelControlID, int width, int height, int xOffset, int yOffset) const {
-    colorPicker.init(getHinst(), getHSelf());
-    auto label = ::GetDlgItem(getHSelf(), labelControlID);
+  bool DialogBase::setDropdownSelectedText(HWND hwnd, int controlID, LPCWSTR text) const {
+    int index = static_cast<int>(::SendDlgItemMessage(hwnd, controlID, CB_FINDSTRINGEXACT, 0, reinterpret_cast<LPARAM>(text)));
+    if (index != CB_ERR) {
+      setDropdownSelectedIndex(hwnd, controlID, index);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void DialogBase::initColorPicker(HWND hwnd, ColourPicker& colorPicker, int labelControlID, int width, int height, int xOffset, int yOffset) const {
+    colorPicker.init(getHinst(), hwnd);
+    auto label = ::GetDlgItem(hwnd, labelControlID);
     RECT rc {};
     ::GetWindowRect(label, &rc);
     POINT p {
       .x = rc.right,
       .y = rc.top
     };
-    ::ScreenToClient(getHSelf(), &p);
+    ::ScreenToClient(hwnd, &p);
     ::MoveWindow(colorPicker.getHSelf(), p.x + xOffset, p.y + yOffset, width, height, TRUE);
   }
 
-  HWND DialogBase::createToolTip(int controlID, LPCWSTR toolTip, int delayTime) const {
-    auto control = getControl(controlID);
+  HWND DialogBase::createToolTip(HWND hwnd, int controlID, LPCWSTR toolTip, int delayTime) const {
+    auto control = getControl(hwnd, controlID);
     if (!control) {
       return nullptr;
     }
@@ -135,8 +141,8 @@ namespace papyrus {
     return hwndToolTip;
   }
 
-  std::wstring DialogBase::getText(int controlID) const {
-    auto control = getControl(controlID);
+  std::wstring DialogBase::getText(HWND hwnd, int controlID) const {
+    auto control = getControl(hwnd, controlID);
     std::wstring content(static_cast<size_t>(::GetWindowTextLength(control)) + 1, L' ');
     ::GetWindowText(control, const_cast<LPWSTR>(content.c_str()), static_cast<int>(content.size()));
     content.pop_back(); // Remove trailing NULL

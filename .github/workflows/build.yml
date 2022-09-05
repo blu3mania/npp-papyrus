@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
     branches: [main]
 
 env:
@@ -15,6 +15,7 @@ jobs:
   Build:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         build_configuration: [Release]
         build_platform: [x64, x86]
@@ -40,4 +41,4 @@ jobs:
 
       - name: Build plugin DLL
         working-directory: ${{ github.workspace }}
-        run: msbuild /m /p:Configuration=${{ matrix.build_configuration}} /p:Platform=${{ matrix.build_platform }} ${{ env.SOLUTION_FILE_PATH }}
+        run: msbuild /m /p:Configuration=${{ matrix.build_configuration }} /p:Platform=${{ matrix.build_platform }} ${{ env.SOLUTION_FILE_PATH }}
