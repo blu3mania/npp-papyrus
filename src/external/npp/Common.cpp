@@ -133,7 +133,7 @@ void writeLog(const TCHAR *logFileName, const char *log2write)
 	const DWORD accessParam{ GENERIC_READ | GENERIC_WRITE };
 	const DWORD shareParam{ FILE_SHARE_READ | FILE_SHARE_WRITE };
 	const DWORD dispParam{ OPEN_ALWAYS }; // Open existing file for writing without destroying it or create new
-	const DWORD attribParam{ FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH };
+	const DWORD attribParam{ FILE_ATTRIBUTE_NORMAL };
 	HANDLE hFile = ::CreateFileW(logFileName, accessParam, shareParam, NULL, dispParam, attribParam, NULL);
 
 	if (hFile != INVALID_HANDLE_VALUE)
@@ -155,6 +155,7 @@ void writeLog(const TCHAR *logFileName, const char *log2write)
 		::WriteFile(hFile, log2writeStr.c_str(), static_cast<DWORD>(log2writeStr.length()), &bytes_written, NULL);
 
 		::FlushFileBuffers(hFile);
+		::CloseHandle(hFile);
 	}
 }
 */
@@ -569,24 +570,34 @@ generic_string uintToString(unsigned int val)
 }
 
 // Build Recent File menu entries from given
-generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generic_string &filename)
+generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generic_string &filename, bool ordinalNumber)
 {
 	generic_string strTemp;
 
-	if (pos < 9)
+	if (ordinalNumber)
 	{
-		strTemp.push_back('&');
-		strTemp.push_back('1' + static_cast<TCHAR>(pos));
-	}
-	else if (pos == 9)
-	{
-		strTemp.append(TEXT("1&0"));
+		if (pos < 9)
+		{
+			strTemp.push_back('&');
+			strTemp.push_back('1' + static_cast<TCHAR>(pos));
+		}
+		else if (pos == 9)
+		{
+			strTemp.append(TEXT("1&0"));
+		}
+		else
+		{
+			div_t splitDigits = div(pos + 1, 10);
+			strTemp.append(uintToString(splitDigits.quot));
+			strTemp.push_back('&');
+			strTemp.append(uintToString(splitDigits.rem));
+		}
+		strTemp.append(TEXT(": "));
 	}
 	else
 	{
-		strTemp.append(uintToString(pos + 1));
+		strTemp.push_back('&');
 	}
-	strTemp.append(TEXT(": "));
 
 	if (filenameLen > 0)
 	{
@@ -1549,3 +1560,192 @@ HFONT createFont(const TCHAR* fontName, int fontSize, bool isBold, HWND hDestPar
 
 	return newFont;
 }
+
+// PapyrusPlugin modification -- not used
+/*
+Version::Version(const generic_string& versionStr)
+{
+	try {
+		auto ss = tokenizeString(versionStr, '.');
+
+		if (ss.size() > 4)
+		{
+			std::wstring msg(L"\"");
+			msg += versionStr;
+			msg += L"\"";
+			msg += TEXT(": Version parts are more than 4. The string to parse is not a valid version format. Let's make it default value in catch block.");
+			throw msg;
+		}
+
+		int i = 0;
+		std::vector<unsigned long*> v = { &_major, &_minor, &_patch, &_build };
+		for (const auto& s : ss)
+		{
+			if (!isNumber(s))
+			{
+				std::wstring msg(L"\"");
+				msg += versionStr;
+				msg += L"\"";
+				msg += TEXT(": One of version character is not number. The string to parse is not a valid version format. Let's make it default value in catch block.");
+				throw msg;
+			}
+			*(v[i]) = std::stoi(s);
+
+			++i;
+		}
+	}
+#ifdef DEBUG
+	catch (const std::wstring& s)
+	{
+		_major = 0;
+		_minor = 0;
+		_patch = 0;
+		_build = 0;
+
+		throw s;
+	}
+#endif
+	catch (...)
+	{
+		_major = 0;
+		_minor = 0;
+		_patch = 0;
+		_build = 0;
+#ifdef DEBUG
+		throw std::wstring(TEXT("Unknown exception from \"Version::Version(const generic_string& versionStr)\""));
+#endif
+	}
+}
+
+
+void Version::setVersionFrom(const generic_string& filePath)
+{
+	if (!filePath.empty() && ::PathFileExists(filePath.c_str()))
+	{
+		DWORD uselessArg = 0; // this variable is for passing the ignored argument to the functions
+		DWORD bufferSize = ::GetFileVersionInfoSize(filePath.c_str(), &uselessArg);
+
+		if (bufferSize <= 0)
+			return;
+
+		unsigned char* buffer = new unsigned char[bufferSize];
+		::GetFileVersionInfo(filePath.c_str(), uselessArg, bufferSize, buffer);
+
+		VS_FIXEDFILEINFO* lpFileInfo = nullptr;
+		UINT cbFileInfo = 0;
+		VerQueryValue(buffer, TEXT("\\"), reinterpret_cast<LPVOID*>(&lpFileInfo), &cbFileInfo);
+		if (cbFileInfo)
+		{
+			_major = (lpFileInfo->dwFileVersionMS & 0xFFFF0000) >> 16;
+			_minor = lpFileInfo->dwFileVersionMS & 0x0000FFFF;
+			_patch = (lpFileInfo->dwFileVersionLS & 0xFFFF0000) >> 16;
+			_build = lpFileInfo->dwFileVersionLS & 0x0000FFFF;
+		}
+		delete[] buffer;
+	}
+}
+
+generic_string Version::toString()
+{
+	if (_build == 0 && _patch == 0 && _minor == 0 && _major == 0) // ""
+	{
+		return TEXT("");
+	}
+	else if (_build == 0 && _patch == 0 && _minor == 0) // "major"
+	{
+		return std::to_wstring(_major);
+	}
+	else if (_build == 0 && _patch == 0) // "major.minor"
+	{
+		std::wstring v = std::to_wstring(_major);
+		v += TEXT(".");
+		v += std::to_wstring(_minor);
+		return v;
+	}
+	else if (_build == 0) // "major.minor.patch"
+	{
+		std::wstring v = std::to_wstring(_major);
+		v += TEXT(".");
+		v += std::to_wstring(_minor);
+		v += TEXT(".");
+		v += std::to_wstring(_patch);
+		return v;
+	}
+
+	// "major.minor.patch.build"
+	std::wstring ver = std::to_wstring(_major);
+	ver += TEXT(".");
+	ver += std::to_wstring(_minor);
+	ver += TEXT(".");
+	ver += std::to_wstring(_patch);
+	ver += TEXT(".");
+	ver += std::to_wstring(_build);
+
+	return ver;
+}
+
+int Version::compareTo(const Version& v2c) const
+{
+	if (_major > v2c._major)
+		return 1;
+	else if (_major < v2c._major)
+		return -1;
+	else // (_major == v2c._major)
+	{
+		if (_minor > v2c._minor)
+			return 1;
+		else if (_minor < v2c._minor)
+			return -1;
+		else // (_minor == v2c._minor)
+		{
+			if (_patch > v2c._patch)
+				return 1;
+			else if (_patch < v2c._patch)
+				return -1;
+			else // (_patch == v2c._patch)
+			{
+				if (_build > v2c._build)
+					return 1;
+				else if (_build < v2c._build)
+					return -1;
+				else // (_build == v2c._build)
+				{
+					return 0;
+				}
+			}
+		}
+	}
+}
+
+bool Version::isCompatibleTo(const Version& from, const Version& to) const
+{
+	// This method determinates if Version object is in between "from" version and "to" version, it's useful for testing compatibility of application.
+	// test in versions <from, to> example: 
+	// 1. <0.0.0.0, 0.0.0.0>: both from to versions are empty, so it's 
+	// 2. <6.9, 6.9>: plugin is compatible to only v6.9
+	// 3. <4.2, 6.6.6>: from v4.2 (included) to v6.6.6 (included)
+	// 4. <0.0.0.0, 8.2.1>: all version until v8.2.1 (included)
+	// 5. <8.3, 0.0.0.0>: from v8.3 (included) to the latest verrsion
+	
+	if (empty()) // if this version is empty, then no compatible to all version
+		return false;
+
+	if (from.empty() && to.empty()) // both versions "from" and "to" are empty: it's considered compatible, whatever this version is (match to 1)
+	{
+		return true;
+	}
+
+	if (from <= *this && to >= *this) // from_ver <= this_ver <= to_ver (match to 2, 3 and 4)
+	{
+		return true;
+	}
+		
+	if (from <= *this && to.empty()) // from_ver <= this_ver (match to 5)
+	{
+		return true;
+	}
+
+	return false;
+}
+*/
+// End of PapyrusPlugin modification

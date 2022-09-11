@@ -78,6 +78,7 @@ void ColourPicker::drawBackground(HDC hDC)
 	}
   */
 	::Rectangle(hDC, 0, 0, rc.right, rc.bottom);
+  // PapyrusPlugin modification ends
 	::SelectObject(hDC, oldObj);
 	//FillRect(hDC, &rc, hbrush);
 	::DeleteObject(hbrush);

@@ -16,6 +16,7 @@
 
 
 #include "URLCtrl.h"
+//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now
 
 // PapyrusPlugin modification -- string manipulation for email link
 #include <string>
@@ -181,7 +182,7 @@ void URLCtrl::action()
       ::ShellExecute(NULL, TEXT("open"), _URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
     }
     //
-    // PapyrusPlugin modification
+    // PapyrusPlugin modification ends
   }
 }
 
@@ -229,7 +230,7 @@ LRESULT URLCtrl::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 			}
         */
         ::SetTextColor(hdc, _linkColor);
-        // PapyrusPlugin modification
+        // PapyrusPlugin modification ends
 
         ::SetBkColor(hdc, getCtrlBgColor(GetParent(hwnd))); ///*::GetSysColor(COLOR_3DFACE)*/);
 

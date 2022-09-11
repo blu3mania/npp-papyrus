@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <unordered_set>
 #include <algorithm>
-
+#include <tchar.h>
 #include "Notepad_plus_msgs.h"  // PapyrusPlugin modification -- added due to including GetLastErrorAsString as inline 
 
 
@@ -40,7 +40,7 @@ const bool dirDown = false;
 
 #define generic_strtol wcstol
 #define generic_strncpy wcsncpy
-#define generic_stricmp _wcsicmp  // PapyrusPlugin modification -- make MS built tool happy...
+#define generic_stricmp _wcsicmp  // PapyrusPlugin modification -- make MS build tool happy...
 #define generic_strncmp wcsncmp
 #define generic_strnicmp wcsnicmp
 #define generic_strncat wcsncat
@@ -68,7 +68,7 @@ void printInt(int int2print);
 void printStr(const TCHAR *str2print);
 generic_string commafyInt(size_t n);
 
-//void writeLog(const TCHAR *logFileName, const char *log2write); // PapyrusPlugin modification -- not used, and causing secure warnings
+//void writeLog(const TCHAR *logFileName, const char *log2write);  // PapyrusPlugin modification -- not used, and causing secure warnings
 int filter(unsigned int code, struct _EXCEPTION_POINTERS *ep);
 generic_string purgeMenuItemString(const TCHAR * menuItemStr, bool keepAmpersand = false);
 std::vector<generic_string> tokenizeString(const generic_string & tokenString, const char delim);
@@ -81,9 +81,9 @@ std::string wstring2string(const std::wstring & rwString, UINT codepage);
 bool isInList(const TCHAR *token, const TCHAR *list);
 generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generic_string &filename);
 
-//std::string getFileContent(const TCHAR *file2read); // PapyrusPlugin modification -- not used, and causing secure warnings
+//std::string getFileContent(const TCHAR *file2read);  // PapyrusPlugin modification -- not used, and causing secure warnings
 generic_string relativeFilePathToFullFilePath(const TCHAR *relativeFilePath);
-//void writeFileContent(const TCHAR *file2write, const char *content2write); // PapyrusPlugin modification -- not used, and causing secure warnings
+//void writeFileContent(const TCHAR *file2write, const char *content2write);  // PapyrusPlugin modification -- not used, and causing secure warnings
 bool matchInList(const TCHAR *fileName, const std::vector<generic_string> & patterns);
 bool matchInExcludeDirList(const TCHAR* dirName, const std::vector<generic_string>& patterns, size_t level);
 bool allPatternsAreExclusion(const std::vector<generic_string> patterns);
@@ -161,10 +161,6 @@ protected:
 };
 
 
-
-#define MACRO_RECORDING_IN_PROGRESS 1
-#define MACRO_RECORDING_HAS_STOPPED 2
-
 #define REBARBAND_SIZE sizeof(REBARBANDINFO)
 
 generic_string PathRemoveFileSpec(generic_string & path);
@@ -237,3 +233,61 @@ int nbDigitsFromNbLines(size_t nbLines);
 generic_string getDateTimeStrFrom(const generic_string& dateTimeFormat, const SYSTEMTIME& st);
 
 HFONT createFont(const TCHAR* fontName, int fontSize, bool isBold, HWND hDestParent);
+
+// PapyrusPlugin modification -- not used
+/*
+class Version final
+{
+public:
+	Version() = default;
+	Version(const generic_string& versionStr);
+
+	void setVersionFrom(const generic_string& filePath);
+	generic_string toString();
+	bool isNumber(const generic_string& s) const {
+		return !s.empty() &&
+			find_if(s.begin(), s.end(), [](TCHAR c) { return !_istdigit(c); }) == s.end();
+	};
+
+	int compareTo(const Version& v2c) const;
+
+	bool operator < (const Version& v2c) const {
+		return compareTo(v2c) == -1;
+	};
+
+	bool operator <= (const Version& v2c) const {
+		int r = compareTo(v2c);
+		return r == -1 || r == 0;
+	};
+
+	bool operator > (const Version& v2c) const {
+		return compareTo(v2c) == 1;
+	};
+
+	bool operator >= (const Version& v2c) const {
+		int r = compareTo(v2c);
+		return r == 1 || r == 0;
+	};
+
+	bool operator == (const Version& v2c) const {
+		return compareTo(v2c) == 0;
+	};
+
+	bool operator != (const Version& v2c) const {
+		return compareTo(v2c) != 0;
+	};
+
+	bool empty() const {
+		return _major == 0 && _minor == 0 && _patch == 0 && _build == 0;
+	}
+
+	bool isCompatibleTo(const Version& from, const Version& to) const;
+
+private:
+	unsigned long _major = 0;
+	unsigned long _minor = 0;
+	unsigned long _patch = 0;
+	unsigned long _build = 0;
+};
+*/
+// End of PapyrusPlugin modification
