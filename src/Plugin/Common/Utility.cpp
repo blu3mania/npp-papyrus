@@ -238,7 +238,7 @@ namespace utility {
   // File utilities
   //
   bool fileExists(const std::wstring& filePath) {
-    DWORD dwAttrib = GetFileAttributes(filePath.c_str());
+    DWORD dwAttrib = ::GetFileAttributes(filePath.c_str());
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
   }
 

@@ -66,8 +66,15 @@ namespace papyrus {
       if (!isTabDialogCreated(currentTab)) {
         createTabDialog(currentTab);
       }
+
+      // Adjust tab dialog's position to remove tab item's height
+      int tabIndex = getTabIndex(currentTab);
+      RECT tabItemRect;
+      ::SendDlgItemMessage(getHSelf(), tabsControlID, TCM_GETITEMRECT, tabIndex, reinterpret_cast<LPARAM>(&tabItemRect));
+      ::SetWindowPos(tabItems[currentTab].handle, 0, tabDialogRect.left, tabDialogRect.top + tabItemRect.bottom, tabDialogRect.right - tabDialogRect.left, tabDialogRect.bottom - tabDialogRect.top - tabItemRect.bottom, SWP_HIDEWINDOW);
+
       setTabVisibility(currentTab, true);
-      ::SendDlgItemMessage(getHSelf(), tabsControlID, TCM_SETCURSEL, getTabIndex(currentTab), 0);
+      ::SendDlgItemMessage(getHSelf(), tabsControlID, TCM_SETCURSEL, tabIndex, 0);
     }
   }
 
@@ -75,19 +82,17 @@ namespace papyrus {
   //
 
   void MultiTabbedDialog::initControls() {
-    // Calculate tab dialog's position:
-    // 1. Find tabs control's position
-    // 2. Add tabs control's height to get tab dialog's top position, so tabs are not overlapped by tab dialogs
-    // 3. Add an 1-pixel margin to all 4 sides to make window border also visible
+    // Calculate tab dialog's position before item height adjustment
     ::GetWindowRect(DialogBase::getControl(tabsControlID), &tabDialogRect);
     POINT offset {};
     ::ScreenToClient(getHSelf(), &offset);
     ::OffsetRect(&tabDialogRect, offset.x, offset.y);
 
-    tabDialogRect.top += 21;
-    tabDialogRect.bottom--;
-    tabDialogRect.left++;
-    tabDialogRect.right--;
+    // Add a 2-pixel margin to all 4 sides to compensate for borders
+    tabDialogRect.top += 2;
+    tabDialogRect.bottom -= 2;
+    tabDialogRect.left += 2;
+    tabDialogRect.right -= 2;
   }
 
   INT_PTR MultiTabbedDialog::handleNotifyMessage(WPARAM wParam, LPARAM lParam) {
@@ -130,7 +135,6 @@ namespace papyrus {
     auto iter = findTab(tab);
     if (iter != tabs.end()) {
       tabItems[tab].handle = ::CreateDialogParam(getHinst(), MAKEINTRESOURCE(tabItems[tab].dialogID), getHSelf(), tabDialogProc, reinterpret_cast<LPARAM>(&(*iter)));
-      ::SetWindowPos(tabItems[tab].handle, 0, tabDialogRect.left, tabDialogRect.top, tabDialogRect.right - tabDialogRect.left, tabDialogRect.bottom - tabDialogRect.top, SWP_HIDEWINDOW);
       onTabDialogCreated(tab);
     }
   }
