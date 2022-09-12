@@ -39,7 +39,7 @@ namespace papyrus {
       virtual void doDialog();
 
     protected:
-      virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+      INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
       virtual void initControls() = 0;
       inline virtual INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) { return FALSE; }

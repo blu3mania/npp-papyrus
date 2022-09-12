@@ -94,67 +94,64 @@ namespace papyrus {
   }
 
   void Plugin::onNotification(SCNotification* notification) {
-    if (!isShuttingDown) {
-      if ((notification->nmhdr.hwndFrom == nppData._scintillaMainHandle) || (notification->nmhdr.hwndFrom == nppData._scintillaSecondHandle)) {
-        switch (notification->nmhdr.code) {
-          case SCN_HOTSPOTCLICK:
-          case SCN_HOTSPOTDOUBLECLICK: {
-            handleHotspotClick(notification);
-            break;
-          }
-
-          case SCN_UPDATEUI: {
-            if (notification->updated & SC_UPDATE_SELECTION) {
-              handleSelectionChange(notification);
-            }
-            break;
-          }
-
-          case SCN_MODIFIED: {
-            if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-              handleContentUpdate(notification);
-            }
-            break;
-          }
-
-          default: {
-            break;
-          }
+    if ((notification->nmhdr.hwndFrom == nppData._scintillaMainHandle) || (notification->nmhdr.hwndFrom == nppData._scintillaSecondHandle)) {
+      switch (notification->nmhdr.code) {
+        case SCN_HOTSPOTCLICK:
+        case SCN_HOTSPOTDOUBLECLICK: {
+          handleHotspotClick(notification);
+          break;
         }
-      } else if (notification->nmhdr.hwndFrom == nppData._nppHandle) {
-        switch (notification->nmhdr.code) {
-          case NPPN_READY: {
-            setupAdvancedMenu();
-            break;
-          }
 
-          case NPPN_BEFORESHUTDOWN: {
-            isShuttingDown = true;
-            break;
+        case SCN_UPDATEUI: {
+          if (notification->updated & SC_UPDATE_SELECTION) {
+            handleSelectionChange(notification);
           }
-
-          case NPPN_BUFFERACTIVATED: {
-            handleBufferActivation(notification->nmhdr.idFrom, false);
-            break;
-          }
-
-          case NPPN_LANGCHANGED: {
-            handleBufferActivation(notification->nmhdr.idFrom, true);
-          }
-
-          case NPPN_DARKMODECHANGED: {
-            updateNppUIParameters();
-          }
-
-          default: {
-            break;
-          }
+          break;
         }
-      } else if (notification->nmhdr.hwndFrom == 0 && notification->nmhdr.code == NPPN_DARKMODECHANGED) {
-        // Temporary workaround until https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12144 is fixed
-        //utility::logger.log(L"NPPN_DARKMODECHANGED from a different hwnd: " + std::to_wstring(reinterpret_cast<long long>(notification->nmhdr.hwndFrom)) + L", NPP handle: " + std::to_wstring(reinterpret_cast<long long>(nppData._nppHandle)));
-        updateNppUIParameters();
+
+        case SCN_MODIFIED: {
+          if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
+            handleContentUpdate(notification);
+          }
+          break;
+        }
       }
+    } else if (notification->nmhdr.hwndFrom == nppData._nppHandle) {
+      switch (notification->nmhdr.code) {
+        case NPPN_READY: {
+          setupAdvancedMenu();
+          break;
+        }
+
+        case NPPN_BEFORESHUTDOWN: {
+          isShuttingDown = true;
+          break;
+        }
+
+        case NPPN_CANCELSHUTDOWN: {
+          isShuttingDown = false;
+          break;
+        }
+
+        case NPPN_BUFFERACTIVATED: {
+          if (!isShuttingDown) {
+            handleBufferActivation(notification->nmhdr.idFrom, false);
+          }
+          break;
+        }
+
+        case NPPN_LANGCHANGED: {
+          handleBufferActivation(notification->nmhdr.idFrom, true);
+        }
+
+        case NPPN_DARKMODECHANGED: {
+          updateNppUIParameters();
+        }
+      }
+    } else if (notification->nmhdr.hwndFrom == 0 && notification->nmhdr.code == NPPN_DARKMODECHANGED) {
+      // Temporary workaround until https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12144 is fixed
+      //utility::logger.log(L"NPPN_DARKMODECHANGED from a different hwnd: " + std::to_wstring(reinterpret_cast<long long>(notification->nmhdr.hwndFrom)) + L", NPP handle: " + std::to_wstring(reinterpret_cast<long long>(nppData._nppHandle)));
+      updateNppUIParameters();
     }
   }
 
@@ -176,16 +173,8 @@ namespace papyrus {
             case AdvancedMenu::InstallFunctionList:
               installFunctionList();
               break;
-
-            default: {
-              break;
-            }
           }
         }
-        break;
-      }
-
-      default: {
         break;
       }
     }
