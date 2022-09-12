@@ -18,7 +18,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "ColourPopup.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
+#include "NppDarkMode.h"
 
 DWORD colourItems[] = {
 	RGB(  0,   0,   0),	RGB( 64,   0,   0),	RGB(128,   0,   0),	RGB(128,  64,  64),	RGB(255,   0,   0),	RGB(255, 128, 128),
@@ -83,8 +83,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 	{
 		case WM_INITDIALOG:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-			//NppDarkMode::autoSubclassAndThemeChildControls(_hSelf);
+			NppDarkMode::autoSubclassAndThemeChildControls(_hSelf);
 
 			int nColor;
 			for (nColor = 0 ; nColor < int(sizeof(colourItems)/sizeof(DWORD)) ; ++nColor)
@@ -97,30 +96,33 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 		
 		case WM_CTLCOLORLISTBOX:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-      /*
 			if (NppDarkMode::isEnabled())
 			{
 				return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
 			}
-      */
 			return reinterpret_cast<LRESULT>(::GetStockObject(NULL_BRUSH));
 		}
 
 		case WM_CTLCOLORDLG:
 		case WM_CTLCOLORSTATIC:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-      /*
 			if (NppDarkMode::isEnabled())
 			{
 				return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
 			}
-      */
 			break;
 		}
 
-    // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
+		case WM_PRINTCLIENT:
+		{
+			if (NppDarkMode::isEnabled())
+			{
+				return TRUE;
+			}
+			break;
+		}
+
+    // PapyrusPlugin modification -- not used
     /*
 		case NPPM_INTERNAL_REFRESHDARKMODE:
 		{
@@ -157,9 +159,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 							hbrush = CreateSolidBrush((COLORREF)cr);
 							FillRect(hdc, &rc, hbrush);
 							DeleteObject(hbrush);
-              // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-							//hbrush = CreateSolidBrush(NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : RGB(0, 0, 0));
-							hbrush = CreateSolidBrush(RGB(0, 0, 0));
+							hbrush = CreateSolidBrush(NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : RGB(0, 0, 0));
 							FrameRect(hdc, &rc, hbrush);
 							DeleteObject(hbrush);
 							break;
@@ -172,9 +172,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 						rc.bottom --;
 						rc.right --;
 						// Draw the lighted side.
-            // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-						//HPEN hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNSHADOW));
-						HPEN hpen = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_BTNSHADOW));
+						HPEN hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNSHADOW));
 						HPEN holdPen = (HPEN)SelectObject(hdc, hpen);
 						MoveToEx(hdc, rc.left, rc.bottom, NULL);
 						LineTo(hdc, rc.left, rc.top);
@@ -182,9 +180,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 						SelectObject(hdc, holdPen);
 						DeleteObject(hpen);
 						// Draw the darkened side.
-            // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-						//hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNHIGHLIGHT));
-						hpen = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_BTNHIGHLIGHT));
+						hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNHIGHLIGHT));
 						holdPen = (HPEN)SelectObject(hdc, hpen);
 						LineTo(hdc, rc.right, rc.bottom);
 						LineTo(hdc, rc.left, rc.bottom);
@@ -193,9 +189,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 					}
 					else 
 					{
-            // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-						//hbrush = CreateSolidBrush(NppDarkMode::isEnabled() ? NppDarkMode::getDarkerBackgroundColor() : GetSysColor(COLOR_3DFACE));
-						hbrush = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
+						hbrush = CreateSolidBrush(NppDarkMode::isEnabled() ? NppDarkMode::getDarkerBackgroundColor() : GetSysColor(COLOR_3DFACE));
 						FrameRect(hdc, &rc, hbrush);
 						DeleteObject(hbrush);
 					}
@@ -232,7 +226,11 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 
 					cc.lpCustColors = (LPDWORD) acrCustClr;
 					cc.rgbResult = _colour;
-					cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+          // PapyrusPlugin modification -- handle dark mode for ChooseColor dialog
+					//cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+					cc.lpfnHook = chooseColorDialogProc;
+					cc.Flags = CC_FULLOPEN | CC_RGBINIT | CC_ENABLEHOOK;
+          // End of PapyrusPlugin modification
 
 					display(false);
 					 
@@ -274,3 +272,53 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 	}
 	return FALSE;
 }
+
+// PapyrusPlugin modification -- handle dark mode for ChooseColor dialog
+UINT_PTR CALLBACK ColourPopup::chooseColorDialogProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
+{
+  switch (message) {
+    case WM_INITDIALOG: {
+      // Handle dark mode
+      NppDarkMode::setDarkTitleBar(hwnd);
+      NppDarkMode::autoSubclassAndThemeChildControls(hwnd);
+      break;
+    }
+
+    case WM_CTLCOLOREDIT: {
+      if (NppDarkMode::isEnabled()) {
+        return NppDarkMode::onCtlColorSofter(reinterpret_cast<HDC>(wParam));
+      }
+      break;
+    }
+
+    case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORDLG:
+    case WM_CTLCOLORSTATIC: {
+      if (NppDarkMode::isEnabled()) {
+        return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
+      }
+      break;
+    }
+
+    case WM_PRINTCLIENT: {
+      if (NppDarkMode::isEnabled()) {
+        // Do not proceed in dark mode
+        return TRUE;
+      }
+      break;
+    }
+
+    case WM_ERASEBKGND: {
+      if (NppDarkMode::isEnabled()) {
+        RECT clientRect {};
+        ::GetClientRect(hwnd, &clientRect);
+        ::FillRect(reinterpret_cast<HDC>(wParam), &clientRect, NppDarkMode::getDarkerBackgroundBrush());
+        return TRUE;
+      }
+      break;
+    }
+  }
+
+	return FALSE;
+}
+// End of PapyrusPlugin modification

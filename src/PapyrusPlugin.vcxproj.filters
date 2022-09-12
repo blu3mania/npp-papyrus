@@ -155,6 +155,12 @@
     <ClCompile Include="external\npp\Common.cpp">
       <Filter>External\Notepad++</Filter>
     </ClCompile>
+    <ClCompile Include="external\npp\DarkMode.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
+    <ClCompile Include="external\npp\NppDarkMode.cpp">
+      <Filter>External\Notepad++</Filter>
+    </ClCompile>
     <ClCompile Include="external\npp\StaticDialog.cpp">
       <Filter>External\Notepad++</Filter>
     </ClCompile>
@@ -279,6 +285,9 @@
     <None Include="external\npp\Common.h">
       <Filter>External\Notepad++</Filter>
     </None>
+    <None Include="external\npp\DarkMode.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
     <None Include="external\npp\Docking.h">
       <Filter>External\Notepad++</Filter>
     </None>
@@ -288,7 +297,16 @@
     <None Include="external\npp\dockingResource.h">
       <Filter>External\Notepad++</Filter>
     </None>
+    <None Include="external\npp\dpiManager.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\IatHook.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
     <None Include="external\npp\Notepad_plus_msgs.h">
+      <Filter>External\Notepad++</Filter>
+    </None>
+    <None Include="external\npp\NppDarkMode.h">
       <Filter>External\Notepad++</Filter>
     </None>
     <None Include="external\npp\PluginInterface.h">

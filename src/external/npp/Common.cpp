@@ -28,6 +28,7 @@
 #include "Utf8.h"
 //#include <Parameters.h>  // PapyrusPlugin modification -- not used
 //#include "Buffer.h"  // PapyrusPlugin modification -- not used
+#include "NppDarkMode.h"  // PapyrusPlugin modification -- added as NppDarkMode is referenced
 
 void printInt(int int2print)
 {
@@ -1090,8 +1091,7 @@ HWND CreateToolTip(int toolID, HWND hDlg, HINSTANCE hInst, const PTSTR pszText, 
 		return NULL;
 	}
 
-        // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-	//NppDarkMode::setDarkTooltips(hwndTip, NppDarkMode::ToolTipsType::tooltip);
+	NppDarkMode::setDarkTooltips(hwndTip, NppDarkMode::ToolTipsType::tooltip);
 
 	// Associate the tooltip with the tool.
 	TOOLINFO toolInfo = {};

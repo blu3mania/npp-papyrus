@@ -18,7 +18,7 @@
 #include <stdexcept>
 #include "ColourPicker.h"
 #include "ColourPopup.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
+#include "NppDarkMode.h"
 
 void ColourPicker::init(HINSTANCE hInst, HWND parent)
 {
@@ -64,8 +64,6 @@ void ColourPicker::drawBackground(HDC hDC)
 	getClientRect(rc);
 	hbrush = ::CreateSolidBrush(_currentColour);
 	HGDIOBJ oldObj = ::SelectObject(hDC, hbrush);
-  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-  /*
 	HPEN holdPen = nullptr;
 	if (NppDarkMode::isEnabled())
 	{
@@ -76,9 +74,6 @@ void ColourPicker::drawBackground(HDC hDC)
 	{
 		::SelectObject(hDC, holdPen);
 	}
-  */
-	::Rectangle(hDC, 0, 0, rc.right, rc.bottom);
-  // PapyrusPlugin modification ends
 	::SelectObject(hDC, oldObj);
 	//FillRect(hDC, &rc, hbrush);
 	::DeleteObject(hbrush);
@@ -164,7 +159,7 @@ LRESULT ColourPicker::runProc(UINT Message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 
-    // PapyrusPlugin modification -- disable right button support.
+    // PapyrusPlugin modification -- not used.
     /*
 		case NPPM_INTERNAL_REFRESHDARKMODE:
 		{

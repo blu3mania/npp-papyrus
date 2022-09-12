@@ -84,6 +84,9 @@ namespace papyrus {
       // Check if lexer's config file exists, and attempt to fix it if not
       void checkLexerConfigFile(const std::wstring& configPath);
 
+      // Update Notepad++ UI parameters, such as dark mode and default fore/background colors
+      void updateNppUIParameters();
+
       // Notepad++ notification NPPN_BUFFERACTIVATED and NPPN_LANGCHANGED handler
       void handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange);
 

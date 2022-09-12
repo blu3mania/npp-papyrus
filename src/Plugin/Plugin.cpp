@@ -38,6 +38,7 @@ https://www.creationkit.com/fallout4/index.php?title=Category:Papyrus
 #include "Lexer\LexerData.hpp"
 
 #include "..\external\gsl\include\gsl\util"
+#include "..\external\npp\NppDarkMode.h"
 #include "..\external\tinyxml2\tinyxml2.h"
 
 #include <filesystem>
@@ -141,10 +142,18 @@ namespace papyrus {
             handleBufferActivation(notification->nmhdr.idFrom, true);
           }
 
+          case NPPN_DARKMODECHANGED: {
+            updateNppUIParameters();
+          }
+
           default: {
             break;
           }
         }
+      } else if (notification->nmhdr.hwndFrom == 0 && notification->nmhdr.code == NPPN_DARKMODECHANGED) {
+        // Temporary workaround until https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12144 is fixed
+        //utility::logger.log(L"NPPN_DARKMODECHANGED from a different hwnd: " + std::to_wstring(reinterpret_cast<long long>(notification->nmhdr.hwndFrom)) + L", NPP handle: " + std::to_wstring(reinterpret_cast<long long>(nppData._nppHandle)));
+        updateNppUIParameters();
       }
     }
   }
@@ -226,6 +235,9 @@ namespace papyrus {
       };
       compiler = std::make_unique<Compiler>(messageWindow, compilerMessages, settings.compilerSettings);
     }
+
+    NppDarkMode::initDarkMode();
+    updateNppUIParameters();
   }
 
   void Plugin::checkLexerConfigFile(const std::wstring& configPath) {
@@ -251,6 +263,19 @@ namespace papyrus {
         }
       }
     }
+  }
+
+  void Plugin::updateNppUIParameters() {
+    bool darkModeEnabled = (::SendMessage(nppData._nppHandle, NPPM_ISDARKMODEENABLED, 0, 0) == TRUE);
+    NppDarkMode::setDarkModeEnabled(darkModeEnabled);
+
+    NppDarkMode::Colors nppDarkModeColors {};
+    bool darkModeColorRetrieved = static_cast<bool>(::SendMessage(nppData._nppHandle, NPPM_GETDARKMODECOLORS, sizeof(NppDarkMode::Colors), reinterpret_cast<LPARAM>(&nppDarkModeColors)));
+    //utility::logger.log(L"Dark mode colors retrieved? " + utility::boolToStr(darkModeColorRetrieved));
+
+    COLORREF nppDefaultFgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTFOREGROUNDCOLOR, 0, 0));
+    COLORREF nppDefaultBgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTBACKGROUNDCOLOR, 0, 0));
+    NppDarkMode::setNppUIColors(nppDarkModeColors, nppDefaultFgColor, nppDefaultBgColor);
   }
 
   void Plugin::handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange) {

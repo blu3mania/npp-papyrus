@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MultiTabbedDialog.hpp"
 
+#include "..\..\external\npp\NppDarkMode.h"
+
 #include <stdexcept>
 
 #include <commctrl.h>
@@ -93,6 +95,9 @@ namespace papyrus {
     tabDialogRect.bottom -= 2;
     tabDialogRect.left += 2;
     tabDialogRect.right -= 2;
+
+    // Handle dark mode
+    NppDarkMode::subclassTabControl(DialogBase::getControl(tabsControlID));
   }
 
   INT_PTR MultiTabbedDialog::handleNotifyMessage(WPARAM wParam, LPARAM lParam) {
@@ -116,6 +121,10 @@ namespace papyrus {
       case WM_INITDIALOG: {
         // Store initialization data (pointer to Tab structure that contains tab info, including MultiTabbedDialog instance)
         ::SetWindowLongPtr(hwnd, GWLP_USERDATA, static_cast<LONG_PTR>(lParam));
+
+        // Handle dark mode for the tab dialog
+        NppDarkMode::autoSubclassAndThemeChildControls(hwnd);
+
         return TRUE;
       }
 
@@ -125,6 +134,40 @@ namespace papyrus {
           return FALSE;
         }
         return tabInfo->multiTabbedDialog->handleTabCommandMessage(tabInfo->tab, wParam, lParam);
+      }
+
+      case WM_CTLCOLOREDIT: {
+        if (NppDarkMode::isEnabled()) {
+          return NppDarkMode::onCtlColorSofter(reinterpret_cast<HDC>(wParam));
+        }
+        break;
+      }
+
+      case WM_CTLCOLORLISTBOX:
+      case WM_CTLCOLORDLG:
+      case WM_CTLCOLORSTATIC: {
+        if (NppDarkMode::isEnabled()) {
+          return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
+        }
+        break;
+      }
+
+      case WM_PRINTCLIENT: {
+        if (NppDarkMode::isEnabled()) {
+          // Do not proceed in dark mode
+          return TRUE;
+        }
+        break;
+      }
+
+      case WM_ERASEBKGND: {
+        if (NppDarkMode::isEnabled()) {
+          RECT tabDialogRect {};
+          ::GetClientRect(hwnd, &tabDialogRect);
+          ::FillRect(reinterpret_cast<HDC>(wParam), &tabDialogRect, NppDarkMode::getDarkerBackgroundBrush());
+          return TRUE;
+        }
+        break;
       }
     }
 

@@ -108,7 +108,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -134,7 +134,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -154,7 +154,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -180,7 +180,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -226,6 +226,8 @@
     <ClCompile Include="external\npp\ColourPicker.cpp" />
     <ClCompile Include="external\npp\ColourPopup.cpp" />
     <ClCompile Include="external\npp\Common.cpp" />
+    <ClCompile Include="external\npp\DarkMode.cpp" />
+    <ClCompile Include="external\npp\NppDarkMode.cpp" />
     <ClCompile Include="external\npp\StaticDialog.cpp" />
     <ClCompile Include="external\npp\URLCtrl.cpp" />
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp" />
@@ -270,10 +272,14 @@
     <None Include="external\npp\ColourPopup.h" />
     <None Include="external\npp\ColourPopupResource.h" />
     <None Include="external\npp\Common.h" />
+    <None Include="external\npp\DarkMode.h" />
     <None Include="external\npp\Docking.h" />
     <None Include="external\npp\DockingDlgInterface.h" />
     <None Include="external\npp\dockingResource.h" />
+    <None Include="external\npp\dpiManager.h" />
+    <None Include="external\npp\IatHook.h" />
     <None Include="external\npp\Notepad_plus_msgs.h" />
+    <None Include="external\npp\NppDarkMode.h" />
     <None Include="external\npp\PluginInterface.h" />
     <None Include="external\npp\StaticDialog.h" />
     <None Include="external\npp\URLCtrl.h" />

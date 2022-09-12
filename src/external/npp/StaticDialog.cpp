@@ -18,7 +18,7 @@
 #include <windows.h>
 #include "StaticDialog.h"
 #include "Common.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
+#include "NppDarkMode.h"
 
 StaticDialog::~StaticDialog()
 {
@@ -228,8 +228,7 @@ void StaticDialog::create(int dialogID, bool isRTL, bool msgDestParent)
 		return;
 	}
 
-  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-	//NppDarkMode::setDarkTitleBar(_hSelf);
+	NppDarkMode::setDarkTitleBar(_hSelf);
 
 	// if the destination of message NPPM_MODELESSDIALOG is not its parent, then it's the grand-parent
 	::SendMessage(msgDestParent ? _hParent : (::GetParent(_hParent)), NPPM_MODELESSDIALOG, MODELESSDIALOGADD, reinterpret_cast<WPARAM>(_hSelf));
@@ -241,8 +240,7 @@ intptr_t CALLBACK StaticDialog::dlgProc(HWND hwnd, UINT message, WPARAM wParam, 
 	{
 		case WM_INITDIALOG:
 		{
-      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-			//NppDarkMode::setDarkTitleBar(hwnd);
+			NppDarkMode::setDarkTitleBar(hwnd);
 
 			StaticDialog *pStaticDlg = reinterpret_cast<StaticDialog *>(lParam);
 			pStaticDlg->_hSelf = hwnd;

@@ -24,7 +24,7 @@
 #include <shlwapi.h>
 #include "Common.h"
 #include "StaticDialog.h"
-//#include "NppDarkMode.h"  // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
+#include "NppDarkMode.h"
 
 
 
@@ -97,8 +97,6 @@ protected :
 	virtual intptr_t CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message)
 		{
-      // PapyrusPlugin modification -- ignore dark mode support for now as there isn't an API provided to detect and apply dark mode
-      /*
 			case WM_ERASEBKGND:
 			{
 				if (!NppDarkMode::isEnabled())
@@ -111,7 +109,6 @@ protected :
 				::FillRect(reinterpret_cast<HDC>(wParam), &rc, NppDarkMode::getDarkerBackgroundBrush());
 				return TRUE;
 			}
-      */
 			case WM_NOTIFY: 
 			{
 				LPNMHDR	pnmh = reinterpret_cast<LPNMHDR>(lParam);

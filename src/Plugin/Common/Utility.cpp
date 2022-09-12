@@ -53,7 +53,7 @@ namespace utility {
 
   std::wstring intToHexStr(int intValue) noexcept {
     std::wstringstream strStream;
-    strStream << std::hex << intValue;
+    strStream << std::uppercase << std::hex << intValue;
     return strStream.str();
   }
 
@@ -69,7 +69,7 @@ namespace utility {
 
   std::wstring colorToHexStr(COLORREF color) noexcept {
     std::wstringstream strStream;
-    strStream << std::hex << (((color >> 16) & 0xFF) | (color & 0xFF00) | ((color & 0xFF) << 16)); // COLORREF is BGR
+    strStream << std::uppercase << std::hex << (((color >> 16) & 0xFF) | (color & 0xFF00) | ((color & 0xFF) << 16)); // COLORREF is BGR
     return strStream.str();
   }
 

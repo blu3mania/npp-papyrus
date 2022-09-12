@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\Common\Resources.hpp"
 
+#include "..\..\external\npp\NppDarkMode.h"
+
 #include <uxtheme.h>
 
 namespace papyrus {
@@ -48,6 +50,10 @@ namespace papyrus {
           }
 
           initControls();
+
+          // Handle dark mode
+          NppDarkMode::autoSubclassAndThemeChildControls(getHSelf());
+
           initializing = false;
           break;
         }
@@ -64,7 +70,37 @@ namespace papyrus {
           return handleCloseMessage(wParam, lParam);
         }
 
-        default: {
+        case WM_CTLCOLOREDIT: {
+          if (NppDarkMode::isEnabled()) {
+            return NppDarkMode::onCtlColorSofter(reinterpret_cast<HDC>(wParam));
+          }
+          break;
+        }
+
+        case WM_CTLCOLORLISTBOX:
+        case WM_CTLCOLORDLG:
+        case WM_CTLCOLORSTATIC: {
+          if (NppDarkMode::isEnabled()) {
+            return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
+          }
+          break;
+        }
+
+        case WM_PRINTCLIENT: {
+          if (NppDarkMode::isEnabled()) {
+            // Do not proceed in dark mode
+            return TRUE;
+          }
+          break;
+        }
+
+        case WM_ERASEBKGND: {
+          if (NppDarkMode::isEnabled()) {
+            RECT clientRect {};
+            getClientRect(clientRect);
+            ::FillRect(reinterpret_cast<HDC>(wParam), &clientRect, NppDarkMode::getDarkerBackgroundBrush());
+            return TRUE;
+          }
           break;
         }
       }
