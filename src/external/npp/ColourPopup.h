@@ -65,7 +65,5 @@ private :
 
 	static intptr_t CALLBACK dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	intptr_t CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam);
-
-  // PapyrusPlugin modification -- handle dark mode for ChooseColor dialog
-  static UINT_PTR CALLBACK chooseColorDialogProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static uintptr_t CALLBACK chooseColorDlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
