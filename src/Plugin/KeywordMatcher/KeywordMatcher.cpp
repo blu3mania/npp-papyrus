@@ -55,13 +55,13 @@ namespace papyrus {
    : settings(settings) {
     // Subscribe to settings changes
     KeywordMatcherSettings& subscribableSettings = const_cast<KeywordMatcherSettings&>(settings);
-    subscribableSettings.enableKeywordMatching.subscribe([&](auto eventData) { match(); });
-    subscribableSettings.enabledKeywords.subscribe([&](auto eventData) { match(); });
+    subscribableSettings.enableKeywordMatching.subscribe([&](auto) { match(); });
+    subscribableSettings.enabledKeywords.subscribe([&](auto) { match(); });
     subscribableSettings.indicatorID.subscribe([&](auto eventData) { changeIndicator(eventData.oldValue); });
-    subscribableSettings.matchedIndicatorStyle.subscribe([&](auto eventData) { if (handle != 0 && matched) { setupIndicator(); } });
-    subscribableSettings.matchedIndicatorForegroundColor.subscribe([&](auto eventData) { if (handle != 0 && matched) { setupIndicator(); } });
-    subscribableSettings.unmatchedIndicatorStyle.subscribe([&](auto eventData) { if (handle != 0 && !matched) { setupIndicator(); } });
-    subscribableSettings.unmatchedIndicatorForegroundColor.subscribe([&](auto eventData) { if (handle != 0 && !matched) { setupIndicator(); } });
+    subscribableSettings.matchedIndicatorStyle.subscribe([&](auto) { if (handle != 0 && matched) { setupIndicator(); } });
+    subscribableSettings.matchedIndicatorForegroundColor.subscribe([&](auto) { if (handle != 0 && matched) { setupIndicator(); } });
+    subscribableSettings.unmatchedIndicatorStyle.subscribe([&](auto) { if (handle != 0 && !matched) { setupIndicator(); } });
+    subscribableSettings.unmatchedIndicatorForegroundColor.subscribe([&](auto) { if (handle != 0 && !matched) { setupIndicator(); } });
    }
 
   void KeywordMatcher::match(HWND scintillaHandle) {

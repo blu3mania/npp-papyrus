@@ -35,11 +35,11 @@ namespace papyrus {
       inline MultiTabbedDialog(int dialogID, int tabsControlID) : DialogBase(dialogID), tabsControlID(tabsControlID) {}
       virtual ~MultiTabbedDialog();
 
-      inline virtual void addTab(tab_id_t tab, int dialogID, std::wstring text, bool lazyInitialization = true) { addTabAt(tab, dialogID, text, tabs.end(), lazyInitialization); }
-      virtual void addTabBefore(tab_id_t tab, int dialogID, std::wstring text, tab_id_t referenceTab, bool lazyInitialization = true) { addTabAt(tab, dialogID, text, findTab(referenceTab), lazyInitialization); };
-      virtual void addTabAfter(tab_id_t tab, int dialogID, std::wstring text, tab_id_t referenceTab, bool lazyInitialization = true)  {
+      inline virtual void addTab(tab_id_t tab, int tabDialogID, std::wstring text, bool lazyInitialization = true) { addTabAt(tab, tabDialogID, text, tabs.end(), lazyInitialization); }
+      inline virtual void addTabBefore(tab_id_t tab, int tabDialogID, std::wstring text, tab_id_t referenceTab, bool lazyInitialization = true) { addTabAt(tab, tabDialogID, text, findTab(referenceTab), lazyInitialization); };
+      inline virtual void addTabAfter(tab_id_t tab, int tabDialogID, std::wstring text, tab_id_t referenceTab, bool lazyInitialization = true)  {
         auto iter = findTab(referenceTab);
-        addTabAt(tab, dialogID, text, iter == tabs.end() ? iter : std::next(iter), lazyInitialization);
+        addTabAt(tab, tabDialogID, text, iter == tabs.end() ? iter : std::next(iter), lazyInitialization);
       };
 
       virtual bool removeTab(tab_id_t tab, bool destroy = false);
@@ -52,7 +52,7 @@ namespace papyrus {
       void initControls() override;
       INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) override;
 
-      inline virtual INT_PTR handleTabCommandMessage(tab_id_t tab, WPARAM wParam, LPARAM lParam) { return FALSE; }
+      inline virtual INT_PTR handleTabCommandMessage(tab_id_t, WPARAM, LPARAM) { return FALSE; }
 
       inline virtual HWND getControl(tab_id_t tab, int controlID) const { return ::GetDlgItem(getTabHandle(tab), controlID); };
 
@@ -84,9 +84,9 @@ namespace papyrus {
       inline virtual void setText(tab_id_t tab, int controlID, LPCWSTR text) const { DialogBase::setText(getTabHandle(tab), controlID, text); }
       inline virtual std::wstring getText(tab_id_t tab, int controlID) const { return DialogBase::getText(getTabHandle(tab), controlID); };
 
-      inline virtual void onTabDialogCreated(tab_id_t tab) {}
-      inline virtual void onTabDialogDestroyed(tab_id_t tab) {}
-      inline virtual void onTabVisibilityChanged(tab_id_t tab, bool visible) {}
+      inline virtual void onTabDialogCreated(tab_id_t) {}
+      inline virtual void onTabDialogDestroyed(tab_id_t) {}
+      inline virtual void onTabVisibilityChanged(tab_id_t, bool) {}
 
     private:
       struct Tab {
@@ -123,7 +123,7 @@ namespace papyrus {
       inline int getTabIndex(tab_id_t tab) const { return getTabIndex(findTab(tab)); }
       inline int getTabIndex(tab_list_t::const_iterator pos) const { return static_cast<int>(std::distance(tabs.begin(), pos)); }
 
-      void addTabAt(tab_id_t tab, int dialogID, std::wstring text, tab_list_t::const_iterator pos, bool lazyInitialization);
+      void addTabAt(tab_id_t tab, int tabDialogID, std::wstring text, tab_list_t::const_iterator pos, bool lazyInitialization);
 
       // Private members
       //

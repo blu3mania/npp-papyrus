@@ -64,7 +64,7 @@ namespace papyrus {
 
   void ErrorsWindow::show(const std::vector<Error>& compilationErrors) {
     errors = compilationErrors;
-    for (int i = 0; i < static_cast<int>(errors.size()); i++) {
+    for (int i = 0; i < static_cast<int>(errors.size()); ++i) {
       std::wstring filename = std::filesystem::path(errors[i].file).filename();
       LVITEM item {
         .mask = LVIF_TEXT,

@@ -74,7 +74,7 @@ namespace papyrus {
   }
 
   void Plugin::onInit(HINSTANCE instance) {
-    this->instance = instance;
+    myInstance = instance;
 
     WNDCLASS messageHandleClass {
       .lpfnWndProc = messageHandleProc,
@@ -88,8 +88,8 @@ namespace papyrus {
   void Plugin::cleanUp() {
   }
 
-  void Plugin::setNppData(NppData nppData) {
-    this->nppData = nppData;
+  void Plugin::setNppData(NppData data) {
+    nppData = data;
     initializeComponents();
   }
 
@@ -155,7 +155,7 @@ namespace papyrus {
     }
   }
 
-  LRESULT Plugin::handleNppMessage(UINT message, WPARAM wParam, LPARAM lParam) {
+  LRESULT Plugin::handleNppMessage(UINT message, WPARAM wParam, LPARAM) {
     switch (message) {
       case WM_COMMAND: {
         // Menu command relayed by NPP
@@ -186,10 +186,10 @@ namespace papyrus {
 
   void Plugin::initializeComponents() {
     lexerData = std::make_unique<LexerData>(nppData, settings.lexerSettings);
-    errorsWindow = std::make_unique<ErrorsWindow>(instance, nppData._nppHandle, messageWindow);
+    errorsWindow = std::make_unique<ErrorsWindow>(myInstance, nppData._nppHandle, messageWindow);
     errorAnnotator = std::make_unique<ErrorAnnotator>(nppData, settings.errorAnnotatorSettings);
-    settingsDialog.init(instance, nppData._nppHandle);
-    aboutDialog.init(instance, nppData._nppHandle);
+    settingsDialog.init(myInstance, nppData._nppHandle);
+    aboutDialog.init(myInstance, nppData._nppHandle);
 
     // Get Notepad++'s plugins config folder
     npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
@@ -262,9 +262,11 @@ namespace papyrus {
     bool darkModeColorRetrieved = static_cast<bool>(::SendMessage(nppData._nppHandle, NPPM_GETDARKMODECOLORS, sizeof(NppDarkMode::Colors), reinterpret_cast<LPARAM>(&nppDarkModeColors)));
     //utility::logger.log(L"Dark mode colors retrieved? " + utility::boolToStr(darkModeColorRetrieved));
 
-    COLORREF nppDefaultFgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTFOREGROUNDCOLOR, 0, 0));
-    COLORREF nppDefaultBgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTBACKGROUNDCOLOR, 0, 0));
-    NppDarkMode::setNppUIColors(nppDarkModeColors, nppDefaultFgColor, nppDefaultBgColor);
+    if (darkModeColorRetrieved) {
+      COLORREF nppDefaultFgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTFOREGROUNDCOLOR, 0, 0));
+      COLORREF nppDefaultBgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTBACKGROUNDCOLOR, 0, 0));
+      NppDarkMode::setNppUIColors(nppDarkModeColors, nppDefaultFgColor, nppDefaultBgColor);
+    }
   }
 
   void Plugin::handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange) {
@@ -443,7 +445,7 @@ namespace papyrus {
     Game detectedGameType = compilerSettings.gameMode;
     bool useAutoModeOutputDirectory = false;
     if (detectedGameType == Game::Auto) {
-      for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
+      for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
         auto game = static_cast<Game>(i);
         const CompilerSettings::GameSettings& gameSettings = compilerSettings.gameSettings(game);
         if (gameSettings.enabled && !gameSettings.installPath.empty() && utility::startsWith(filePath, gameSettings.installPath)) {
@@ -583,8 +585,8 @@ namespace papyrus {
 
       if (dest.fail()) {
         // Likely a UAC issue since by default Notepad++ is installed under %PROGRAMFILES%. Try to execute copy command with administrator privilege.
-        std::wstring msg(L"Cannot write to " + destinationFile + L". Will run COPY command with elevated privilege. Please accept UAC prompt if any.");
-        ::MessageBox(nppData._nppHandle, msg.c_str(), PLUGIN_NAME L" Plugin", MB_ICONINFORMATION | MB_OK);
+        std::wstring infoMessage(L"Cannot write to " + destinationFile + L". Will run COPY command with elevated privilege. Please accept UAC prompt if any.");
+        ::MessageBox(nppData._nppHandle, infoMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONINFORMATION | MB_OK);
         std::wstring parameter(L"/c copy /y \"" + sourceFile + L"\" \"" + destinationFile + L"\"");
         SHELLEXECUTEINFO shellExecutionInfo {
           .cbSize = sizeof(SHELLEXECUTEINFO),
@@ -600,8 +602,8 @@ namespace papyrus {
         }
 
         if (!utility::fileExists(destinationFile)) {
-          std::wstring msg(L"Fail to copy to " + destinationFile + L". Please manually copy " + sourceFile + L" to it.");
-          ::MessageBox(nppData._nppHandle, msg.c_str(), PLUGIN_NAME L" Plugin", MB_ICONINFORMATION | MB_OK);
+          std::wstring errorMessage(L"Fail to copy to " + destinationFile + L". Please manually copy " + sourceFile + L" to it.");
+          ::MessageBox(nppData._nppHandle, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
           return false;
         }
       } else {
@@ -611,14 +613,14 @@ namespace papyrus {
         if (!source.fail()) {
           dest << source.rdbuf();
         } else {
-          std::wstring msg(L"Cannot read " + sourceFile + L". Please check permission.");
-          ::MessageBox(nppData._nppHandle, msg.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
+          std::wstring errorMessage(L"Cannot read " + sourceFile + L". Please check permission.");
+          ::MessageBox(nppData._nppHandle, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
           return false;
         }
       }
     } else {
-      std::wstring msg(L"Cannot find " + sourceFile + L". Please make sure the full package is extracted in plugin folder.");
-      ::MessageBox(nppData._nppHandle, msg.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
+      std::wstring errorMessage(L"Cannot find " + sourceFile + L". Please make sure the full package is extracted in plugin folder.");
+      ::MessageBox(nppData._nppHandle, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
       return false;
     }
 
@@ -630,7 +632,7 @@ namespace papyrus {
       HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
       HMENU advancedMenu = ::CreatePopupMenu();
       if (::ModifyMenu(menu, funcs[utility::underlying(Menu::Advanced)]._cmdID, MF_BYCOMMAND | MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(advancedMenu), funcs[utility::underlying(Menu::Advanced)]._itemName)) {
-        for (UINT i = 0; i < advancedMenuItems.size(); i++) {
+        for (UINT i = 0; i < advancedMenuItems.size(); ++i) {
           ::InsertMenu(advancedMenu, i, MF_BYPOSITION | MF_STRING, static_cast<UINT_PTR>(advancedMenuBaseCmdID) + i, advancedMenuItems[i]);
         }
       }

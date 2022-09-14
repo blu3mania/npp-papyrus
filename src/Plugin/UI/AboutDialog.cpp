@@ -68,7 +68,7 @@ namespace papyrus {
     gslLink.create(getControl(IDC_ABOUT_LIBRARY_GSL_LINK));
   }
 
-  INT_PTR AboutDialog::handleCommandMessage(WPARAM wParam, LPARAM lParam) {
+  INT_PTR AboutDialog::handleCommandMessage(WPARAM wParam, LPARAM) {
     if (wParam == IDC_ABOUT_LIBRARY_NPP_LINK) {
       // Special link for Notepad++'s About dialog. Send a message to activate that menu
       ::SendMessage(getHParent(), NPPM_MENUCOMMAND, 0, IDM_ABOUT);
@@ -77,7 +77,7 @@ namespace papyrus {
     return FALSE;
   }
 
-  INT_PTR AboutDialog::handleCloseMessage(WPARAM wParam, LPARAM lParam) {
+  INT_PTR AboutDialog::handleCloseMessage(WPARAM, LPARAM) {
     hide();
 
     return FALSE;

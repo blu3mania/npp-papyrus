@@ -130,7 +130,7 @@ namespace papyrus {
     addTab(utility::underlying(Tab::ErrorAnnotator), IDC_SETTINGS_TAB_ERROR_ANNOTATOR, tabNames[utility::underlying(Tab::ErrorAnnotator)]);
     addTab(utility::underlying(Tab::Compiler), IDC_SETTINGS_TAB_COMPILER, tabNames[utility::underlying(Tab::Compiler)]);
 
-    for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
+    for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
       auto game = static_cast<Game>(i);
       if (settings.compilerSettings.gameSettings(game).enabled) {
         addGameTab(game);
@@ -568,10 +568,10 @@ namespace papyrus {
     };
 
     tab_id_t referenceTab = utility::underlying(Tab::Compiler);
-    for (int i = utility::underlying(Game::Auto) + 1; i < utility::underlying(game); i++) {
-      Game game = static_cast<Game>(i);
-      if (settings.compilerSettings.gameSettings(game).enabled) {
-        referenceTab = getGameTab(game);
+    for (int i = utility::underlying(Game::Auto) + 1; i < utility::underlying(game); ++i) {
+      Game refGame = static_cast<Game>(i);
+      if (settings.compilerSettings.gameSettings(refGame).enabled) {
+        referenceTab = getGameTab(refGame);
       }
     }
     addTabAfter(getGameTab(game), IDC_SETTINGS_TAB_GAME, game::gameNames[utility::underlying(game)].second, referenceTab);
@@ -619,7 +619,7 @@ namespace papyrus {
     clearDropdownList(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN);
     dropdown_options_t gameOptions;
     if (enabled) {
-      for (int i = static_cast<int>(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
+      for (int i = static_cast<int>(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
         if (settings.compilerSettings.gameSettings(static_cast<Game>(i)).enabled) {
           // Use game's display name
           gameOptions.push_back(const_cast<LPWSTR>(game::gameNames[i].second.c_str()));
@@ -726,7 +726,7 @@ namespace papyrus {
       settings.compilerSettings.autoModeDefaultGame = game::games[getText(compilerTab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN)];
     }
 
-    for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); i++) {
+    for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
       Game game = static_cast<Game>(i);
       tab_id_t gameTab = getGameTab(game);
       if (gameTab > utility::underlying(Tab::GameBase) && isTabDialogCreated(gameTab)) {

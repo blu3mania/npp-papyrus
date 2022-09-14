@@ -33,7 +33,7 @@ namespace papyrus {
 
   class DialogBase : public StaticDialog {
     public:
-      inline DialogBase(int dialogID) : StaticDialog(), dialogID(dialogID) {}
+      inline DialogBase(int id) : StaticDialog(), dialogID(id) {}
       inline virtual ~DialogBase() {}
 
       virtual void doDialog();
@@ -42,9 +42,9 @@ namespace papyrus {
       INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
       virtual void initControls() = 0;
-      inline virtual INT_PTR handleCommandMessage(WPARAM wParam, LPARAM lParam) { return FALSE; }
-      inline virtual INT_PTR handleNotifyMessage(WPARAM wParam, LPARAM lParam) { return FALSE; }
-      inline virtual INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) { return FALSE; }
+      inline virtual INT_PTR handleCommandMessage(WPARAM, LPARAM) { return FALSE; }
+      inline virtual INT_PTR handleNotifyMessage(WPARAM, LPARAM) { return FALSE; }
+      inline virtual INT_PTR handleCloseMessage(WPARAM, LPARAM) { return FALSE; }
 
       inline virtual void hide() const { display(false); }
 
@@ -102,6 +102,7 @@ namespace papyrus {
 
       virtual LPCWSTR loadResourceString(int stringID) const;
 
+    private:
       // Private members
       //
       const int dialogID;

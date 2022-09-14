@@ -191,7 +191,7 @@ namespace utility {
     std::vector<std::string> result;
     size_t prevPos = 0;
     size_t pos = 0;
-    while ((pos = indexOf(str, delimiter, prevPos)) != std::string::npos) {
+    while ((pos = indexOf(str, delimiter, prevPos, ignoreCase)) != std::string::npos) {
       result.push_back(str.substr(prevPos, pos));
       pos += delimiter.size();
       prevPos = pos;
@@ -205,7 +205,7 @@ namespace utility {
     std::vector<std::wstring> result;
     size_t prevPos = 0;
     size_t pos = 0;
-    while ((pos = indexOf(str, delimiter, prevPos)) != std::string::npos) {
+    while ((pos = indexOf(str, delimiter, prevPos, ignoreCase)) != std::string::npos) {
       result.push_back(str.substr(prevPos, pos));
       pos += delimiter.size();
       prevPos = pos;

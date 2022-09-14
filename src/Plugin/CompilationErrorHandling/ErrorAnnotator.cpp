@@ -36,16 +36,16 @@ namespace papyrus {
     : nppData(nppData), settings(settings) {
     // Subscribe to settings changes
     ErrorAnnotatorSettings& subscribableSettings = const_cast<ErrorAnnotatorSettings&>(settings);
-    subscribableSettings.enableAnnotation.subscribe([&](auto eventData) { updateAnnotationStyle(); });
-    subscribableSettings.annotationForegroundColor.subscribe([&](auto eventData) { updateAnnotationStyle(); });
-    subscribableSettings.annotationBackgroundColor.subscribe([&](auto eventData) { updateAnnotationStyle(); });
-    subscribableSettings.isAnnotationItalic.subscribe([&](auto eventData) { updateAnnotationStyle(); });
-    subscribableSettings.isAnnotationBold.subscribe([&](auto eventData) { updateAnnotationStyle(); });
+    subscribableSettings.enableAnnotation.subscribe([&](auto) { updateAnnotationStyle(); });
+    subscribableSettings.annotationForegroundColor.subscribe([&](auto) { updateAnnotationStyle(); });
+    subscribableSettings.annotationBackgroundColor.subscribe([&](auto) { updateAnnotationStyle(); });
+    subscribableSettings.isAnnotationItalic.subscribe([&](auto) { updateAnnotationStyle(); });
+    subscribableSettings.isAnnotationBold.subscribe([&](auto) { updateAnnotationStyle(); });
 
-    subscribableSettings.enableIndication.subscribe([&](auto eventData) { updateIndicatorStyle(); });
+    subscribableSettings.enableIndication.subscribe([&](auto) { updateIndicatorStyle(); });
     subscribableSettings.indicatorID.subscribe([&](auto eventData) { changeIndicator(eventData.oldValue); });
-    subscribableSettings.indicatorStyle.subscribe([&](auto eventData) { updateIndicatorStyle(); });
-    subscribableSettings.indicatorForegroundColor.subscribe([&](auto eventData) { updateIndicatorStyle(); });
+    subscribableSettings.indicatorStyle.subscribe([&](auto) { updateIndicatorStyle(); });
+    subscribableSettings.indicatorForegroundColor.subscribe([&](auto) { updateIndicatorStyle(); });
   }
 
   ErrorAnnotator::~ErrorAnnotator() {
@@ -137,7 +137,6 @@ namespace papyrus {
 
   std::wstring ErrorAnnotator::getApplicableFilePathOnView(npp_view_t view) const {
     // Check whether there is an active doc on the given view
-    HWND handle = (view == MAIN_VIEW ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle);
     npp_index_t docIndex = static_cast<npp_index_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
     if (docIndex != -1) {
       npp_buffer_t bufferID = static_cast<npp_buffer_t>(::SendMessage(nppData._nppHandle, NPPM_GETBUFFERIDFROMPOS, static_cast<WPARAM>(docIndex), static_cast<LPARAM>(view)));

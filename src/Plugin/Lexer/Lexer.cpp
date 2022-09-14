@@ -72,7 +72,7 @@ namespace papyrus {
     changeEventSubscription->unsubscribe();
   }
 
-  void SCI_METHOD Lexer::Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) {
+  void SCI_METHOD Lexer::Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int, IDocument* pAccess) {
     if (isUsable()) {
       if (docPointer == nullptr) {
         npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
@@ -85,12 +85,12 @@ namespace papyrus {
 
       // This state is saved in the line feed character. It can be used to initialize the state of the next line
       State messageStateLast = static_cast<State>(accessor.StyleAt(startPos - 1));
-      for (auto line = accessor.GetLine(startPos); line <= accessor.GetLine(startPos + lengthDoc - 1); line++) {
+      for (auto line = accessor.GetLine(startPos); line <= accessor.GetLine(startPos + lengthDoc - 1); ++line) {
         auto tokens = tokenize(accessor, line);
         State messageState = messageStateLast;
 
         // Styling
-        for (auto iterTokens = tokens.begin(); iterTokens != tokens.end(); iterTokens++) {
+        for (auto iterTokens = tokens.begin(); iterTokens != tokens.end(); ++iterTokens) {
           std::string tokenString = iterTokens->content;
 
           if (messageState == State::CommentDoc) {
@@ -245,13 +245,13 @@ namespace papyrus {
     }
   }
 
-  void SCI_METHOD Lexer::Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) {
+  void SCI_METHOD Lexer::Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int, IDocument* pAccess) {
     if (isUsable()) {
       Accessor accessor(pAccess, nullptr);
 
       int levelPrev = accessor.LevelAt(accessor.GetLine(startPos)) & SC_FOLDLEVELNUMBERMASK;
       // Lines
-      for (auto line = accessor.GetLine(startPos); line <= accessor.GetLine(startPos + lengthDoc); line++) {
+      for (auto line = accessor.GetLine(startPos); line <= accessor.GetLine(startPos + lengthDoc); ++line) {
         int numFoldOpen = 0;
         int numFoldClose = 0;
         bool hasFoldMiddle = false;
@@ -508,7 +508,7 @@ namespace papyrus {
       handleHotspotClick(eventData.first, eventData.second);
     });
 
-    lexerSettings.enableFoldMiddle.subscribe([&](auto eventData) { restyleDocument(); });
+    lexerSettings.enableFoldMiddle.subscribe([&](auto) { restyleDocument(); });
 
     lexerSettings.enableClassNameCache.subscribe([&](auto eventData) {
       if (!eventData.newValue) {

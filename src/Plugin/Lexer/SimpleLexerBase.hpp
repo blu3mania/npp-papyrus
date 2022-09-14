@@ -43,36 +43,36 @@ namespace papyrus {
       inline virtual ~SimpleLexerBase() {}
 
       // ILexer4 interface
-      inline virtual int SCI_METHOD Version() const override { return lvRelease5; }
-      inline virtual void SCI_METHOD Release() override { delete this; }
-      inline virtual const char * SCI_METHOD PropertyNames() override { return ""; }
-      inline virtual int SCI_METHOD PropertyType(const char* name) override { return 0; }
-      inline virtual const char * SCI_METHOD DescribeProperty(const char* name) override { return ""; }
-      inline virtual Sci_Position SCI_METHOD PropertySet(const char* key, const char* val) override { return -1; }
-      inline virtual const char * SCI_METHOD DescribeWordListSets() override { return ""; }
-      virtual Sci_Position SCI_METHOD WordListSet(int n, const char* wl) override;
+      inline virtual int SCI_METHOD Version() const { return lvRelease5; }
+      inline virtual void SCI_METHOD Release() { delete this; }
+      inline virtual const char* SCI_METHOD PropertyNames() { return ""; }
+      inline virtual int SCI_METHOD PropertyType(const char*) { return 0; }
+      inline virtual const char* SCI_METHOD DescribeProperty(const char*) { return ""; }
+      inline virtual Sci_Position SCI_METHOD PropertySet(const char*, const char*) { return -1; }
+      inline virtual const char* SCI_METHOD DescribeWordListSets() { return ""; }
+      virtual Sci_Position SCI_METHOD WordListSet(int n, const char* wl);
       virtual void SCI_METHOD Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) = 0;
       virtual void SCI_METHOD Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) = 0;
-      inline virtual void * SCI_METHOD PrivateCall(int operation, void* pointer) { return nullptr; }
-      inline virtual int SCI_METHOD LineEndTypesSupported() override { return SC_LINE_END_TYPE_DEFAULT; }
-      inline virtual int SCI_METHOD AllocateSubStyles(int styleBase, int numberStyles) override { return -1; }
-      inline virtual int SCI_METHOD SubStylesStart(int styleBase) override { return -1; }
-      inline virtual int SCI_METHOD SubStylesLength(int styleBase) override { return 0; }
-      inline virtual int SCI_METHOD StyleFromSubStyle(int subStyle) override { return subStyle; }
-      inline virtual int SCI_METHOD PrimaryStyleFromStyle(int style) override { return style; }
-      inline virtual void SCI_METHOD FreeSubStyles() override {}
-      inline virtual void SCI_METHOD SetIdentifiers(int style, const char* identifiers) override {}
-      inline virtual int SCI_METHOD DistanceToSecondaryStyles() override { return 0; }
-      virtual const char * SCI_METHOD GetSubStyleBases() override;
-      inline virtual int SCI_METHOD NamedStyles() override { return 0; }
-      inline virtual const char * SCI_METHOD NameOfStyle(int style) override { return ""; }
-      inline virtual const char * SCI_METHOD TagsOfStyle(int style) override { return ""; }
-      inline virtual const char * SCI_METHOD DescriptionOfStyle(int style) override { return ""; }
+      inline virtual void* SCI_METHOD PrivateCall(int, void*) { return nullptr; }
+      inline virtual int SCI_METHOD LineEndTypesSupported() { return SC_LINE_END_TYPE_DEFAULT; }
+      inline virtual int SCI_METHOD AllocateSubStyles(int, int) { return -1; }
+      inline virtual int SCI_METHOD SubStylesStart(int) { return -1; }
+      inline virtual int SCI_METHOD SubStylesLength(int) { return 0; }
+      inline virtual int SCI_METHOD StyleFromSubStyle(int subStyle) { return subStyle; }
+      inline virtual int SCI_METHOD PrimaryStyleFromStyle(int style) { return style; }
+      inline virtual void SCI_METHOD FreeSubStyles() {}
+      inline virtual void SCI_METHOD SetIdentifiers(int, const char*) {}
+      inline virtual int SCI_METHOD DistanceToSecondaryStyles() { return 0; }
+      virtual const char* SCI_METHOD GetSubStyleBases();
+      inline virtual int SCI_METHOD NamedStyles() { return 0; }
+      inline virtual const char* SCI_METHOD NameOfStyle(int) { return ""; }
+      inline virtual const char* SCI_METHOD TagsOfStyle(int) { return ""; }
+      inline virtual const char* SCI_METHOD DescriptionOfStyle(int) { return ""; }
 
       // ILexer5 methods
-      inline virtual const char * SCI_METHOD GetName() override { return name; }
-      inline virtual int SCI_METHOD  GetIdentifier() override { return id; }
-      inline virtual const char * SCI_METHOD PropertyGet(const char *key) override { return ""; }
+      inline virtual const char* SCI_METHOD GetName() { return name; }
+      inline virtual int SCI_METHOD  GetIdentifier() { return id; }
+      inline virtual const char* SCI_METHOD PropertyGet(const char*) { return ""; }
 
     protected:
       // Whether current lexer is usable.

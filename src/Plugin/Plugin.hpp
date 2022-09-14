@@ -58,7 +58,7 @@ namespace papyrus {
       inline BOOL useUnicode() const { return USE_UNICODE; }
       inline int numFuncs() const { return utility::underlying(Menu::COUNT); }
       inline  FuncItem* getFuncs() { return funcs; }
-      void setNppData(NppData nppData);
+      void setNppData(NppData data);
       void onNotification(SCNotification* notification);
       LRESULT handleNppMessage(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -148,7 +148,7 @@ namespace papyrus {
 
       HWND messageWindow {};
 
-      HINSTANCE instance {};
+      HINSTANCE myInstance {};
       NppData nppData;
 
       Settings settings;

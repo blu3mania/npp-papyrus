@@ -38,22 +38,28 @@ namespace utility {
 #endif
   }
 
-  void Logger::init(const std::wstring& filePath) {
 #ifdef _DEBUG
-  if (fileExists(filePath)) {
-    logFile.open(filePath, std::ios::out | std::ios::app);
-  } else {
-    logFile.open(filePath, std::ios::out);
+  void Logger::init(const std::wstring& filePath) {
+    if (fileExists(filePath)) {
+      logFile.open(filePath, std::ios::out | std::ios::app);
+    } else {
+      logFile.open(filePath, std::ios::out);
+    }
+  }
+#else
+  void Logger::init(const std::wstring&) {
   }
 #endif
-  }
 
-  void Logger::log(const std::wstring& message) {
 #ifdef _DEBUG
+  void Logger::log(const std::wstring& message) {
     if (logFile.is_open() && !logFile.fail()) {
       logFile << message << std::endl;
     }
-#endif
   }
+#else
+  void Logger::log(const std::wstring&) {
+  }
+#endif
 
 } // namespace

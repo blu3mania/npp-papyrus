@@ -53,7 +53,7 @@ namespace utility {
     }
   }
 
-  void CALLBACK Timer::callback(PVOID lpParameter, BOOLEAN TimerOrWaitFired) {
+  void CALLBACK Timer::callback(PVOID lpParameter, BOOLEAN) {
     Timer* timer = static_cast<Timer*>(lpParameter);
     timer->func();
     if (timer->onlyOnce) {

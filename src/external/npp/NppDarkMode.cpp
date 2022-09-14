@@ -411,11 +411,11 @@ namespace NppDarkMode
 // End of PapyrusPlugin modification
 	}
 
+// PapyrusPlugin modification -- not used
+/*
 	// attempts to apply new options from NppParameters, sends NPPM_INTERNAL_REFRESHDARKMODE to hwnd's top level parent
 	void refreshDarkMode(HWND hwnd, bool forceRefresh)
 	{
-// PapyrusPlugin modification -- not used
-/*
 		bool supportedChanged = false;
 
 		auto config = configuredOptions();
@@ -446,8 +446,10 @@ namespace NppDarkMode
 		// wParam == true, will reset style and toolbar icon
 		::SendMessage(hwndRoot, NPPM_INTERNAL_REFRESHDARKMODE, static_cast<WPARAM>(!forceRefresh), 0);
 */
-// End of PapyrusPlugin modification
+	void refreshDarkMode(HWND, bool)
+	{
 	}
+// End of PapyrusPlugin modification
 
 	bool isEnabled()
 	{
@@ -678,12 +680,12 @@ namespace NppDarkMode
 		}
 	}
 
+// PapyrusPlugin modification -- not used
+/*
 	// processes messages related to UAH / custom menubar drawing.
 	// return true if handled, false to continue with normal processing in your wndproc
 	bool runUAHWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT* lr)
 	{
-// PapyrusPlugin modification -- not used
-/*
 		static HTHEME g_menuTheme = nullptr;
 
 		UNREFERENCED_PARAMETER(wParam);
@@ -809,9 +811,11 @@ namespace NppDarkMode
 			return false;
 		}
 */
-			return false;
-// End of PapyrusPlugin modification
+	bool runUAHWndProc(HWND, UINT, WPARAM, LPARAM, LRESULT*)
+	{
+		return false;
 	}
+// End of PapyrusPlugin modification
 
 	void drawUAHMenuNCBottomLine(HWND hWnd)
 	{

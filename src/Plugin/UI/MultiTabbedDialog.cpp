@@ -102,7 +102,7 @@ namespace papyrus {
 
   INT_PTR MultiTabbedDialog::handleNotifyMessage(WPARAM wParam, LPARAM lParam) {
     auto nmhdr = *(reinterpret_cast<LPNMHDR>(lParam));
-    if (nmhdr.idFrom == tabsControlID) {
+    if (nmhdr.idFrom == static_cast<UINT_PTR>(tabsControlID)) {
       if (nmhdr.code == TCN_SELCHANGE) {
         int tabIndex = static_cast<int>(::SendDlgItemMessage(getHSelf(), tabsControlID, TCM_GETCURSEL, 0, 0));
         showTab((std::next(tabs.begin(), tabIndex))->tab);
@@ -182,7 +182,7 @@ namespace papyrus {
     }
   }
 
-  void MultiTabbedDialog::addTabAt(tab_id_t tab, int dialogID, std::wstring text, tab_list_t::const_iterator pos, bool lazyInitialization) {
+  void MultiTabbedDialog::addTabAt(tab_id_t tab, int tabDialogID, std::wstring text, tab_list_t::const_iterator pos, bool lazyInitialization) {
     int tabIndex = getTabIndex(pos);
 
     // Check if tab already exists
@@ -205,7 +205,7 @@ namespace papyrus {
     }
 
     if (foundExistingTab) {
-      if (tabItems[tab].dialogID != dialogID) {
+      if (tabItems[tab].dialogID != tabDialogID) {
         throw std::invalid_argument("Cannot use the same tab ID for different dialogs");
       }
       tabs.splice(pos, list, iter);
@@ -216,7 +216,7 @@ namespace papyrus {
       });
 
       tabItems[tab] = TabItem {
-        .dialogID = dialogID
+        .dialogID = tabDialogID
       };
 
       if (!lazyInitialization) {

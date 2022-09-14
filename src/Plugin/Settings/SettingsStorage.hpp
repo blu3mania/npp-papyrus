@@ -31,7 +31,7 @@ namespace papyrus {
 
   class SettingsStorage {
     public:
-      inline void init(const std::wstring& settingsPath) { SettingsStorage::settingsPath = settingsPath; }
+      inline void init(const std::wstring& path) { settingsPath = path; }
 
       bool load();
       void save() const;
