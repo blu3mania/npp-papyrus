@@ -431,7 +431,7 @@ namespace papyrus {
   void SettingsDialog::enableGroup(Group group, bool enabled) const {
     switch (group) {
       case Group::ClassLink: {
-        tab_id_t tab = utility::underlying(Tab::Lexer);
+        constexpr tab_id_t tab = utility::underlying(Tab::Lexer);
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, enabled);
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, enabled);
         ::EnableWindow(classLinkFgColorPicker.getHSelf(), enabled);
@@ -445,7 +445,7 @@ namespace papyrus {
       }
 
       case Group::Matcher: {
-        tab_id_t tab = utility::underlying(Tab::KeywordMatcher);
+        constexpr tab_id_t tab = utility::underlying(Tab::KeywordMatcher);
         setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORDS_LABEL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, enabled);
         setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORD_STATE, enabled);
@@ -470,7 +470,7 @@ namespace papyrus {
       }
 
       case Group::Annotation: {
-        tab_id_t tab = utility::underlying(Tab::ErrorAnnotator);
+        constexpr tab_id_t tab = utility::underlying(Tab::ErrorAnnotator);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL, enabled);
         ::EnableWindow(annotationFgColorPicker.getHSelf(), enabled);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_ANNOTATION_BGCOLOR_LABEL, enabled);
@@ -481,7 +481,7 @@ namespace papyrus {
       }
 
       case Group::Indication: {
-        tab_id_t tab = utility::underlying(Tab::ErrorAnnotator);
+        constexpr tab_id_t tab = utility::underlying(Tab::ErrorAnnotator);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, enabled);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_LABEL, enabled);
@@ -492,7 +492,7 @@ namespace papyrus {
       }
 
       case Group::GameAuto: {
-        tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_LABEL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, enabled);
@@ -502,7 +502,7 @@ namespace papyrus {
       }
 
       case Group::GameSkyrim: {
-        tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_SKYRIM, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_SKYRIM_CONFIGURE, enabled);
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_SKYRIM_TOGGLE, enabled);
@@ -510,7 +510,7 @@ namespace papyrus {
       }
 
       case Group::GameSSE: {
-        tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_SSE, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_SSE_CONFIGURE, enabled);
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_SSE_TOGGLE, enabled);
@@ -518,7 +518,7 @@ namespace papyrus {
       }
 
       case Group::GameFO4: {
-        tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_FO4, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_FO4_CONFIGURE, enabled);
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_FO4_TOGGLE, enabled);
@@ -532,7 +532,7 @@ namespace papyrus {
   }
 
   void SettingsDialog::updateEnabledKeywords() const {
-    tab_id_t tab = utility::underlying(Tab::KeywordMatcher);
+    constexpr tab_id_t tab = utility::underlying(Tab::KeywordMatcher);
     settings.keywordMatcherSettings.enabledKeywords =
       (getChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION) ? KEYWORD_FUNCTION : KEYWORD_NONE) |
       (getChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_STATE) ? KEYWORD_STATE : KEYWORD_NONE) |
@@ -604,7 +604,7 @@ namespace papyrus {
   }
 
   void SettingsDialog::updateAutoModeDefaultGame() const {
-    tab_id_t tab = utility::underlying(Tab::Compiler);
+    constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
     bool enabled = settings.compilerSettings.skyrim.enabled || settings.compilerSettings.sse.enabled || settings.compilerSettings.fo4.enabled;
     enableGroup(Group::GameAuto, enabled);
 
@@ -644,7 +644,7 @@ namespace papyrus {
   }
 
   void SettingsDialog::updateGameEnableButtonText(int controlID, bool enabled) const {
-    tab_id_t tab = utility::underlying(Tab::Compiler);
+    constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
     setText(tab, controlID, enabled ? L"Disable" : L"Enable");
   }
 
@@ -674,7 +674,7 @@ namespace papyrus {
   }
 
   bool SettingsDialog::saveSettings() {
-    tab_id_t errorAnnotatorTab = utility::underlying(Tab::ErrorAnnotator);
+    constexpr tab_id_t errorAnnotatorTab = utility::underlying(Tab::ErrorAnnotator);
     if (isTabDialogCreated(errorAnnotatorTab)) {
       std::wstring errorIndicatorIDStr = getText(errorAnnotatorTab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
       if (!utility::isNumber(errorIndicatorIDStr)) {
@@ -692,7 +692,7 @@ namespace papyrus {
       settings.errorAnnotatorSettings.indicatorID = errorIndicatorID;
     }
 
-    tab_id_t keywordMatcherTab = utility::underlying(Tab::KeywordMatcher);
+    constexpr tab_id_t keywordMatcherTab = utility::underlying(Tab::KeywordMatcher);
     if (isTabDialogCreated(keywordMatcherTab)) {
       std::wstring matcherIndicatorIDStr = getText(keywordMatcherTab, IDC_SETTINGS_MATCHER_INDICATOR_ID);
       if (!utility::isNumber(matcherIndicatorIDStr)) {
@@ -710,7 +710,7 @@ namespace papyrus {
       settings.keywordMatcherSettings.indicatorID = matcherIndicatorID;
     }
 
-    tab_id_t lexerTab = utility::underlying(Tab::Lexer);
+    constexpr tab_id_t lexerTab = utility::underlying(Tab::Lexer);
     if (isTabDialogCreated(lexerTab)) {
       settings.lexerSettings.enableClassNameCache = getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
       settings.lexerSettings.classLinkClickModifier = SCMOD_NORM |
@@ -719,7 +719,7 @@ namespace papyrus {
         (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT) ? SCMOD_ALT : SCMOD_NORM);
     }
 
-    tab_id_t compilerTab = utility::underlying(Tab::Compiler);
+    constexpr tab_id_t compilerTab = utility::underlying(Tab::Compiler);
     if (isTabDialogCreated(compilerTab)) {
       settings.compilerSettings.allowUnmanagedSource = getChecked(compilerTab, IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE);
       settings.compilerSettings.autoModeOutputDirectory = getText(compilerTab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT);

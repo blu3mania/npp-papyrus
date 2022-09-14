@@ -71,7 +71,7 @@ namespace papyrus {
 
       // Adjust tab dialog's position to remove tab item's height
       int tabIndex = getTabIndex(currentTab);
-      RECT tabItemRect;
+      RECT tabItemRect {};
       ::SendDlgItemMessage(getHSelf(), tabsControlID, TCM_GETITEMRECT, tabIndex, reinterpret_cast<LPARAM>(&tabItemRect));
       ::SetWindowPos(tabItems[currentTab].handle, 0, tabDialogRect.left, tabDialogRect.top + tabItemRect.bottom, tabDialogRect.right - tabDialogRect.left, tabDialogRect.bottom - tabDialogRect.top - tabItemRect.bottom, SWP_HIDEWINDOW);
 
