@@ -30,6 +30,8 @@
 //#include "Buffer.h"  // PapyrusPlugin modification -- not used
 #include "NppDarkMode.h"  // PapyrusPlugin modification -- added as NppDarkMode is referenced
 
+#include "..\XMessageBox\XMessageBox.h"  // PapyrusPlugin modification -- use XMessageBox to replace MessageBox
+
 void printInt(int int2print)
 {
 	TCHAR str[32];

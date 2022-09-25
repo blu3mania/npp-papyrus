@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "AboutDialog.hpp"
 
 #include "..\Common\NotepadPlusPlus.hpp"
-#include "..\Common\Utility.hpp"
+#include "..\Common\StringUtil.hpp"
 
 namespace papyrus {
 

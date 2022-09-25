@@ -189,15 +189,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Plugin\Common\DateTimeUtil.hpp" />
     <ClInclude Include="Plugin\Common\EnumUtil.hpp" />
+    <ClInclude Include="Plugin\Common\FileSystemUtil.hpp" />
     <ClInclude Include="Plugin\Common\Game.hpp" />
     <ClInclude Include="Plugin\Common\Logger.hpp" />
     <ClInclude Include="Plugin\Common\NotepadPlusPlus.hpp" />
     <ClInclude Include="Plugin\Common\PrimitiveTypeValueMonitor.hpp" />
     <ClInclude Include="Plugin\Common\Resources.hpp" />
+    <ClInclude Include="Plugin\Common\StringUtil.hpp" />
     <ClInclude Include="Plugin\Common\Timer.hpp" />
     <ClInclude Include="Plugin\Common\Topic.hpp" />
-    <ClInclude Include="Plugin\Common\Utility.hpp" />
     <ClInclude Include="Plugin\Common\Version.hpp" />
     <ClInclude Include="Plugin\CompilationErrorHandling\Error.hpp" />
     <ClInclude Include="Plugin\CompilationErrorHandling\ErrorAnnotator.hpp" />
@@ -235,10 +237,12 @@
     <ClCompile Include="external\npp\StaticDialog.cpp" />
     <ClCompile Include="external\npp\URLCtrl.cpp" />
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="external\XMessageBox\XMessageBox.cpp" />
+    <ClCompile Include="Plugin\Common\DateTimeUtil.cpp" />
     <ClCompile Include="Plugin\Common\Game.cpp" />
     <ClCompile Include="Plugin\Common\Logger.cpp" />
+    <ClCompile Include="Plugin\Common\StringUtil.cpp" />
     <ClCompile Include="Plugin\Common\Timer.cpp" />
-    <ClCompile Include="Plugin\Common\Utility.cpp" />
     <ClCompile Include="Plugin\Common\Version.cpp" />
     <ClCompile Include="Plugin\CompilationErrorHandling\ErrorAnnotator.cpp" />
     <ClCompile Include="Plugin\CompilationErrorHandling\ErrorsWindow.cpp" />
@@ -293,6 +297,7 @@
     <None Include="external\scintilla\Scintilla.h" />
     <None Include="external\scintilla\Sci_Position.h" />
     <None Include="external\tinyxml2\tinyxml2.h" />
+    <None Include="external\XMessageBox\XMessageBox.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\dist\Papyrus.xml">

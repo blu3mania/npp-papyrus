@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "KeywordMatcher.hpp"
 
-#include "..\Common\Utility.hpp"
+#include "..\Common\StringUtil.hpp"
 #include "..\Lexer\Lexer.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"

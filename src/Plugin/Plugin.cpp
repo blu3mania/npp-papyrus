@@ -30,8 +30,9 @@ https://www.creationkit.com/fallout4/index.php?title=Category:Papyrus
 
 #include "Plugin.hpp"
 
+#include "Common\FileSystemUtil.hpp"
 #include "Common\Logger.hpp"
-#include "Common\Utility.hpp"
+#include "Common\StringUtil.hpp"
 #include "Common\Version.hpp"
 #include "Compiler\CompilationRequest.hpp"
 #include "Lexer\Lexer.hpp"
@@ -40,6 +41,7 @@ https://www.creationkit.com/fallout4/index.php?title=Category:Papyrus
 #include "..\external\gsl\include\gsl\util"
 #include "..\external\npp\NppDarkMode.h"
 #include "..\external\tinyxml2\tinyxml2.h"
+#include "..\external\XMessageBox\XMessageBox.h"
 
 #include <filesystem>
 #include <fstream>
@@ -637,9 +639,6 @@ namespace papyrus {
         }
       }
     }
-  }
-
-  void Plugin::advancedMenuFunc() {
   }
 
   void Plugin::showLangID() {

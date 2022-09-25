@@ -28,6 +28,9 @@
     <Filter Include="External\TinyXML">
       <UniqueIdentifier>{f3c1be1f-0315-4d9b-adb5-5ad628efd7fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\XMessageBox">
+      <UniqueIdentifier>{df0db884-3b72-46a1-b96a-c543006de09f}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Exports">
       <UniqueIdentifier>{252ac3d4-3227-4ff1-842c-470f6cd55a73}</UniqueIdentifier>
     </Filter>
@@ -36,7 +39,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Plugin\Common\DateTimeUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Plugin\Common\EnumUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugin\Common\FileSystemUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\Common\Game.hpp">
@@ -54,13 +63,13 @@
     <ClInclude Include="Plugin\Common\Resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Plugin\Common\StringUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Plugin\Common\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\Common\Topic.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Plugin\Common\Utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Plugin\Common\Version.hpp">
@@ -170,16 +179,22 @@
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp">
       <Filter>External\TinyXML</Filter>
     </ClCompile>
+    <ClCompile Include="external\XMessageBox\XMessageBox.cpp">
+      <Filter>External\XMessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugin\Common\DateTimeUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Plugin\Common\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Plugin\Common\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Plugin\Common\Timer.cpp">
+    <ClCompile Include="Plugin\Common\StringUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Plugin\Common\Utility.cpp">
+    <ClCompile Include="Plugin\Common\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Plugin\Common\Version.cpp">
@@ -335,6 +350,9 @@
     </None>
     <None Include="external\tinyxml2\tinyxml2.h">
       <Filter>External\TinyXML</Filter>
+    </None>
+    <None Include="external\XMessageBox\XMessageBox.h">
+      <Filter>External\XMessageBox</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

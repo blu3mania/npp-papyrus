@@ -42,4 +42,3 @@ using npp_ptr_t       = void*;
 // They are unlikely to change but make sure they are checked and updated as needed
 // with each new Notepad++ releases.
 #define NB_MAX_EXTERNAL_LANG        30
-#define MAX_EXTERNAL_LEXER_NAME_LEN 16

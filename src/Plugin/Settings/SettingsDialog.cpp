@@ -22,10 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\Common\EnumUtil.hpp"
 #include "..\Common\NotepadPlusPlus.hpp"
 #include "..\Common\Resources.hpp"
-#include "..\Common\Utility.hpp"
+#include "..\Common\StringUtil.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
 #include "..\..\external\npp\PluginInterface.h"
+#include "..\..\external\XMessageBox\XMessageBox.h"
 
 #include <commctrl.h>
 

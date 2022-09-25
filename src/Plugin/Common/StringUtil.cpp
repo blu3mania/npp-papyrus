@@ -17,17 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Utility.hpp"
+#include "StringUtil.hpp"
 
 #include <algorithm>
-#include <chrono>
 #include <sstream>
 
-#include <windows.h>
-
 namespace utility {
-
-  using Clock = std::chrono::system_clock;
 
   // Conversion between string and other types
   //
@@ -225,21 +220,6 @@ namespace utility {
     std::wstring lower;
     std::transform(str.begin(), str.end(), std::back_inserter(lower), towlower);
     return lower;
-  }
-
-  // Date/Time utilities
-  int currentYear() noexcept {
-    struct tm time {};
-    auto now = Clock::to_time_t(Clock::now());
-    localtime_s(&time, &now);
-    return time.tm_year + 1900;
-  }
-
-  // File utilities
-  //
-  bool fileExists(const std::wstring& filePath) {
-    DWORD dwAttrib = ::GetFileAttributes(filePath.c_str());
-    return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
   }
 
 } // namespace

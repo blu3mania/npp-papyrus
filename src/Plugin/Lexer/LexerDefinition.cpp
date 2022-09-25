@@ -29,7 +29,7 @@ namespace papyrus {
 
   void SCI_METHOD GetLexerName(int index, char* name, int length) {
     // From NPP's Parameters.h:
-    // #define MAX_EXTERNAL_LEXER_NAME_LEN 16
+    // #define MAX_EXTERNAL_LEXER_NAME_LEN 128
     switch (index) {
       case 0: {
         strncpy_s(name, length, Lexer::name(), _TRUNCATE);
@@ -47,7 +47,7 @@ namespace papyrus {
 
   // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
   void SCI_METHOD GetLexerStatusText(int index, TCHAR* text, int length) {
-    // From NPP's Parameters.h:
+    // From NPP's Parameters.h (prior to 8.3.4):
     // #define MAX_EXTERNAL_LEXER_DESC_LEN 32
     switch (index) {
       case 0: {

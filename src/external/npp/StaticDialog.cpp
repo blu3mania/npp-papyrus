@@ -20,6 +20,8 @@
 #include "Common.h"
 #include "NppDarkMode.h"
 
+#include "..\XMessageBox\XMessageBox.h"  // PapyrusPlugin modification -- use XMessageBox to replace MessageBox
+
 StaticDialog::~StaticDialog()
 {
 	if (isCreated())

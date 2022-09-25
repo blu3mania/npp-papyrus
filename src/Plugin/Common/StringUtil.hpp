@@ -35,7 +35,7 @@ namespace utility {
   COLORREF hexStrToColor(const std::wstring& hexStr) noexcept;
   std::wstring colorToHexStr(COLORREF color) noexcept;
 
-  // String utilites
+  // String utilities
   //
   inline bool isNumber(const std::wstring& str) noexcept { return !str.empty() && std::find_if(str.begin(), str.end(), [](wchar_t ch) { return !iswdigit(ch); }) == str.end(); }
   inline bool isHexNumber(const std::wstring& str) noexcept { return !str.empty() && std::find_if(str.begin(), str.end(), [](wchar_t ch) { return !iswxdigit(ch); }) == str.end(); }
@@ -51,12 +51,5 @@ namespace utility {
   std::vector<std::wstring> split(const std::wstring& str, const std::wstring& delimiter, bool ignoreCase = true) noexcept;
   std::wstring toUpper(const std::wstring& str) noexcept;
   std::wstring toLower(const std::wstring& str) noexcept;
-
-  // Date/Time utilities
-  int currentYear() noexcept;
-
-  // File utilities
-  //
-  bool fileExists(const std::wstring& filePath);
 
 } // namespace

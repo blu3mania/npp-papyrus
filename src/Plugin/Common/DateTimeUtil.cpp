@@ -17,49 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Logger.hpp"
+#include "DateTimeUtil.hpp"
 
-#include "FileSystemUtil.hpp"
-
-#include "..\..\external\gsl\include\gsl\util"
-
-#include <fstream>
-#include <sstream>
+#include <chrono>
 
 namespace utility {
 
-  Logger logger;
+  using Clock = std::chrono::system_clock;
 
-  Logger::~Logger() {
-#ifdef _DEBUG
-    if (logFile.is_open()) {
-      logFile.close();
-    }
-#endif
+  int currentYear() noexcept {
+    struct tm time {};
+    auto now = Clock::to_time_t(Clock::now());
+    localtime_s(&time, &now);
+    return time.tm_year + 1900;
   }
-
-#ifdef _DEBUG
-  void Logger::init(const std::wstring& filePath) {
-    if (fileExists(filePath)) {
-      logFile.open(filePath, std::ios::out | std::ios::app);
-    } else {
-      logFile.open(filePath, std::ios::out);
-    }
-  }
-#else
-  void Logger::init(const std::wstring&) {
-  }
-#endif
-
-#ifdef _DEBUG
-  void Logger::log(const std::wstring& message) {
-    if (logFile.is_open() && !logFile.fail()) {
-      logFile << message << std::endl;
-    }
-  }
-#else
-  void Logger::log(const std::wstring&) {
-  }
-#endif
 
 } // namespace

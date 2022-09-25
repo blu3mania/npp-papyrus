@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Settings.hpp"
 
 #include "..\Common\EnumUtil.hpp"
-#include "..\Common\Utility.hpp"
+#include "..\Common\StringUtil.hpp"
 #include "..\CompilationErrorHandling\ErrorAnnotator.hpp"
 
 #include <fstream>

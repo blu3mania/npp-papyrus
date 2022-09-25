@@ -128,7 +128,7 @@ namespace papyrus {
       // Menu functions
       //
       void setupAdvancedMenu();
-      static void advancedMenuFunc(); // Still need an empty func so NPP won't render the menu item as a separator
+      static void advancedMenuFunc() {}; // Still need an empty func so NPP won't render the menu item as a separator
       void showLangID();
       void installAutoCompletion();
       void installFunctionList();

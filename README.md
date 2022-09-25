@@ -155,7 +155,8 @@ in your local repository.
     │   ├── lexilla - Lexilla source files
     │   ├── npp - Notepad++ source files
     │   ├── scintilla - Scintilla source files
-    │   └── tinyxml2 - references TinyXML2 as submodule
+    │   ├── tinyxml2 - references TinyXML2 as submodule
+    │   └── XMessageBox - adopted and modified XMessageBox to provide dark mode support
     └── Plugin - source files of this plugin
         ├── Common - common definitions and utilities shared by all modules
         ├── CompilationErrorHandling - show/annotate compilation errors

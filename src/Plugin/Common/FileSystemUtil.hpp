@@ -17,49 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Logger.hpp"
+#pragma once
 
-#include "FileSystemUtil.hpp"
+#include <string>
 
-#include "..\..\external\gsl\include\gsl\util"
-
-#include <fstream>
-#include <sstream>
+#include "windows.h"
 
 namespace utility {
 
-  Logger logger;
-
-  Logger::~Logger() {
-#ifdef _DEBUG
-    if (logFile.is_open()) {
-      logFile.close();
-    }
-#endif
+  inline bool fileExists(const std::wstring& filePath) {
+    DWORD dwAttrib = ::GetFileAttributes(filePath.c_str());
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
   }
-
-#ifdef _DEBUG
-  void Logger::init(const std::wstring& filePath) {
-    if (fileExists(filePath)) {
-      logFile.open(filePath, std::ios::out | std::ios::app);
-    } else {
-      logFile.open(filePath, std::ios::out);
-    }
-  }
-#else
-  void Logger::init(const std::wstring&) {
-  }
-#endif
-
-#ifdef _DEBUG
-  void Logger::log(const std::wstring& message) {
-    if (logFile.is_open() && !logFile.fail()) {
-      logFile << message << std::endl;
-    }
-  }
-#else
-  void Logger::log(const std::wstring&) {
-  }
-#endif
 
 } // namespace

@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Lexer.hpp"
 
 #include "LexerIDs.hpp"
-#include "..\Common\EnumUtil.hpp"
-#include "..\Common\Utility.hpp"
+#include "..\Common\FileSystemUtil.hpp"
+#include "..\Common\StringUtil.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
 #include "..\..\external\lexilla\LexerModule.h"
