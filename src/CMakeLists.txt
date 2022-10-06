@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.20)
 # set the project name
 project(PapyrusPlugin)
 
-# compile with C++ standard 20
-set(CMAKE_CXX_STANDARD 20)
+# compile with C++ standard 23
+set(CMAKE_CXX_STANDARD 23)
 
 # null terminate resource strings
 set(CMAKE_RC_FLAGS "/n")

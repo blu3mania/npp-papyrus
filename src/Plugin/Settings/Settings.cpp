@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Settings.hpp"
 
-#include "..\Common\EnumUtil.hpp"
 #include "..\Common\StringUtil.hpp"
 #include "..\CompilationErrorHandling\ErrorAnnotator.hpp"
 
@@ -72,8 +71,8 @@ namespace papyrus {
     storage.putString(L"errorAnnotator.indicatorForegroundColor", utility::colorToHexStr(errorAnnotatorSettings.indicatorForegroundColor));
 
     storage.putString(L"compiler.common.allowUnmanagedSource", utility::boolToStr(compilerSettings.allowUnmanagedSource));
-    storage.putString(L"compiler.common.gameMode", game::gameNames[utility::underlying(compilerSettings.gameMode)].first);
-    storage.putString(L"compiler.auto.defaultGame", game::gameNames[utility::underlying(compilerSettings.autoModeDefaultGame)].first);
+    storage.putString(L"compiler.common.gameMode", game::gameNames[std::to_underlying(compilerSettings.gameMode)].first);
+    storage.putString(L"compiler.auto.defaultGame", game::gameNames[std::to_underlying(compilerSettings.autoModeDefaultGame)].first);
     storage.putString(L"compiler.auto.outputDirectory", compilerSettings.autoModeOutputDirectory);
 
     saveGameSettings(storage, Game::Skyrim, compilerSettings.skyrim);
@@ -372,7 +371,7 @@ namespace papyrus {
     bool gameConfigured = true;
     bool updated = false;
     std::wstring value;
-    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[utility::underlying(game)].first + L'.');
+    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[std::to_underlying(game)].first + L'.');
     std::wstring gamePath = game::installationPath(game);
 
     // Enabled flag
@@ -514,7 +513,7 @@ namespace papyrus {
   }
 
   void Settings::saveGameSettings(SettingsStorage& storage, Game game, const CompilerSettings::GameSettings& gameSettings) {
-    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[utility::underlying(game)].first + L'.');
+    std::wstring gameSettingsPrefix(L"compiler." + game::gameNames[std::to_underlying(game)].first + L'.');
     storage.putString(gameSettingsPrefix + L"enabled", utility::boolToStr(gameSettings.enabled));
     storage.putString(gameSettingsPrefix + L"installPath", gameSettings.installPath);
     storage.putString(gameSettingsPrefix + L"compilerPath", gameSettings.compilerPath);

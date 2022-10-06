@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include "Common\EnumUtil.hpp"
 #include "Common\Game.hpp"
 #include "Common\NotepadPlusPlus.hpp"
 #include "Common\Resources.hpp"
@@ -56,7 +55,7 @@ namespace papyrus {
       // Interface functions with Notepad++
       inline TCHAR* name() const { return const_cast<TCHAR*>(PLUGIN_NAME); }
       inline BOOL useUnicode() const { return USE_UNICODE; }
-      inline int numFuncs() const { return utility::underlying(Menu::COUNT); }
+      inline int numFuncs() const { return std::to_underlying(Menu::COUNT); }
       inline  FuncItem* getFuncs() { return funcs; }
       void setNppData(NppData data);
       void onNotification(SCNotification* notification);
@@ -142,7 +141,7 @@ namespace papyrus {
 
       // Private members
       //
-      FuncItem funcs[utility::underlying(Menu::COUNT)];
+      FuncItem funcs[std::to_underlying(Menu::COUNT)];
 
       UINT advancedMenuBaseCmdID {};
 

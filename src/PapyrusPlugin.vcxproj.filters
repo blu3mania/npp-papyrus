@@ -42,9 +42,6 @@
     <ClInclude Include="Plugin\Common\DateTimeUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Plugin\Common\EnumUtil.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Plugin\Common\FileSystemUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

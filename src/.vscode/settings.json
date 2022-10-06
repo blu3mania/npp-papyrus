@@ -25,6 +25,7 @@
       "cwchar": "cpp",
       "exception": "cpp",
       "filesystem": "cpp",
+      "format": "cpp",
       "fstream": "cpp",
       "functional": "cpp",
       "initializer_list": "cpp",
@@ -52,7 +53,7 @@
       "stop_token": "cpp",
       "streambuf": "cpp",
       "string": "cpp",
-      "string_span": "cpp"
+      "string_span": "cpp",
       "system_error": "cpp",
       "thread": "cpp",
       "tuple": "cpp",

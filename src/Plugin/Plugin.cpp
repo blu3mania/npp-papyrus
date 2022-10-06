@@ -335,7 +335,7 @@ namespace papyrus {
 
           // If not compiling current file, check its game type and update status message (if applicable)
           if (!isComplingCurrentFile && detectedGame != Game::Auto) {
-            std::wstring gameSpecificStatus(L"[" + game::gameNames[utility::underlying(detectedGame)].second + L"] " + Lexer::statusText());
+            std::wstring gameSpecificStatus(L"[" + game::gameNames[std::to_underlying(detectedGame)].second + L"] " + Lexer::statusText());
             ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
           }
 
@@ -447,7 +447,7 @@ namespace papyrus {
     Game detectedGameType = compilerSettings.gameMode;
     bool useAutoModeOutputDirectory = false;
     if (detectedGameType == Game::Auto) {
-      for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
+      for (int i = std::to_underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
         auto game = static_cast<Game>(i);
         const CompilerSettings::GameSettings& gameSettings = compilerSettings.gameSettings(game);
         if (gameSettings.enabled && !gameSettings.installPath.empty() && utility::startsWith(filePath, gameSettings.installPath)) {
@@ -633,7 +633,7 @@ namespace papyrus {
     if (::SendMessage(nppData._nppHandle, NPPM_ALLOCATECMDID, advancedMenuItems.size(), reinterpret_cast<LPARAM>(&advancedMenuBaseCmdID)) != 0) {
       HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
       HMENU advancedMenu = ::CreatePopupMenu();
-      if (::ModifyMenu(menu, funcs[utility::underlying(Menu::Advanced)]._cmdID, MF_BYCOMMAND | MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(advancedMenu), funcs[utility::underlying(Menu::Advanced)]._itemName)) {
+      if (::ModifyMenu(menu, funcs[std::to_underlying(Menu::Advanced)]._cmdID, MF_BYCOMMAND | MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(advancedMenu), funcs[std::to_underlying(Menu::Advanced)]._itemName)) {
         for (UINT i = 0; i < advancedMenuItems.size(); ++i) {
           ::InsertMenu(advancedMenu, i, MF_BYPOSITION | MF_STRING, static_cast<UINT_PTR>(advancedMenuBaseCmdID) + i, advancedMenuItems[i]);
         }

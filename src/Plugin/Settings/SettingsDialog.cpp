@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SettingsDialog.hpp"
 
-#include "..\Common\EnumUtil.hpp"
 #include "..\Common\NotepadPlusPlus.hpp"
 #include "..\Common\Resources.hpp"
 #include "..\Common\StringUtil.hpp"
@@ -126,24 +125,24 @@ namespace papyrus {
 
   void SettingsDialog::initControls() {
     MultiTabbedDialog::initControls();
-    addTab(utility::underlying(Tab::Lexer), IDC_SETTINGS_TAB_LEXER, tabNames[utility::underlying(Tab::Lexer)]);
-    addTab(utility::underlying(Tab::KeywordMatcher), IDC_SETTINGS_TAB_KEYWORD_MATCHER, tabNames[utility::underlying(Tab::KeywordMatcher)]);
-    addTab(utility::underlying(Tab::ErrorAnnotator), IDC_SETTINGS_TAB_ERROR_ANNOTATOR, tabNames[utility::underlying(Tab::ErrorAnnotator)]);
-    addTab(utility::underlying(Tab::Compiler), IDC_SETTINGS_TAB_COMPILER, tabNames[utility::underlying(Tab::Compiler)]);
+    addTab(std::to_underlying(Tab::Lexer), IDC_SETTINGS_TAB_LEXER, tabNames[std::to_underlying(Tab::Lexer)]);
+    addTab(std::to_underlying(Tab::KeywordMatcher), IDC_SETTINGS_TAB_KEYWORD_MATCHER, tabNames[std::to_underlying(Tab::KeywordMatcher)]);
+    addTab(std::to_underlying(Tab::ErrorAnnotator), IDC_SETTINGS_TAB_ERROR_ANNOTATOR, tabNames[std::to_underlying(Tab::ErrorAnnotator)]);
+    addTab(std::to_underlying(Tab::Compiler), IDC_SETTINGS_TAB_COMPILER, tabNames[std::to_underlying(Tab::Compiler)]);
 
-    for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
+    for (int i = std::to_underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
       auto game = static_cast<Game>(i);
       if (settings.compilerSettings.gameSettings(game).enabled) {
         addGameTab(game);
       }
     }
 
-    showTab(utility::underlying(Tab::Lexer));
+    showTab(std::to_underlying(Tab::Lexer));
   }
 
   void SettingsDialog::onTabDialogCreated(tab_id_t tab) {
     switch (tab) {
-      case utility::underlying(Tab::Lexer):
+      case std::to_underlying(Tab::Lexer):
         enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
         setChecked(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, settings.lexerSettings.enableFoldMiddle);
         foldMiddleTooltip = createToolTip(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, IDS_SETTINGS_LEXER_FOLD_MIDDLE_TOOLTIP);
@@ -166,7 +165,7 @@ namespace papyrus {
         stylerConfigLink.create(getControl(tab, IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK), IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK);
         break;
 
-      case utility::underlying(Tab::KeywordMatcher):
+      case std::to_underlying(Tab::KeywordMatcher):
         enableGroup(Group::Matcher, settings.keywordMatcherSettings.enableKeywordMatching);
         setChecked(tab, IDC_SETTINGS_MATCHER, settings.keywordMatcherSettings.enableKeywordMatching);
         matcherTooltip = createToolTip(tab, IDC_SETTINGS_MATCHER, IDS_SETTINGS_MATCHER_TOOLTIP);
@@ -193,7 +192,7 @@ namespace papyrus {
         unmatchedIndicatorFgColorPicker.setColour(settings.keywordMatcherSettings.unmatchedIndicatorForegroundColor);
         break;
 
-      case utility::underlying(Tab::ErrorAnnotator):
+      case std::to_underlying(Tab::ErrorAnnotator):
         enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
         setChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, settings.errorAnnotatorSettings.enableAnnotation);
         annotationTooltip = createToolTip(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP);
@@ -214,25 +213,25 @@ namespace papyrus {
         errorIndicatorFgColorPicker.setColour(settings.errorAnnotatorSettings.indicatorForegroundColor);
         break;
 
-      case utility::underlying(Tab::Compiler):
+      case std::to_underlying(Tab::Compiler):
         enableGroup(Group::GameSkyrim, settings.compilerSettings.skyrim.enabled);
         enableGroup(Group::GameSSE, settings.compilerSettings.sse.enabled);
         enableGroup(Group::GameFO4, settings.compilerSettings.fo4.enabled);
 
         setChecked(tab, IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE, settings.compilerSettings.allowUnmanagedSource);
-        setChecked(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO + utility::underlying(settings.compilerSettings.gameMode), true);
+        setChecked(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO + std::to_underlying(settings.compilerSettings.gameMode), true);
         setText(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT, settings.compilerSettings.autoModeOutputDirectory);
         updateAutoModeDefaultGame();
         if (settings.compilerSettings.autoModeDefaultGame != Game::Auto) {
           // Set current user prefs in auto mode default game dropdown list
-          setDropdownSelectedText(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, game::gameNames[utility::underlying(settings.compilerSettings.autoModeDefaultGame)].second);
+          setDropdownSelectedText(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, game::gameNames[std::to_underlying(settings.compilerSettings.autoModeDefaultGame)].second);
         }
 
         autoModeTooltip = createToolTip(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO, IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP);
         break;
 
       default:
-        if (tab > utility::underlying(Tab::GameBase)) {
+        if (tab > std::to_underlying(Tab::GameBase)) {
           // Update displayed values when showing, and save current values when hiding
           auto game = getGame(tab);
           const auto& gameSettings = settings.compilerSettings.gameSettings(game);
@@ -432,7 +431,7 @@ namespace papyrus {
   void SettingsDialog::enableGroup(Group group, bool enabled) const {
     switch (group) {
       case Group::ClassLink: {
-        constexpr tab_id_t tab = utility::underlying(Tab::Lexer);
+        constexpr tab_id_t tab = std::to_underlying(Tab::Lexer);
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, enabled);
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL, enabled);
         ::EnableWindow(classLinkFgColorPicker.getHSelf(), enabled);
@@ -446,7 +445,7 @@ namespace papyrus {
       }
 
       case Group::Matcher: {
-        constexpr tab_id_t tab = utility::underlying(Tab::KeywordMatcher);
+        constexpr tab_id_t tab = std::to_underlying(Tab::KeywordMatcher);
         setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORDS_LABEL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, enabled);
         setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORD_STATE, enabled);
@@ -471,7 +470,7 @@ namespace papyrus {
       }
 
       case Group::Annotation: {
-        constexpr tab_id_t tab = utility::underlying(Tab::ErrorAnnotator);
+        constexpr tab_id_t tab = std::to_underlying(Tab::ErrorAnnotator);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL, enabled);
         ::EnableWindow(annotationFgColorPicker.getHSelf(), enabled);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_ANNOTATION_BGCOLOR_LABEL, enabled);
@@ -482,7 +481,7 @@ namespace papyrus {
       }
 
       case Group::Indication: {
-        constexpr tab_id_t tab = utility::underlying(Tab::ErrorAnnotator);
+        constexpr tab_id_t tab = std::to_underlying(Tab::ErrorAnnotator);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, enabled);
         setControlEnabled(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_LABEL, enabled);
@@ -493,7 +492,7 @@ namespace papyrus {
       }
 
       case Group::GameAuto: {
-        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = std::to_underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_LABEL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, enabled);
@@ -503,7 +502,7 @@ namespace papyrus {
       }
 
       case Group::GameSkyrim: {
-        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = std::to_underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_SKYRIM, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_SKYRIM_CONFIGURE, enabled);
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_SKYRIM_TOGGLE, enabled);
@@ -511,7 +510,7 @@ namespace papyrus {
       }
 
       case Group::GameSSE: {
-        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = std::to_underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_SSE, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_SSE_CONFIGURE, enabled);
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_SSE_TOGGLE, enabled);
@@ -519,7 +518,7 @@ namespace papyrus {
       }
 
       case Group::GameFO4: {
-        constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
+        constexpr tab_id_t tab = std::to_underlying(Tab::Compiler);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_RADIO_FO4, enabled);
         setControlEnabled(tab, IDC_SETTINGS_COMPILER_FO4_CONFIGURE, enabled);
         updateGameEnableButtonText(IDC_SETTINGS_COMPILER_FO4_TOGGLE, enabled);
@@ -533,7 +532,7 @@ namespace papyrus {
   }
 
   void SettingsDialog::updateEnabledKeywords() const {
-    constexpr tab_id_t tab = utility::underlying(Tab::KeywordMatcher);
+    constexpr tab_id_t tab = std::to_underlying(Tab::KeywordMatcher);
     settings.keywordMatcherSettings.enabledKeywords =
       (getChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION) ? KEYWORD_FUNCTION : KEYWORD_NONE) |
       (getChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_STATE) ? KEYWORD_STATE : KEYWORD_NONE) |
@@ -547,8 +546,8 @@ namespace papyrus {
   }
 
   Game SettingsDialog::getGame(tab_id_t tab) const {
-    if (tab > utility::underlying(Tab::GameBase)) {
-      return static_cast<Game>(utility::underlying(Game::Auto) + (tab - utility::underlying(Tab::GameBase)));
+    if (tab > std::to_underlying(Tab::GameBase)) {
+      return static_cast<Game>(std::to_underlying(Game::Auto) + (tab - std::to_underlying(Tab::GameBase)));
     }
     return Game::Auto;
   }
@@ -558,24 +557,24 @@ namespace papyrus {
       return -1;
     }
 
-    return utility::underlying(Tab::GameBase) + (utility::underlying(game) - utility::underlying(Game::Auto));
+    return std::to_underlying(Tab::GameBase) + (std::to_underlying(game) - std::to_underlying(Game::Auto));
   }
 
   void SettingsDialog::addGameTab(Game game) {
     TCITEM item {
       .mask = TCIF_TEXT,
-      .pszText = const_cast<LPWSTR>(game::gameNames[utility::underlying(game)].second.c_str()),
+      .pszText = const_cast<LPWSTR>(game::gameNames[std::to_underlying(game)].second.c_str()),
       .cchTextMax = static_cast<int>(_tcslen(item.pszText))
     };
 
-    tab_id_t referenceTab = utility::underlying(Tab::Compiler);
-    for (int i = utility::underlying(Game::Auto) + 1; i < utility::underlying(game); ++i) {
+    tab_id_t referenceTab = std::to_underlying(Tab::Compiler);
+    for (int i = std::to_underlying(Game::Auto) + 1; i < std::to_underlying(game); ++i) {
       Game refGame = static_cast<Game>(i);
       if (settings.compilerSettings.gameSettings(refGame).enabled) {
         referenceTab = getGameTab(refGame);
       }
     }
-    addTabAfter(getGameTab(game), IDC_SETTINGS_TAB_GAME, game::gameNames[utility::underlying(game)].second, referenceTab);
+    addTabAfter(getGameTab(game), IDC_SETTINGS_TAB_GAME, game::gameNames[std::to_underlying(game)].second, referenceTab);
   }
 
   void SettingsDialog::removeGameTab(Game game) {
@@ -605,7 +604,7 @@ namespace papyrus {
   }
 
   void SettingsDialog::updateAutoModeDefaultGame() const {
-    constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
+    constexpr tab_id_t tab = std::to_underlying(Tab::Compiler);
     bool enabled = settings.compilerSettings.skyrim.enabled || settings.compilerSettings.sse.enabled || settings.compilerSettings.fo4.enabled;
     enableGroup(Group::GameAuto, enabled);
 
@@ -628,7 +627,7 @@ namespace papyrus {
       }
     } else {
       // No game is enabled
-      gameOptions.push_back(const_cast<LPWSTR>(game::gameNames[utility::underlying(Game::Auto)].second.c_str()));
+      gameOptions.push_back(const_cast<LPWSTR>(game::gameNames[std::to_underlying(Game::Auto)].second.c_str()));
     }
     initDropdownList(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, gameOptions);
 
@@ -645,7 +644,7 @@ namespace papyrus {
   }
 
   void SettingsDialog::updateGameEnableButtonText(int controlID, bool enabled) const {
-    constexpr tab_id_t tab = utility::underlying(Tab::Compiler);
+    constexpr tab_id_t tab = std::to_underlying(Tab::Compiler);
     setText(tab, controlID, enabled ? L"Disable" : L"Enable");
   }
 
@@ -675,7 +674,7 @@ namespace papyrus {
   }
 
   bool SettingsDialog::saveSettings() {
-    constexpr tab_id_t errorAnnotatorTab = utility::underlying(Tab::ErrorAnnotator);
+    constexpr tab_id_t errorAnnotatorTab = std::to_underlying(Tab::ErrorAnnotator);
     if (isTabDialogCreated(errorAnnotatorTab)) {
       std::wstring errorIndicatorIDStr = getText(errorAnnotatorTab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
       if (!utility::isNumber(errorIndicatorIDStr)) {
@@ -693,7 +692,7 @@ namespace papyrus {
       settings.errorAnnotatorSettings.indicatorID = errorIndicatorID;
     }
 
-    constexpr tab_id_t keywordMatcherTab = utility::underlying(Tab::KeywordMatcher);
+    constexpr tab_id_t keywordMatcherTab = std::to_underlying(Tab::KeywordMatcher);
     if (isTabDialogCreated(keywordMatcherTab)) {
       std::wstring matcherIndicatorIDStr = getText(keywordMatcherTab, IDC_SETTINGS_MATCHER_INDICATOR_ID);
       if (!utility::isNumber(matcherIndicatorIDStr)) {
@@ -711,7 +710,7 @@ namespace papyrus {
       settings.keywordMatcherSettings.indicatorID = matcherIndicatorID;
     }
 
-    constexpr tab_id_t lexerTab = utility::underlying(Tab::Lexer);
+    constexpr tab_id_t lexerTab = std::to_underlying(Tab::Lexer);
     if (isTabDialogCreated(lexerTab)) {
       settings.lexerSettings.enableClassNameCache = getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
       settings.lexerSettings.classLinkClickModifier = SCMOD_NORM |
@@ -720,17 +719,17 @@ namespace papyrus {
         (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT) ? SCMOD_ALT : SCMOD_NORM);
     }
 
-    constexpr tab_id_t compilerTab = utility::underlying(Tab::Compiler);
+    constexpr tab_id_t compilerTab = std::to_underlying(Tab::Compiler);
     if (isTabDialogCreated(compilerTab)) {
       settings.compilerSettings.allowUnmanagedSource = getChecked(compilerTab, IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE);
       settings.compilerSettings.autoModeOutputDirectory = getText(compilerTab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT);
       settings.compilerSettings.autoModeDefaultGame = game::games[getText(compilerTab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN)];
     }
 
-    for (int i = utility::underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
+    for (int i = std::to_underlying(Game::Auto) + 1; i < static_cast<int>(game::games.size()); ++i) {
       Game game = static_cast<Game>(i);
       tab_id_t gameTab = getGameTab(game);
-      if (gameTab > utility::underlying(Tab::GameBase) && isTabDialogCreated(gameTab)) {
+      if (gameTab > std::to_underlying(Tab::GameBase) && isTabDialogCreated(gameTab)) {
         saveGameSettings(gameTab, settings.compilerSettings.gameSettings(game));
       }
     }
