@@ -144,10 +144,12 @@ namespace papyrus {
 
         case NPPN_LANGCHANGED: {
           handleBufferActivation(notification->nmhdr.idFrom, true);
+          break;
         }
 
         case NPPN_DARKMODECHANGED: {
           updateNppUIParameters();
+          break;
         }
       }
     } else if (notification->nmhdr.hwndFrom == 0 && notification->nmhdr.code == NPPN_DARKMODECHANGED) {

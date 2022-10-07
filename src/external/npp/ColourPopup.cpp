@@ -165,6 +165,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 							break;
 					}
 					// *** FALL THROUGH ***
+					[[fallthrough]];  // PapyrusPlugin modification -- address MSVC analysis warning
 				case ODA_SELECT:
 					rc = pdis->rcItem;
 					if (pdis->itemState & ODS_SELECTED)
@@ -207,9 +208,9 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
-            {
-                case IDOK :
-			    {
+			{
+				case IDOK :
+				{
 					//isColourChooserLaunched = true;
 					CHOOSECOLOR cc;                 // common dialog box structure 
 					static COLORREF acrCustClr[16] = {
@@ -240,32 +241,33 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 						::SendMessage(_hParent, WM_PICKUP_CANCEL, 0, 0);
 					}
 
-				    return TRUE;
-			    }
+					return TRUE;
+				}
 
-                case IDC_COLOUR_LIST :
-                {
-			        if (HIWORD(wParam) == LBN_SELCHANGE)
-		            {
-                        auto i = ::SendMessage(reinterpret_cast<HWND>(lParam), LB_GETCURSEL, 0L, 0L);
+				case IDC_COLOUR_LIST :
+				{
+					if (HIWORD(wParam) == LBN_SELCHANGE)
+					{
+						auto i = ::SendMessage(reinterpret_cast<HWND>(lParam), LB_GETCURSEL, 0L, 0L);
 						_colour = static_cast<COLORREF>(::SendMessage(reinterpret_cast<HWND>(lParam), LB_GETITEMDATA, i, 0L));
 
-                        ::SendMessage(_hParent, WM_PICKUP_COLOR, _colour, 0);
-					    return TRUE;
-		            }
-                }
-			    
-                default :
-                    return FALSE;
-            }
-		
+						::SendMessage(_hParent, WM_PICKUP_COLOR, _colour, 0);
+						return TRUE;
+					}
+				}
+				[[fallthrough]];  // PapyrusPlugin modification -- address MSVC analysis warning
+  
+				default :
+					return FALSE;
+			}
+
 		case WM_ACTIVATE :
-        {
+		{
 			if (LOWORD(wParam) == WA_INACTIVE)
 				::SendMessage(_hParent, WM_PICKUP_CANCEL, 0, 0);
 			return TRUE;
 		}
-		
+
 	}
 	return FALSE;
 }

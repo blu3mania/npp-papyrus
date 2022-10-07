@@ -301,6 +301,7 @@ namespace papyrus {
 
           // Let it fall through to the next block
         }
+        [[fallthrough]];
 
         case IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION:
         case IDC_SETTINGS_MATCHER_KEYWORD_STATE:
