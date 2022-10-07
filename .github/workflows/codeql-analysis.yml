@@ -12,7 +12,9 @@ on:
 
 env:
   # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: PapyrusPlugin.sln
+  configuration: Debug
+  platform: x64
+  solution_file: PapyrusPlugin.sln
 
 jobs:
   Analyze:
@@ -33,8 +35,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1
 
       - name: Build debuggable x64 plugin DLL
-        working-directory: ${{ github.workspace }}
-        run: msbuild /m /p:Configuration="Debug" /p:Platform="x64" ${{ env.SOLUTION_FILE_PATH }}
+        run: msbuild /m /p:Configuration=${{ env.configuration }} /p:Platform=${{ env.platform }} ${{ env.solution_file }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2

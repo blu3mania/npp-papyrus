@@ -9,7 +9,7 @@ on:
 
 env:
   # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: PapyrusPlugin.sln
+  solution_file: PapyrusPlugin.sln
 
 jobs:
   Build:
@@ -17,8 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_configuration: [Release]
-        build_platform: [x64, x86]
+        configuration: [Release, Debug]
+        platform: [x64, x86]
 
     steps:
       - name: Checkout
@@ -40,5 +40,4 @@ jobs:
         run: (gc Resources.hpp) -replace 'BUILD_NUMBER    0', 'BUILD_NUMBER    ${{ github.run_number }}' | Out-File -encoding ASCII Resources.hpp
 
       - name: Build plugin DLL
-        working-directory: ${{ github.workspace }}
-        run: msbuild /m /p:Configuration=${{ matrix.build_configuration }} /p:Platform=${{ matrix.build_platform }} ${{ env.SOLUTION_FILE_PATH }}
+        run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} ${{ env.solution_file }}

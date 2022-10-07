@@ -20,8 +20,8 @@ on:
 
 env:
   # Path to the CMake build directory.
-  build: '${{ github.workspace }}/build'
-  config: 'Debug'
+  build_dir: '${{ github.workspace }}/build'
+  configuration: 'Debug'
 
 jobs:
   Analyze:
@@ -34,22 +34,22 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: cmake -S src -B ${{ env.build }} -DCMAKE_BUILD_TYPE=${{ env.config }}
+        run: cmake -S src -B ${{ env.build_dir }} -DCMAKE_BUILD_TYPE=${{ env.configuration }}
 
       # Build is not required unless generated source files are used
       # - name: Build CMake
-      #   run: cmake --build ${{ env.build }} --config ${{ env.config }}
+      #   run: cmake --build ${{ env.build_dir }} --config ${{ env.configuration }}
 
       - name: Run MSVC Code Analysis
         uses: microsoft/msvc-code-analysis-action@v0.1.1
         # Provide a unique ID to access the sarif output path
         id: run-analysis
         with:
-          cmakeBuildDirectory: ${{ env.build }}
-          buildConfiguration: ${{ env.config }}
+          cmakeBuildDirectory: ${{ env.build_dir }}
+          buildConfiguration: ${{ env.configuration }}
           # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
-          ignoredPaths: ${{ github.workspace }}/src/external/gsl;${{ github.workspace }}/src/external/tinyxml2
+          ignoredPaths: src/external/gsl;src/external/tinyxml2
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
