@@ -143,13 +143,13 @@ in your local repository.
 ```
 ├── .github - GitHub related files
 │   └── workflows - GitHub action workflows
+├── .vscode - configuration files for VS Code
 ├── dist - output folder, used by build script to create the release package
 │   └── extras - extra configuration files that can be used in Notepad++
 │       ├── autoCompletion - auto completion configuration file for Papyrus scripts
 │       ├── functionList - function list configuration file for Papyrus scripts
 │       └── userDefineLangs - user-defined Papyrus language instead of this plugin's lexer
 └── src - source code
-    ├── .vscode - configuration files for VS Code
     ├── external - source files from external projects (may be modified)
     │   ├── gsl - references GSL as submodule
     │   ├── lexilla - Lexilla source files
