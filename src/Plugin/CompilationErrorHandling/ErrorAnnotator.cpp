@@ -75,7 +75,7 @@ namespace papyrus {
   void ErrorAnnotator::annotate(const std::vector<Error>& compilationErrors) {
     for (const auto& error : compilationErrors) {
       std::wstring key = utility::toUpper(error.file);
-      if (!hasErrors(key)) {
+      if (!errors.contains(key)) {
         errors[key] = FileErrors();
       }
 
@@ -130,10 +130,6 @@ namespace papyrus {
 
   // Private methods
   //
-
-  bool ErrorAnnotator::hasErrors(const std::wstring& filePath) const {
-    return errors.find(utility::toUpper(filePath)) != errors.end();
-  }
 
   std::wstring ErrorAnnotator::getApplicableFilePathOnView(npp_view_t view) const {
     // Check whether there is an active doc on the given view

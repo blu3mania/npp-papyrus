@@ -20,53 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "StringUtil.hpp"
 
 #include <algorithm>
-#include <sstream>
 
 namespace utility {
-
-  // Conversion between string and other types
-  //
-  bool strToBool(const std::wstring& str) noexcept {
-    bool boolValue = false;
-    std::wistringstream(str) >> std::boolalpha >> boolValue;
-    return boolValue;
-  }
-
-  std::wstring boolToStr(bool boolValue) noexcept {
-    std::wostringstream strStream;
-    strStream << std::boolalpha << boolValue;
-    return strStream.str();
-  }
-
-  int hexStrToInt(const std::wstring& hexStr) noexcept {
-    int intValue {};
-    std::wstringstream strStream;
-    strStream << std::hex << hexStr;
-    strStream >> intValue;
-    return intValue;
-  }
-
-  std::wstring intToHexStr(int intValue) noexcept {
-    std::wstringstream strStream;
-    strStream << std::uppercase << std::hex << intValue;
-    return strStream.str();
-  }
-
-  COLORREF hexStrToColor(const std::wstring& hexStr) noexcept {
-    COLORREF color {};
-    std::wstringstream strStream;
-    strStream << std::hex << hexStr;
-    strStream >> color;
-
-    // COLORREF is BGR
-    return ((color >> 16) & 0xFF) | (color & 0xFF00) | ((color & 0xFF) << 16);
-  }
-
-  std::wstring colorToHexStr(COLORREF color) noexcept {
-    std::wstringstream strStream;
-    strStream << std::uppercase << std::hex << (((color >> 16) & 0xFF) | (color & 0xFF00) | ((color & 0xFF) << 16)); // COLORREF is BGR
-    return strStream.str();
-  }
 
   // String utilites
   //
@@ -100,38 +55,6 @@ namespace utility {
         return towupper(ch1) == towupper(ch2);
       }
     );
-  }
-
-  bool startsWith(const std::string& str1, const std::string& str2, bool ignoreCase) noexcept {
-    if (str1.length() < str2.length()) {
-      return false;
-    }
-
-    return compare(str1.substr(0, str2.length()), str2, ignoreCase);
-  }
-
-  bool startsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase) noexcept {
-    if (str1.length() < str2.length()) {
-      return false;
-    }
-
-    return compare(str1.substr(0, str2.length()), str2, ignoreCase);
-  }
-
-  bool endsWith(const std::string& str1, const std::string& str2, bool ignoreCase) noexcept {
-    if (str1.length() < str2.length()) {
-      return false;
-    }
-
-    return compare(str1.substr(str1.length() - str2.length(), std::string::npos), str2, ignoreCase);
-  }
-
-  bool endsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase) noexcept {
-    if (str1.length() < str2.length()) {
-      return false;
-    }
-
-    return compare(str1.substr(str1.length() - str2.length(), std::string::npos), str2, ignoreCase);
   }
 
   size_t indexOf(const std::string& str1, const std::string& str2, size_t startIndex, bool ignoreCase) noexcept {
@@ -208,18 +131,6 @@ namespace utility {
     result.push_back(str.substr(prevPos, pos));
 
     return result;
-  }
-
-  std::wstring toUpper(const std::wstring& str) noexcept {
-    std::wstring upper;
-    std::transform(str.begin(), str.end(), std::back_inserter(upper), towupper);
-    return upper;
-  }
-
-  std::wstring toLower(const std::wstring& str) noexcept {
-    std::wstring lower;
-    std::transform(str.begin(), str.end(), std::back_inserter(lower), towlower);
-    return lower;
   }
 
 } // namespace

@@ -179,9 +179,6 @@
     <ClCompile Include="external\XMessageBox\XMessageBox.cpp">
       <Filter>External\XMessageBox</Filter>
     </ClCompile>
-    <ClCompile Include="Plugin\Common\DateTimeUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Plugin\Common\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

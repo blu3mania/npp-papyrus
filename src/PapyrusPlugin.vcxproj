@@ -226,7 +226,6 @@
     <ClCompile Include="external\npp\URLCtrl.cpp" />
     <ClCompile Include="external\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="external\XMessageBox\XMessageBox.cpp" />
-    <ClCompile Include="Plugin\Common\DateTimeUtil.cpp" />
     <ClCompile Include="Plugin\Common\Game.cpp" />
     <ClCompile Include="Plugin\Common\Logger.cpp" />
     <ClCompile Include="Plugin\Common\StringUtil.cpp" />

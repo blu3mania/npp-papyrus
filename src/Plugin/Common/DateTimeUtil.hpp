@@ -19,8 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <chrono>
+
 namespace utility {
 
-  int currentYear() noexcept;
+  inline int currentYear() noexcept { return static_cast<int>(std::chrono::year_month_day{floor<std::chrono::days>(std::chrono::system_clock::now())}.year()); }
 
 } // namespace

@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <format>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -28,28 +30,86 @@ namespace utility {
 
   // Conversion between string and other types
   //
-  bool strToBool(const std::wstring& str) noexcept;
-  std::wstring boolToStr(bool boolValue) noexcept;
-  int hexStrToInt(const std::wstring& hexStr) noexcept;
-  std::wstring intToHexStr(int intValue) noexcept;
-  COLORREF hexStrToColor(const std::wstring& hexStr) noexcept;
-  std::wstring colorToHexStr(COLORREF color) noexcept;
+  inline bool strToBool(const std::wstring& str) noexcept {
+    bool boolValue = false;
+    std::wistringstream(str) >> std::boolalpha >> boolValue;
+    return boolValue;
+  }
+  inline std::wstring boolToStr(bool boolValue) noexcept { return std::format(L"{}", boolValue); }
+
+  inline int hexStrToInt(const std::wstring& hexStr) noexcept {
+    int intValue {};
+    std::wstringstream strStream;
+    strStream << std::hex << hexStr;
+    strStream >> intValue;
+    return intValue;
+  }
+  inline std::wstring intToHexStr(int intValue) noexcept { return std::format(L"{:X}", intValue); }
+
+  inline COLORREF hexStrToColor(const std::wstring& hexStr) noexcept {
+    COLORREF color {};
+    std::wstringstream strStream;
+    strStream << std::hex << hexStr;
+    strStream >> color;
+
+    // COLORREF is BGR
+    return ((color >> 16) & 0xFF) | (color & 0xFF00) | ((color & 0xFF) << 16);
+  }
+  inline std::wstring colorToHexStr(COLORREF color) noexcept { return std::format(L"{:06X}", (((color >> 16) & 0xFF) | (color & 0xFF00) | ((color & 0xFF) << 16))); } // COLORREF is BGR
 
   // String utilities
   //
   inline bool isNumber(const std::wstring& str) noexcept { return !str.empty() && std::find_if(str.begin(), str.end(), [](wchar_t ch) { return !iswdigit(ch); }) == str.end(); }
   inline bool isHexNumber(const std::wstring& str) noexcept { return !str.empty() && std::find_if(str.begin(), str.end(), [](wchar_t ch) { return !iswxdigit(ch); }) == str.end(); }
+
   bool compare(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept;
   bool compare(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
-  bool startsWith(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept;
-  bool startsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
-  bool endsWith(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept;
-  bool endsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept;
+
+  inline bool startsWith(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept {
+    if (str1.length() < str2.length()) {
+      return false;
+    }
+
+    return compare(str1.substr(0, str2.length()), str2, ignoreCase);
+  }
+  inline bool startsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept {
+    if (str1.length() < str2.length()) {
+      return false;
+    }
+
+    return compare(str1.substr(0, str2.length()), str2, ignoreCase);
+  }
+
+  inline bool endsWith(const std::string& str1, const std::string& str2, bool ignoreCase = true) noexcept {
+    if (str1.length() < str2.length()) {
+      return false;
+    }
+
+    return compare(str1.substr(str1.length() - str2.length(), std::string::npos), str2, ignoreCase);
+  }
+  inline bool endsWith(const std::wstring& str1, const std::wstring& str2, bool ignoreCase = true) noexcept {
+    if (str1.length() < str2.length()) {
+      return false;
+    }
+
+    return compare(str1.substr(str1.length() - str2.length(), std::string::npos), str2, ignoreCase);
+  }
+
   size_t indexOf(const std::string& str1, const std::string& str2, size_t startIndex = 0, bool ignoreCase = true) noexcept;
   size_t indexOf(const std::wstring& str1, const std::wstring& str2, size_t startIndex = 0, bool ignoreCase = true) noexcept;
+
   std::vector<std::string> split(const std::string& str, const std::string& delimiter, bool ignoreCase = true) noexcept;
   std::vector<std::wstring> split(const std::wstring& str, const std::wstring& delimiter, bool ignoreCase = true) noexcept;
-  std::wstring toUpper(const std::wstring& str) noexcept;
-  std::wstring toLower(const std::wstring& str) noexcept;
+
+  inline std::wstring toUpper(const std::wstring& str) noexcept {
+    std::wstring upper;
+    std::transform(str.begin(), str.end(), std::back_inserter(upper), towupper);
+    return upper;
+  }
+  inline std::wstring toLower(const std::wstring& str) noexcept {
+    std::wstring lower;
+    std::transform(str.begin(), str.end(), std::back_inserter(lower), towlower);
+    return lower;
+  }
 
 } // namespace

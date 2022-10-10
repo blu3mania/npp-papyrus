@@ -53,9 +53,6 @@ namespace papyrus {
 
       using FileErrors = std::list<LineError>;
 
-      // Check if a file path is in the error map (case insensitive)
-      bool hasErrors(const std::wstring& filePath) const;
-
       // Get current file path on the given view, if it's a applicable
       std::wstring getApplicableFilePathOnView(npp_view_t view) const;
 

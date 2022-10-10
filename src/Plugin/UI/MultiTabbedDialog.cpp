@@ -42,11 +42,15 @@ namespace papyrus {
       // Remove the tab from tabs control
       ::SendDlgItemMessage(getHSelf(), tabsControlID, TCM_DELETEITEM, getTabIndex(iter), 0);
 
-      auto iterItem = tabItems.find(tab);
       if (destroy) {
         tabs.erase(iter);
-        ::DestroyWindow(iterItem->second.handle);
-        tabItems.erase(iterItem);
+
+        auto iterItem = tabItems.find(tab);
+        if (iterItem != tabItems.end()) {
+          ::DestroyWindow(iterItem->second.handle);
+          tabItems.erase(iterItem);
+        }
+
         onTabDialogDestroyed(tab);
       } else {
         // Move the tab to hidden tabs list so it can be added back later

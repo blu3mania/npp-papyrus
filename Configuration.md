@@ -2,7 +2,7 @@
 Most of this plugin's behavior can be modified in this plugin's *Settings* dialog. However, if it's needed
 to change the settings file *Papyrus.ini* directly, it can be found in *"plugins\config"* directory under
 Notepad++'s data folder, which by default is *"%APPDATA%\Notepad++"*. Also, this plugin's menu shortcuts
-can be remapped from Notepad++'s *Shortcut Mapper* dialog under Settings menu.
+can be remapped from Notepad++'s *Shortcut Mapper* dialog under *Settings* menu.
 
 The following are settings that can be changed in this plugin's *Settings* dialog.
 
@@ -20,7 +20,7 @@ previously checked and determined as a class or not a class. This usually should
 script file that repeatedly references the same classes many times, it may be desired to cache checked
 class names to reduce number of I/O operations. This can be achieved by enabling this option.
 
-However, there is a caveat, that when *a new script file* is generated in one of the import directories,
+However, there is a caveat, that when a new script file is generated in one of the import directories,
 the new class name will not be dynamically recognized if the name has already been checked and treated as
 "not a class name". When this happens, simply disable this option to force the lexer to re-check for class
 names. Afterwards this option can be enabled again.
@@ -41,7 +41,7 @@ causes large amount of text gets selected in the newly opened file window so it 
 than convenience.
 
 ### Papyrus Script Lexer styles
-These styles can be configured from Notepad++'s *Style Configurator* dialog under Settings menu. A convenient
+These styles can be configured from Notepad++'s *Style Configurator* dialog under *Settings* menu. A convenient
 link is provided.
 
 
