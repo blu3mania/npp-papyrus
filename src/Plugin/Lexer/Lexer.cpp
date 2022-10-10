@@ -43,7 +43,7 @@ namespace papyrus {
 
     // Cache names that are classes (i.e. files in import directories) used in current file, and names that aren't, for better performance.
     // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded. This can be
-    // fixed by toggling off this option then toggling it back on in Settings dialog
+    // fixed by toggling off this option then toggling it back on in Settings dialog.
     std::map<Game, std::set<std::string>> classNames;
     std::map<Game, std::set<std::string>> nonClassNames;
   }
@@ -52,7 +52,7 @@ namespace papyrus {
     : SimpleLexerBase(LEXER_NAME, SCLEX_PAPYRUS_SCRIPT),
       instreWordLists{&wordListOperators, &wordListFlowControl},
       typeWordLists{&wordListTypes, &wordListKeywords, &wordListKeywords2, &wordListFoldOpen, &wordListFoldMiddle, &wordListFoldClose} {
-    // Setup settings change listeners
+    // Setup settings change listeners.
     if (isUsable() && !subscriptionHelper) {
       subscriptionHelper = std::make_unique<SubscriptionHelper>();
     }
@@ -61,7 +61,7 @@ namespace papyrus {
       if (isUsable()) {
         HWND handle = std::get<0>(eventData);
         if (docPointer == reinterpret_cast<npp_ptr_t>(::SendMessage(handle, SCI_GETDOCPOINTER, 0, 0))) {
-          // Change happened on current file
+          // Change happened on current file.
           handleContentChange(handle, std::get<1>(eventData), std::get<2>(eventData));
         }
       }
@@ -83,7 +83,7 @@ namespace papyrus {
       Accessor accessor(pAccess, nullptr);
       StyleContext styleContext(startPos, lengthDoc, accessor.StyleAt(startPos - 1), accessor);
 
-      // This state is saved in the line feed character. It can be used to initialize the state of the next line
+      // This state is saved in the line feed character. It can be used to initialize the state of the next line.
       State messageStateLast = static_cast<State>(accessor.StyleAt(startPos - 1));
       for (auto line = accessor.GetLine(startPos); line <= accessor.GetLine(startPos + lengthDoc - 1); ++line) {
         auto tokens = tokenize(accessor, line);
@@ -100,7 +100,7 @@ namespace papyrus {
             }
           } else if (messageState == State::CommentMultiLine) {
             colorToken(styleContext, *iterTokens, State::CommentMultiLine);
-              // A multi-line comment ends with "/;" and there can't be spaces in between
+              // A multi-line comment ends with "/;" and there can't be spaces in between.
             if (tokenString == ";" && iterTokens != tokens.begin() && std::prev(iterTokens)->content == "/" && iterTokens->startPos == std::prev(iterTokens)->startPos + 1) {
               messageState = State::Default;
             }
@@ -109,7 +109,7 @@ namespace papyrus {
           } else if (messageState == State::String) {
             colorToken(styleContext, *iterTokens, State::String);
             if (tokenString == "\"") {
-              // This may be an escape for double quote. Check previous tokens
+              // This may be an escape for double quote. Check previous tokens.
               int numBackslash = 0;
               auto iterCheck = iterTokens;
               while (iterCheck != tokens.begin()) {
@@ -124,12 +124,12 @@ namespace papyrus {
               }
             }
           } else {
-            // Determine the type of the token and color it
+            // Determine the type of the token and color it.
             if (tokenString == "{") {
               colorToken(styleContext, *iterTokens, State::CommentDoc);
               messageState = State::CommentDoc;
             } else if (tokenString == ";") {
-              // A multi-line comment starts with ";/" and there can't be spaces in between
+              // A multi-line comment starts with ";/" and there can't be spaces in between.
               if (std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content == "/" && iterTokens->startPos == std::next(iterTokens)->startPos - 1) {
                 colorToken(styleContext, *iterTokens, State::CommentMultiLine);
                 messageState = State::CommentMultiLine;
@@ -160,7 +160,7 @@ namespace papyrus {
                     }
                   );
                   if (iter != propertyLines.end()) {
-                    // See if there are properties marked as need to re-check due to line addition
+                    // See if there are properties marked as need to re-check due to line addition.
                     if (iter->line < line) {
                       iter = std::find_if(++iter, propertyLines.end(),
                         [&](const auto& property) {
@@ -193,12 +193,12 @@ namespace papyrus {
                   colorToken(styleContext, *iterTokens, State::Property);
                 } else {
                   if (lexerData->currentGame != game::Game::Auto) {
-                    auto currentGameClassNames = classNames[lexerData->currentGame];
+                    auto& currentGameClassNames = classNames[lexerData->currentGame];
                     if (currentGameClassNames.find(tokenString) != currentGameClassNames.end()) {
                       colorToken(styleContext, *iterTokens, State::Class);
                       found = true;
                     } else {
-                      auto currentGameNonClassNames = nonClassNames[lexerData->currentGame];
+                      auto& currentGameNonClassNames = nonClassNames[lexerData->currentGame];
                       if (currentGameNonClassNames.find(tokenString) == currentGameNonClassNames.end()) {
                         if (!getClassFilePath(tokenString).empty()) {
                           colorToken(styleContext, *iterTokens, State::Class);
@@ -269,7 +269,7 @@ namespace papyrus {
           }
         }
 
-        // Skip the lines that have matching start and end keywords
+        // Skip the lines that have matching start and end keywords.
         int level = levelPrev;
         int levelDelta = numFoldOpen - numFoldClose;
         if (levelDelta > 0) {
@@ -301,7 +301,7 @@ namespace papyrus {
   }
 
   std::wstring Lexer::getClassFilePath(std::string className) {
-    // Find relative path from current directory. Support FO4's namespace
+    // Find relative path from current directory. Support FO4's namespace.
     std::filesystem::path relativePath;
     auto pathComponents = utility::split(className, ":");
     for (const auto& pathComponent : pathComponents) {
@@ -309,7 +309,7 @@ namespace papyrus {
     }
     relativePath.replace_extension(".psc");
 
-    // Find the relative path in configured import directories
+    // Find the relative path in configured import directories.
     for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
       std::wstring filePath = std::filesystem::path(path) / relativePath;
       if (utility::fileExists(filePath)) {
@@ -379,7 +379,7 @@ namespace papyrus {
           ch = getNextChar(accessor, index, indexNext);
         }
 
-        // In the case when the token is a single '-', it's not numeric
+        // In the case when the token is a single '-', it's not numeric.
         if (token.content.at(0) == '-' && token.content.size() == 1) {
           token.tokenType = TokenType::Special;
         }
@@ -426,8 +426,8 @@ namespace papyrus {
     // Update property list
     for (auto iter = propertyLines.begin(); iter != propertyLines.end();) {
       if (iter->line >= line) {
-        // If property is within the # of lines deleted, or is on the line when changes were made, delete the property
-        // Note that deleting the property on the line being edited won't be an issue because Lex will be called later
+        // If property is within the # of lines deleted, or is on the line when changes were made, delete the property.
+        // Note, deleting the property on the line being edited won't be an issue because Lex will be called later.
         if ((linesAdded < 0 && iter->line <= line - linesAdded) || (linesAdded == 0 && iter->line == line)) {
           // Delete this property
           propertyNames.erase(iter->name);
@@ -437,7 +437,7 @@ namespace papyrus {
 
         if (iter->line == line) {
           // Since it's not clear if the addition of lines happened before property definition or after, the property defined
-          // on the exact line where changes happened need to be re-checked in Lex
+          // on the exact line where changes happened need to be re-checked in Lex.
           iter->needRecheck = true;
         }
 
@@ -543,7 +543,7 @@ namespace papyrus {
   }
 
   void SubscriptionHelper::restyleDocument(npp_view_t view) const {
-    // Ask Scintilla to restyle urrent document on the given view, but only when it is using this lexer
+    // Ask Scintilla to restyle urrent document on the given view, but only when it is using this lexer.
     if (getApplicableBufferIdOnView(view) != 0) {
       HWND handle = (view == MAIN_VIEW ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle);
       ::SendMessage(handle, SCI_COLOURISE, 0, -1);
@@ -552,9 +552,9 @@ namespace papyrus {
 
   void SubscriptionHelper::handleHotspotClick(HWND handle, Sci_Position position) const {
     if (isUsable() && lexerData->currentGame != game::Game::Auto) {
-      // Change Scintilla word chars to include ':' to support FO4's namespaces
+      // Change Scintilla word chars to include ':' to support FO4's namespaces.
       size_t length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
-      char* wordChars = new char[length + 2]; // To add ':' and also null teminator
+      char* wordChars = new char[length + 2]; // To add ':' and also null terminator
       auto autoCleanupWordChars = gsl::finally([&] { delete[] wordChars; });
       ::SendMessage(handle, SCI_GETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars + 1));
 
@@ -565,7 +565,7 @@ namespace papyrus {
       Sci_Position start = ::SendMessage(handle, SCI_WORDSTARTPOSITION, position, true);
       Sci_Position end = ::SendMessage(handle, SCI_WORDENDPOSITION, position, true);
 
-      // Restore previous word chars setting after search
+      // Restore previous word chars setting after search.
       ::SendMessage(handle, SCI_SETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars + 1));
 
       char* className = new char[end - start + 1];

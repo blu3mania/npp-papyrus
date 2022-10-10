@@ -211,6 +211,7 @@
     <ClInclude Include="Plugin\UI\AboutDialog.hpp" />
     <ClInclude Include="Plugin\UI\DialogBase.hpp" />
     <ClInclude Include="Plugin\UI\MultiTabbedDialog.hpp" />
+    <ClInclude Include="Plugin\UI\UIParameters.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />

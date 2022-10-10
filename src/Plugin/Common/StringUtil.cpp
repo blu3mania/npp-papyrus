@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace utility {
 
-  // String utilites
+  // String utilities
   //
   bool compare(const std::string& str1, const std::string& str2, bool ignoreCase) noexcept {
     if (str1.length() != str2.length()) {

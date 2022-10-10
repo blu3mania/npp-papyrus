@@ -138,6 +138,9 @@
     <ClInclude Include="Plugin\UI\MultiTabbedDialog.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Plugin\UI\UIParameters.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">

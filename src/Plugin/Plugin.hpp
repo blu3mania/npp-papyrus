@@ -32,11 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Settings\Settings.hpp"
 #include "Settings\SettingsDialog.hpp"
 #include "UI\AboutDialog.hpp"
+#include "UI\UIParameters.hpp"
 
 #include "..\external\npp\PluginInterface.h"
 
 #include <memory>
-#include <vector>
 
 // Plugin constants
 //
@@ -150,9 +150,11 @@ namespace papyrus {
       HINSTANCE myInstance {};
       NppData nppData;
 
+      UIParameters uiParameters {};
+
       Settings settings;
       SettingsStorage settingsStorage;
-      SettingsDialog settingsDialog {settings};
+      SettingsDialog settingsDialog {settings, uiParameters};
 
       std::unique_ptr<Compiler> compiler;
       CompilationRequest activeCompilationRequest;

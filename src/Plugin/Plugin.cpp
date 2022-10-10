@@ -47,6 +47,7 @@ https://www.creationkit.com/fallout4/index.php?title=Category:Papyrus
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 papyrus::Plugin papyrusPlugin;
 
@@ -152,10 +153,6 @@ namespace papyrus {
           break;
         }
       }
-    } else if (notification->nmhdr.hwndFrom == 0 && notification->nmhdr.code == NPPN_DARKMODECHANGED) {
-      // Temporary workaround until https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12144 is fixed
-      //utility::logger.log(L"NPPN_DARKMODECHANGED from a different hwnd: " + std::to_wstring(reinterpret_cast<long long>(notification->nmhdr.hwndFrom)) + L", NPP handle: " + std::to_wstring(reinterpret_cast<long long>(nppData._nppHandle)));
-      updateNppUIParameters();
     }
   }
 
@@ -195,7 +192,7 @@ namespace papyrus {
     settingsDialog.init(myInstance, nppData._nppHandle);
     aboutDialog.init(myInstance, nppData._nppHandle);
 
-    // Get Notepad++'s plugins config folder
+    // Get Notepad++'s plugins config folder.
     npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
     if (configPathLength > 0) {
       wchar_t* configPathCharArray = new wchar_t[configPathLength + 1];
@@ -209,7 +206,7 @@ namespace papyrus {
       // Load settings
       settingsStorage.init(std::filesystem::path(configPath) / PLUGIN_NAME L".ini");
       if (!settings.loadSettings(settingsStorage, utility::Version(PLUGIN_VERSION))) {
-        // Settings didn't exist. Default settings initialized
+        // Settings didn't exist. Default settings initialized.
         settings.saveSettings(settingsStorage);
         onSettingsUpdated();
       } else {
@@ -234,10 +231,10 @@ namespace papyrus {
   }
 
   void Plugin::checkLexerConfigFile(const std::wstring& configPath) {
-    // Check if lexer configuration file is in config folder
+    // Check if lexer configuration file is in config folder.
     std::wstring lexerConfigFile = std::filesystem::path(configPath) / PLUGIN_NAME L".xml";
     if (!utility::fileExists(lexerConfigFile)) {
-      // Lexer configuration file doesn't exist, try to generate one from the copy extracted from package
+      // Lexer configuration file doesn't exist, try to generate one from the copy extracted from package.
       npp_size_t homePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, 0, 0));
       if (homePathLength > 0) {
         wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
@@ -246,7 +243,7 @@ namespace papyrus {
         std::wstring pluginHomePath(homePathCharArray);
 
         if (!copyFile(std::filesystem::path(pluginHomePath) / PLUGIN_NAME / PLUGIN_NAME L".xml", lexerConfigFile)) {
-          // Can't generate lexer configuration file. Mark lexer as unusable
+          // Can't generate lexer configuration file. Mark lexer as unusable.
           lexerData->usable = false;
           std::wstring msg(PLUGIN_NAME L".xml is missing and cannot be autmatically generated.\r\n");
           msg += L"Please manually copy it to " + configPath + L".\r\n";
@@ -271,10 +268,12 @@ namespace papyrus {
       COLORREF nppDefaultBgColor = static_cast<COLORREF>(::SendMessage(nppData._nppHandle, NPPM_GETEDITORDEFAULTBACKGROUNDCOLOR, 0, 0));
       NppDarkMode::setNppUIColors(nppDarkModeColors, nppDefaultFgColor, nppDefaultBgColor);
     }
+
+    uiParameters.darkModeEnabled = darkModeEnabled;
   }
 
   void Plugin::handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange) {
-    // Make sure Papyrus script langID is detected
+    // Make sure Papyrus script langID is detected.
     detectLangID();
 
     npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
@@ -285,13 +284,13 @@ namespace papyrus {
       if (::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), reinterpret_cast<LPARAM>(filePathCharArray)) != -1) {
         std::wstring filePath(filePathCharArray);
 
-        // Set detected game for lexer
+        // Set detected game for lexer.
         auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);
         if (lexerData && !fromLangChange) {
           lexerData->currentGame = detectedGame;
         }
 
-        // Check if active compilation file is still the current one on either view
+        // Check if active compilation file is still the current one on either view.
         if (activeCompilationRequest.bufferID != 0) {
           isComplingCurrentFile = utility::compare(activeCompilationRequest.filePath, filePath);
           if (isComplingCurrentFile && !fromLangChange) {
@@ -299,23 +298,23 @@ namespace papyrus {
           }
         }
 
-        // Check if we are waiting for a file to open as a result of user selecting an error from list
+        // Check if we are waiting for a file to open as a result of user selecting an error from list.
         HWND scintillaHandle = (currentView == MAIN_VIEW) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
         if (!activatedErrorsTrackingList.empty() && !fromLangChange) {
-          // Check if activated file is in the tracking list
+          // Check if activated file is in the tracking list.
           auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
             [&](const auto& error) {
               return utility::compare(error.file, filePath);
             }
           );
           if (iter != activatedErrorsTrackingList.end()) {
-            // Scintilla's line numberis zero-based
+            // Scintilla's line numberis zero-based.
             int line = iter->line - 1;
 
-            // When the buffer is big, asking Scintilla to scroll immediately doesn't always work, so use a short timer
+            // When the buffer is big, asking Scintilla to scroll immediately doesn't always work, so use a short timer.
             jumpToErrorLineTimer = utility::startTimer(100, [=] { ::SendMessage(scintillaHandle, SCI_GOTOLINE, line, 0); });
 
-            // Get rid of other errors in the list for the same file
+            // Get rid of other errors in the list for the same file.
             while (iter != activatedErrorsTrackingList.end()) {
               activatedErrorsTrackingList.erase(iter++);
               iter = std::find_if(iter, activatedErrorsTrackingList.end(),
@@ -335,7 +334,7 @@ namespace papyrus {
           // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
           isManagedBuffer = true;
 
-          // If not compiling current file, check its game type and update status message (if applicable)
+          // If not compiling current file, check its game type and update status message (if applicable).
           if (!isComplingCurrentFile && detectedGame != Game::Auto) {
             std::wstring gameSpecificStatus(L"[" + game::gameNames[std::to_underlying(detectedGame)].second + L"] " + Lexer::statusText());
             ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
@@ -345,11 +344,11 @@ namespace papyrus {
             keywordMatcher.match(scintillaHandle);
           }
         } else if (isPapyrusScriptFile && fromLangChange) {
-          // Papyrus script file changed to other language, clear keyword matching
+          // Papyrus script file changed to other language, clear keyword matching.
           keywordMatcher.clear();
         }
 
-        // Only Papyrus script and assembly files can be annotated
+        // Only Papyrus script and assembly files can be annotated.
         if (errorAnnotator && (isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange) {
           errorAnnotator->annotate(currentView, filePath);
         }
@@ -362,7 +361,7 @@ namespace papyrus {
   }
 
   void Plugin::handleHotspotClick(SCNotification* notification) {
-    // Only handle hotspot click if it's from a document buffer shown on current view and is managed by this plugin's lexer, and key modifier/mouse click match configuration
+    // Only handle hotspot click if it's from a document buffer shown on current view and is managed by this plugin's lexer, and key modifier/mouse click match configuration.
     if (lexerData
       && (notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick
       && notification->modifiers == lexerData->settings.classLinkClickModifier
@@ -372,14 +371,14 @@ namespace papyrus {
   }
 
   void Plugin::handleSelectionChange(SCNotification* notification) {
-    // Only handle selection change if it's from a document buffer shown on current view and is managed by this plugin's lexer
+    // Only handle selection change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
     if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
       keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
     }
   }
 
   void Plugin::handleContentUpdate(SCNotification* notification) {
-    // Only handle content change if it's from a document buffer shown on current view and is managed by this plugin's lexer
+    // Only handle content change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
     if (lexerData && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
       lexerData->changeEventData = std::make_tuple(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position, notification->linesAdded);
     }
@@ -419,7 +418,7 @@ namespace papyrus {
           if (langName == lexerName) {
             scriptLangID = i;
 
-            // Update lexer's data as it needs to know if current file is lexed by it
+            // Update lexer's data as it needs to know if current file is lexed by it.
             if (lexerData) {
               lexerData->scriptLangID = scriptLangID;
             }
@@ -431,13 +430,13 @@ namespace papyrus {
   }
 
   bool Plugin::isCurrentBufferManaged(HWND scintillaHandle) {
-    // Check if current view matches Scintilla handle
+    // Check if current view matches Scintilla handle.
     npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
     if ((currentView == MAIN_VIEW && scintillaHandle != nppData._scintillaMainHandle) || (currentView == SUB_VIEW && scintillaHandle != nppData._scintillaSecondHandle)) {
       return false;
     }
 
-    // Make sure Papyrus script langID is detected
+    // Make sure Papyrus script langID is detected.
     detectLangID();
 
     npp_lang_type_t currentFileLangID;
@@ -459,7 +458,7 @@ namespace papyrus {
       }
 
       if (detectedGameType == Game::Auto) {
-        // Can't detect, use auto mode default game instead
+        // Can't detect, use auto mode default game instead.
         detectedGameType = compilerSettings.autoModeDefaultGame;
         useAutoModeOutputDirectory = true;
       }
@@ -558,19 +557,19 @@ namespace papyrus {
       case PPM_JUMP_TO_ERROR: {
         Error* error = reinterpret_cast<Error*>(wParam);
         if (!error->file.empty()) {
-          // Error message with file name. Check if the file is already being actively tracked
+          // Error message with file name. Check if the file is already being actively tracked.
           auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
             [&](const auto& comparisionError) {
               return comparisionError.file == error->file && comparisionError.line == error->line;
             }
           );
           if (iter == activatedErrorsTrackingList.end()) {
-            // The most recent error selection always takes priority so push it to the front of the queue
+            // The most recent error selection always takes priority so push it to the front of the queue.
             activatedErrorsTrackingList.push_front(*error);
             ::SendMessage(nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(error->file.c_str()));
           }
         } else {
-          // Generic error message that is not file specific. Show it in a message box
+          // Generic error message that is not file specific. Show it in a message box.
           ::MessageBox(nppData._nppHandle, error->message.c_str(), PLUGIN_NAME L" Compilation Error", MB_OK);
         }
         return 0;
@@ -654,7 +653,7 @@ namespace papyrus {
   }
 
   void Plugin::installAutoCompletion() {
-    // Get Notepad++'s plugin home path
+    // Get Notepad++'s plugin home path.
     npp_size_t homePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, 0, 0));
     if (homePathLength > 0) {
       wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
@@ -662,7 +661,7 @@ namespace papyrus {
       ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, homePathLength + 1, reinterpret_cast<LPARAM>(homePathCharArray));
       std::wstring pluginHomePath(homePathCharArray);
 
-      // Get Notepad++'s install path
+      // Get Notepad++'s install path.
       wchar_t nppPath[MAX_PATH];
       if (::SendMessage(nppData._nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppPath))) {
         std::wstring nppHomePath(nppPath);
@@ -675,7 +674,7 @@ namespace papyrus {
   }
 
   void Plugin::installFunctionList() {
-    // Get Notepad++'s plugin home path
+    // Get Notepad++'s plugin home path.
     npp_size_t homePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, 0, 0));
     if (homePathLength > 0) {
       wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
@@ -683,7 +682,7 @@ namespace papyrus {
       ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, homePathLength + 1, reinterpret_cast<LPARAM>(homePathCharArray));
       std::wstring pluginHomePath(homePathCharArray);
 
-      // Get Notepad++'s plugin config folder
+      // Get Notepad++'s plugin config folder.
       npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
       if (configPathLength > 0) {
         wchar_t* configPathCharArray = new wchar_t[configPathLength + 1];
@@ -717,18 +716,18 @@ namespace papyrus {
               auto langID = associationElement->Attribute("langID");
               needUpdate = (!langID || std::stoi(langID) != scriptLangID);
             } else {
-              // Create a new association element for Papyrus script language
+              // Create a new association element for Papyrus script language.
               associationElement = xmlDoc.NewElement("association");
               associationElement->SetAttribute("id", papyrusScriptAssociationId.c_str());
 
               tinyxml2::XMLElement* associationMapElement = associationMapHandle.ToElement();
               tinyxml2::XMLElement* prevFirstAssocaition = associationMapHandle.FirstChildElement("association").ToElement();
               if (prevFirstAssocaition) {
-                // Insert as first child. Since tinyxml doesn't support "insert before", have to insert after first child then swap
+                // Insert as first child. Since tinyxml doesn't support "insert before", have to insert after first child then swap.
                 associationMapElement->InsertAfterChild(prevFirstAssocaition, associationElement);
                 associationMapElement->InsertAfterChild(associationElement, prevFirstAssocaition);
               } else {
-                // There isn't any existing association element. Just insert a new one
+                // There isn't any existing association element. Just insert a new one.
                 associationMapElement->InsertEndChild(associationElement);
               }
               needUpdate = true;
@@ -755,12 +754,12 @@ namespace papyrus {
         // Get current file path.
         wchar_t filePath[MAX_PATH];
         if (::SendMessage(nppData._nppHandle, NPPM_GETFULLCURRENTPATH, MAX_PATH, reinterpret_cast<LPARAM>(filePath))) {
-          // Check if current file is handled by Papyrus Script lexer
+          // Check if current file is handled by Papyrus Script lexer.
           detectLangID();
           npp_lang_type_t currentFileLangID;
           ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
 
-          // Check file extension to make sure it is ".psc", and is lexed by this plugin's lexer or compiling unmanaged files is allowed
+          // Check file extension to make sure it is ".psc", and is lexed by this plugin's lexer or compiling unmanaged files is allowed.
           std::wstring currentFile(filePath);
           if (utility::endsWith(currentFile, L".psc") && (currentFileLangID == scriptLangID || settings.compilerSettings.allowUnmanagedSource)) {
             auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);

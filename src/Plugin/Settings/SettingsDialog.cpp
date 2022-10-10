@@ -66,6 +66,12 @@ namespace papyrus {
     };
   }
 
+  SettingsDialog::SettingsDialog(Settings& settings, const UIParameters& uiParameters)
+    : MultiTabbedDialog(IDD_SETTINGS_DIALOG, IDC_SETTINGS_TABS), settings(settings) {
+    UIParameters& subscribableParameters = const_cast<UIParameters&>(uiParameters);
+    subscribableParameters.darkModeEnabled.subscribe([&](auto) { updateDarkMode(); });
+  }
+
   SettingsDialog::~SettingsDialog() {
     classLinkFgColorPicker.destroy();
     classLinkBgColorPicker.destroy();
@@ -76,43 +82,6 @@ namespace papyrus {
     errorIndicatorFgColorPicker.destroy();
 
     stylerConfigLink.destroy();
-
-    if (foldMiddleTooltip) {
-      ::DestroyWindow(foldMiddleTooltip);
-      foldMiddleTooltip = nullptr;
-    }
-    if (classNameCachingTooltip) {
-      ::DestroyWindow(classNameCachingTooltip);
-      classNameCachingTooltip = nullptr;
-    }
-    if (classLinkTooltip) {
-      ::DestroyWindow(classLinkTooltip);
-      classLinkTooltip = nullptr;
-    }
-    if (matcherTooltip) {
-      ::DestroyWindow(matcherTooltip);
-      matcherTooltip = nullptr;
-    }
-    if (matcherIndicatorIdTooltip) {
-      ::DestroyWindow(matcherIndicatorIdTooltip);
-      matcherIndicatorIdTooltip = nullptr;
-    }
-    if (annotationTooltip) {
-      ::DestroyWindow(annotationTooltip);
-      annotationTooltip = nullptr;
-    }
-    if (indicationTooltip) {
-      ::DestroyWindow(indicationTooltip);
-      indicationTooltip = nullptr;
-    }
-    if (errorIndicatorIdTooltip) {
-      ::DestroyWindow(errorIndicatorIdTooltip);
-      errorIndicatorIdTooltip = nullptr;
-    }
-    if (autoModeTooltip) {
-      ::DestroyWindow(autoModeTooltip);
-      autoModeTooltip = nullptr;
-    }
   }
 
   void SettingsDialog::doDialog(callback_t callback) {
@@ -145,13 +114,13 @@ namespace papyrus {
       case std::to_underlying(Tab::Lexer):
         enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
         setChecked(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, settings.lexerSettings.enableFoldMiddle);
-        foldMiddleTooltip = createToolTip(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, IDS_SETTINGS_LEXER_FOLD_MIDDLE_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, IDS_SETTINGS_LEXER_FOLD_MIDDLE_TOOLTIP);
 
         setChecked(tab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, settings.lexerSettings.enableClassNameCache);
-        classNameCachingTooltip = createToolTip(tab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, IDS_SETTINGS_LEXER_CLASS_NAME_CACHING_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, IDS_SETTINGS_LEXER_CLASS_NAME_CACHING_TOOLTIP);
 
         setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK, settings.lexerSettings.enableClassLink);
-        classLinkTooltip = createToolTip(tab, IDC_SETTINGS_LEXER_CLASS_LINK, IDS_SETTINGS_LEXER_CLASS_LINK_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_LEXER_CLASS_LINK, IDS_SETTINGS_LEXER_CLASS_LINK_TOOLTIP);
         setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, settings.lexerSettings.classLinkUnderline);
         initColorPicker(tab, classLinkFgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_FGCOLOR_LABEL);
         classLinkFgColorPicker.setColour(settings.lexerSettings.classLinkForegroundColor);
@@ -168,7 +137,7 @@ namespace papyrus {
       case std::to_underlying(Tab::KeywordMatcher):
         enableGroup(Group::Matcher, settings.keywordMatcherSettings.enableKeywordMatching);
         setChecked(tab, IDC_SETTINGS_MATCHER, settings.keywordMatcherSettings.enableKeywordMatching);
-        matcherTooltip = createToolTip(tab, IDC_SETTINGS_MATCHER, IDS_SETTINGS_MATCHER_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_MATCHER, IDS_SETTINGS_MATCHER_TOOLTIP);
 
         setChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_FUNCTION);
         setChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_STATE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_STATE);
@@ -180,7 +149,7 @@ namespace papyrus {
         setChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_ELSE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_ELSE);
         setChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_WHILE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_WHILE);
 
-        matcherIndicatorIdTooltip = createToolTip(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP);
         setText(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID, std::to_wstring(settings.keywordMatcherSettings.indicatorID));
 
         initDropdownList(tab, IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, indicatorStyles, settings.keywordMatcherSettings.matchedIndicatorStyle);
@@ -195,7 +164,7 @@ namespace papyrus {
       case std::to_underlying(Tab::ErrorAnnotator):
         enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
         setChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, settings.errorAnnotatorSettings.enableAnnotation);
-        annotationTooltip = createToolTip(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION, IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP);
         initColorPicker(tab, annotationFgColorPicker, IDC_SETTINGS_ANNOTATOR_ANNOTATION_FGCOLOR_LABEL);
         annotationFgColorPicker.setColour(settings.errorAnnotatorSettings.annotationForegroundColor);
         initColorPicker(tab, annotationBgColorPicker, IDC_SETTINGS_ANNOTATOR_ANNOTATION_BGCOLOR_LABEL);
@@ -205,8 +174,8 @@ namespace papyrus {
 
         enableGroup(Group::Indication, settings.errorAnnotatorSettings.enableIndication);
         setChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
-        indicationTooltip = createToolTip(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP);
-        errorIndicatorIdTooltip = createToolTip(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP);
         setText(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, std::to_wstring(settings.errorAnnotatorSettings.indicatorID));
         initDropdownList(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, indicatorStyles, settings.errorAnnotatorSettings.indicatorStyle);
         initColorPicker(tab, errorIndicatorFgColorPicker, IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL);
@@ -223,16 +192,16 @@ namespace papyrus {
         setText(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT, settings.compilerSettings.autoModeOutputDirectory);
         updateAutoModeDefaultGame();
         if (settings.compilerSettings.autoModeDefaultGame != Game::Auto) {
-          // Set current user prefs in auto mode default game dropdown list
+          // Set current user prefs in auto mode default game dropdown list.
           setDropdownSelectedText(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, game::gameNames[std::to_underlying(settings.compilerSettings.autoModeDefaultGame)].second);
         }
 
-        autoModeTooltip = createToolTip(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO, IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP);
+        createToolTip(tab, IDC_SETTINGS_COMPILER_RADIO_AUTO, IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP);
         break;
 
       default:
         if (tab > std::to_underlying(Tab::GameBase)) {
-          // Update displayed values when showing, and save current values when hiding
+          // Update displayed values when showing, and save current values when hiding.
           auto game = getGame(tab);
           const auto& gameSettings = settings.compilerSettings.gameSettings(game);
 
@@ -250,7 +219,7 @@ namespace papyrus {
             hideControl(tab, IDC_SETTINGS_TAB_GAME_FINAL);
           }
 
-          // Import directories is a semi-colon delimited multi-line text. Make a copy of it
+          // Import directories is a semi-colon delimited multi-line text. Make a copy of it.
           std::wstring importDirectories = gameSettings.importDirectories;
           size_t index = 0;
           while ((index = importDirectories.find(L";", index)) != std::wstring::npos) {
@@ -264,10 +233,10 @@ namespace papyrus {
 
   INT_PTR SettingsDialog::handleTabCommandMessage(tab_id_t tab, WPARAM wParam, LPARAM lParam) {
     if (wParam == IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK) {
-      // Special link for Notepad++'s Style Configurator dialog. Send a message to activate that menu
+      // Special link for Notepad++'s Style Configurator dialog. Send a message to activate that menu.
       ::SendMessage(getHParent(), NPPM_MENUCOMMAND, 0, IDM_LANGSTYLE_CONFIG_DLG);
     } else if (HIWORD(wParam) == BN_CLICKED) {
-      // Only controls that would trigger live update are checked here
+      // Only controls that would trigger live update are checked here.
       switch (LOWORD(wParam)) {
         case IDC_SETTINGS_LEXER_FOLD_MIDDLE: {
           settings.lexerSettings.enableFoldMiddle = getChecked(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE);
@@ -292,15 +261,14 @@ namespace papyrus {
         }
 
         case IDC_SETTINGS_MATCHER_KEYWORD_IF: {
-          // Enable/disable Else/ElseIf support based on If/EndIf support
+          // Enable/disable Else/ElseIf support based on If/EndIf support.
           bool allowIf = getChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_IF);
           setControlEnabled(tab, IDC_SETTINGS_MATCHER_KEYWORD_ELSE, allowIf);
           if (!allowIf) {
             setChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_ELSE, false);
           }
-
-          // Let it fall through to the next block
         }
+        // Let it fall through to the next block.
         [[fallthrough]];
 
         case IDC_SETTINGS_MATCHER_KEYWORD_FUNCTION:
@@ -616,7 +584,7 @@ namespace papyrus {
     auto autoCleanup = gsl::finally([&] { delete[] currentSelection; });
     ::GetWindowText(dropdown, currentSelection, length + 1);
 
-    // Clear and re-populate default game dropdown list
+    // Clear and re-populate default game dropdown list.
     clearDropdownList(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN);
     dropdown_options_t gameOptions;
     if (enabled) {
@@ -632,7 +600,7 @@ namespace papyrus {
     }
     initDropdownList(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, gameOptions);
 
-    // Try to find the previous selection in the new list
+    // Try to find the previous selection in the new list.
     bool selectionSet = false;
     if (length > 0) {
       if (setDropdownSelectedText(tab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN, currentSelection)) {
@@ -661,14 +629,14 @@ namespace papyrus {
       gameSettings.finalFlag = getChecked(tab, IDC_SETTINGS_TAB_GAME_FINAL);
     }
 
-    // Import directories is a semi-colon delimited multi-line text
+    // Import directories is a semi-colon delimited multi-line text.
     gameSettings.importDirectories = getText(tab, IDC_SETTINGS_TAB_GAME_IMPORT_DIRECTORIES);
     size_t index {};
     while ((index = gameSettings.importDirectories .find(L"\r\n", index)) != std::wstring::npos) {
       gameSettings.importDirectories.replace(index, 2, L";");
     }
 
-    // Trim trailing semicolons
+    // Trim trailing semicolons.
     if (!gameSettings.importDirectories.empty() && gameSettings.importDirectories.back() == L';') {
       gameSettings.importDirectories = gameSettings.importDirectories.substr(0, gameSettings.importDirectories.find_last_not_of(L';') + 1);
     }

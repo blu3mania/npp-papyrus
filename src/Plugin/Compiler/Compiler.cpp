@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <fstream>
 #include <sstream>
 
-#define STDOUT_PIPE_SIZE 10485760   // Allow up to 10MiB data to be returned from stdout
-#define STDERR_PIPE_SIZE 524288000  // Allow up to 500MiB data to be returned from stderr
+#define STDOUT_PIPE_SIZE 10485760   // Allow up to 10 MiB data to be returned from stdout
+#define STDERR_PIPE_SIZE 524288000  // Allow up to 500 MiB data to be returned from stderr
 
 namespace papyrus {
 
@@ -40,7 +40,7 @@ namespace papyrus {
   void Compiler::start(const CompilationRequest& request) {
     try {
       if (!compilationThread.joinable()) {
-        compilationThread = std::thread([=]() { compile(request); }); // Capture the request by value due to asynchornous nature of thread
+        compilationThread = std::thread([=]() { compile(request); }); // Capture the request by value due to asynchronous nature of thread
       } else {
         ::SendMessage(messageWindow, messages.otherErrordMessage, reinterpret_cast<WPARAM>(L"Compilation thread unusable."), reinterpret_cast<LPARAM>(L"Compilation aborted."));
       }
@@ -82,21 +82,21 @@ namespace papyrus {
           .dwFlags = STARTF_USESTDHANDLES
         };
 
-        // Setup error output pipe
+        // Setup error output pipe.
         HANDLE outputReadHandle {};
         HANDLE errorReadHandle {};
         SECURITY_ATTRIBUTES attr {};
         attr.bInheritHandle = TRUE;
         if (::CreatePipe(&outputReadHandle, &startupInfo.hStdOutput, &attr, STDOUT_PIPE_SIZE) && ::CreatePipe(&errorReadHandle, &startupInfo.hStdError, &attr, STDERR_PIPE_SIZE)) {
-          // Run the process
+          // Run the process.
           PROCESS_INFORMATION compilationProcess {};
           if (::CreateProcess(nullptr, const_cast<LPWSTR>(commandLine.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, nullptr, &startupInfo, &compilationProcess)) {
             if (::WaitForSingleObject(compilationProcess.hProcess, INFINITE) != WAIT_FAILED) {
               DWORD size {};
               if (::PeekNamedPipe(errorReadHandle, nullptr, 0, nullptr, &size, nullptr)) {
-                // Check if there are error reported by compiler on stderr
+                // Check if there are error reported by compiler on stderr.
                 if (size > 0) {
-                  // Read the error output from pipe
+                  // Read the error output from pipe.
                   std::vector<char> data(size);
                   if (::ReadFile(errorReadHandle, &data[0], size, nullptr, nullptr)) {
                     std::wstring errorOutput(data.begin(), data.end());
@@ -107,7 +107,7 @@ namespace papyrus {
                     return;
                   }
                 } else {
-                  // Check stdout as well. This is for the rare case that compilation passed but somehow the compiler chokes at .pas file, when optimize flag is used
+                  // Check stdout as well. This is for the rare case that compilation passed but somehow the compiler chokes at .pas file, when optimize flag is used.
                   if (::PeekNamedPipe(outputReadHandle, nullptr, 0, nullptr, &size, nullptr)) {
                     bool hasError = false;
                     if (size > 0) {
@@ -122,9 +122,9 @@ namespace papyrus {
                     }
 
                     if (!hasError) {
-                      // No error, check if anonymization is needed
+                      // No error, check if anonymization is needed.
                       if (gameSettings.anonynmizeFlag) {
-                        // Output file has the same name as input file, with file extension set as ".pex"
+                        // Output file has the same name as input file, with file extension set as ".pex".
                         std::wstring outputFile = std::filesystem::path(outputDirectory) / std::filesystem::path(request.filePath).replace_extension(L".pex").filename();
                         std::wstring errorMsg;
                         if (anonymizeOutput(outputFile, errorMsg)) {
@@ -200,16 +200,16 @@ namespace papyrus {
       if (signature == 0xDEC057FA || signature == 0xFA57C0DE) {
         bool isBigEndian = (signature == 0xDEC057FA);
 
-        // Skip to "Script path size"
+        // Skip to "Script path size".
         file.seekg(16);
 
-        // Anonymize "Script path"
+        // Anonymize "Script path".
         anonymizeCurrentField(file, isBigEndian);
 
-        // Anonymize "User name"
+        // Anonymize "User name".
         anonymizeCurrentField(file, isBigEndian);
 
-        // Anonymize "Host name"
+        // Anonymize "Host name".
         anonymizeCurrentField(file, isBigEndian);
       } else {
         errorMsg = L"Unknown PEX file format: " + outputFile;
@@ -221,36 +221,32 @@ namespace papyrus {
   }
 
   void Compiler::anonymizeCurrentField(std::fstream& file, bool isBigEndian) {
-    // First read current field's size
+    // First read current field's size.
     int size = readSize(file, isBigEndian);
     if (size > 0) {
-      // Switch to write mode
+      // Switch to write mode.
       file.seekp(file.tellg());
 
-      // Overwrite with dashes
+      // Overwrite with dashes.
       char* buffer = new char[size];
       auto autoCleanup = gsl::finally([&] { delete[] buffer; });
       memset(buffer, '-', size);
       file.write(buffer, size);
 
-      // Switch back to read mode
+      // Switch back to read mode.
       file.seekg(file.tellp());
     }
   }
 
   int Compiler::readSize(std::fstream& file, bool isBigEndian) {
-    char firstByte {};
-    char secondByte {};
+    std::int16_t size {};
+    char* bytes = reinterpret_cast<char*>(&size);
+    file.read(bytes, 2);
 
-    file.read(&firstByte, 1);
-    file.read(&secondByte, 1);
-    int size {};
-    if (isBigEndian) {
-      size = static_cast<int>(firstByte) * 256 + static_cast<int>(secondByte);
-    } else {
-      size = static_cast<int>(secondByte) * 256 + static_cast<int>(firstByte);
+    if (isBigEndian)
+    {
+      std::swap(bytes[0], bytes[1]);
     }
-
     return size;
   }
 
@@ -298,7 +294,7 @@ namespace papyrus {
             error.message = lineError.substr(indexParenthesis + 4);
           }
 
-          // Discard duplicate errors
+          // Discard duplicate errors.
           auto iter = std::find_if(errors.begin(), errors.end(),
             [&](const auto& comparisionError) {
               return comparisionError.file == error.file
@@ -318,7 +314,7 @@ namespace papyrus {
     }
 
     if (errors.empty()) {
-      // In the rare case when error cannot be parsed (likely some errors dumped on stdout that are not related to specific files), send the whole output to error window
+      // In the rare case when error cannot be parsed (likely some errors dumped on stdout that are not related to specific files), send the whole output to error window.
       errors.push_back(Error {
         .message = errorText
       });

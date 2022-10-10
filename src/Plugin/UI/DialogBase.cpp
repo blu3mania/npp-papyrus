@@ -27,6 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
+  DialogBase::~DialogBase() {
+    for (const auto& tooltip : tooltips) {
+      ::DestroyWindow(tooltip);
+    }
+  }
+
   void DialogBase::doDialog() {
     if (!isCreated()) {
       create(dialogID);
@@ -51,7 +57,7 @@ namespace papyrus {
 
           initControls();
 
-          // Handle dark mode
+          // Handle dark mode.
           NppDarkMode::autoSubclassAndThemeChildControls(getHSelf());
 
           initializing = false;
@@ -142,19 +148,19 @@ namespace papyrus {
     ::MoveWindow(colorPicker.getHSelf(), p.x + xOffset, p.y + yOffset, width, height, TRUE);
   }
 
-  HWND DialogBase::createToolTip(HWND hwnd, int controlID, LPCWSTR toolTip, int delayTime) const {
+  HWND DialogBase::createToolTip(HWND hwnd, int controlID, LPCWSTR toolTip, int delayTime) {
     auto control = getControl(hwnd, controlID);
     if (!control) {
       return nullptr;
     }
 
-    // Create the tooltip. g_hInst is the global instance handle
+    // Create the tooltip. g_hInst is the global instance handle.
     HWND hwndToolTip = CreateWindowEx(0, TOOLTIPS_CLASS, nullptr, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, getHSelf(), nullptr, getHinst(), nullptr);
     if (!hwndToolTip) {
       return nullptr;
     }
 
-    // Associate the tooltip with the tool
+    // Associate the created tooltip with the specified tool.
     TOOLINFO toolInfo {
       .cbSize = sizeof(toolInfo),
       .uFlags = TTF_IDISHWND | TTF_SUBCLASS,
@@ -170,11 +176,31 @@ namespace papyrus {
     ::SendMessage(hwndToolTip, TTM_ACTIVATE, TRUE, 0);
     ::SendMessage(hwndToolTip, TTM_SETMAXTIPWIDTH, 0, 200);
 
-    // Convert delay time to milliseconds
+    // Convert delay time to milliseconds.
     delayTime *= 1000;
     ::SendMessage(hwndToolTip, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM((delayTime), (0)));
 
+    // Handle dark mode on the tooltip.
+    tooltips.push_back(hwndToolTip);
+    NppDarkMode::setDarkExplorerTheme(hwndToolTip);
+
     return hwndToolTip;
+  }
+
+  // Only returns true if the handle is valid, can be found in tooltips list, and DestroyWindow is successful.
+  bool DialogBase::destroyToolTip(HWND hwndToolTip) {
+    bool destroyed = false;
+    if (hwndToolTip) {
+      destroyed = ::DestroyWindow(hwndToolTip);
+      auto iter = std::find(tooltips.begin(), tooltips.end(), hwndToolTip);
+      if (iter != tooltips.end()) {
+        tooltips.erase(iter);
+      } else {
+        destroyed = false;
+      }
+    }
+
+    return destroyed;
   }
 
   std::wstring DialogBase::getText(HWND hwnd, int controlID) const {
@@ -189,6 +215,14 @@ namespace papyrus {
     LPCWSTR str;
     ::LoadString(getHinst(), stringID, reinterpret_cast<LPWSTR>(&str), 0);
     return str;
+  }
+
+  void DialogBase::updateDarkMode() {
+    // Currently only tooltips are managed separately. All other controls should automatically get updated by NppDarkMode.
+    for (const auto& tooltip : tooltips) {
+      NppDarkMode::setDarkExplorerTheme(tooltip);
+    }
+    redraw();
   }
 
 } // namespace

@@ -65,9 +65,9 @@ namespace papyrus {
 
       inline virtual void initColorPicker(tab_id_t tab, ColourPicker& colorPicker, int labelControlID, int width = 30, int height = 30, int xOffset = 8, int yOffset = -8) const { DialogBase::initColorPicker(getTabHandle(tab), colorPicker, labelControlID, width, height, xOffset, yOffset); }
 
-      inline virtual HWND createToolTip(tab_id_t tab, int controlID, LPCWSTR toolTip, int delayTime = 15) const { return DialogBase::createToolTip(getTabHandle(tab), controlID, toolTip, delayTime); }
-      inline virtual HWND createToolTip(tab_id_t tab, int controlID, std::wstring toolTip, int delayTime = 15) const { return DialogBase::createToolTip(getTabHandle(tab), controlID, toolTip, delayTime); }
-      inline virtual HWND createToolTip(tab_id_t tab, int controlID, int tooltipStringID, int delayTime = 15) const { return DialogBase::createToolTip(getTabHandle(tab), controlID, tooltipStringID, delayTime); }
+      inline virtual HWND createToolTip(tab_id_t tab, int controlID, LPCWSTR toolTip, int delayTime = 15) { return DialogBase::createToolTip(getTabHandle(tab), controlID, toolTip, delayTime); }
+      inline virtual HWND createToolTip(tab_id_t tab, int controlID, std::wstring toolTip, int delayTime = 15) { return DialogBase::createToolTip(getTabHandle(tab), controlID, toolTip, delayTime); }
+      inline virtual HWND createToolTip(tab_id_t tab, int controlID, int tooltipStringID, int delayTime = 15) { return DialogBase::createToolTip(getTabHandle(tab), controlID, tooltipStringID, delayTime); }
 
       inline virtual void setControlVisibility(tab_id_t tab, int controlID, bool show) const { DialogBase::setControlVisibility(getTabHandle(tab), controlID, show); }
       inline virtual void showControl(tab_id_t tab, int controlID) const { DialogBase::showControl(getTabHandle(tab), controlID); }

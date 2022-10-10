@@ -34,7 +34,7 @@ namespace papyrus {
   class DialogBase : public StaticDialog {
     public:
       inline DialogBase(int id) : StaticDialog(), dialogID(id) {}
-      inline virtual ~DialogBase() {}
+      virtual ~DialogBase();
 
       virtual void doDialog();
 
@@ -67,12 +67,13 @@ namespace papyrus {
       virtual void initColorPicker(HWND hwnd, ColourPicker& colorPicker, int labelControlID, int width = 30, int height = 30, int xOffset = 8, int yOffset = -8) const;
       inline virtual void initColorPicker(ColourPicker& colorPicker, int labelControlID, int width = 30, int height = 30, int xOffset = 8, int yOffset = -8) const { initColorPicker(getHSelf(), colorPicker, labelControlID, width, height, xOffset, yOffset); }
 
-      virtual HWND createToolTip(HWND hwnd, int controlID, LPCWSTR toolTip, int delayTime = 15) const;
-      inline virtual HWND createToolTip(int controlID, LPCWSTR toolTip, int delayTime = 15) const { return createToolTip(getHSelf(), controlID, toolTip, delayTime); }
-      inline virtual HWND createToolTip(HWND hwnd, int controlID, std::wstring toolTip, int delayTime = 15) const { return createToolTip(hwnd, controlID, toolTip.c_str(), delayTime); }
-      inline virtual HWND createToolTip(int controlID, std::wstring toolTip, int delayTime = 15) const { return createToolTip(getHSelf(), controlID, toolTip, delayTime); }
-      inline virtual HWND createToolTip(HWND hwnd, int controlID, int tooltipStringID, int delayTime = 15) const { return createToolTip(hwnd, controlID, loadResourceString(tooltipStringID), delayTime); }
-      inline virtual HWND createToolTip(int controlID, int tooltipStringID, int delayTime = 15) const { return createToolTip(getHSelf(), controlID, tooltipStringID, delayTime); }
+      virtual HWND createToolTip(HWND hwnd, int controlID, LPCWSTR toolTip, int delayTime = 15);
+      inline virtual HWND createToolTip(int controlID, LPCWSTR toolTip, int delayTime = 15) { return createToolTip(getHSelf(), controlID, toolTip, delayTime); }
+      inline virtual HWND createToolTip(HWND hwnd, int controlID, std::wstring toolTip, int delayTime = 15) { return createToolTip(hwnd, controlID, toolTip.c_str(), delayTime); }
+      inline virtual HWND createToolTip(int controlID, std::wstring toolTip, int delayTime = 15) { return createToolTip(getHSelf(), controlID, toolTip, delayTime); }
+      inline virtual HWND createToolTip(HWND hwnd, int controlID, int tooltipStringID, int delayTime = 15) { return createToolTip(hwnd, controlID, loadResourceString(tooltipStringID), delayTime); }
+      inline virtual HWND createToolTip(int controlID, int tooltipStringID, int delayTime = 15) { return createToolTip(getHSelf(), controlID, tooltipStringID, delayTime); }
+      virtual bool destroyToolTip(HWND hwndToolTip);
 
       inline virtual void setControlVisibility(HWND hwnd, int controlID, bool show) const { ::ShowWindow(getControl(hwnd, controlID), show ? SW_SHOW : SW_HIDE); }
       inline virtual void setControlVisibility(int controlID, bool show) const { setControlVisibility(getHSelf(), controlID, show); }
@@ -102,11 +103,15 @@ namespace papyrus {
 
       virtual LPCWSTR loadResourceString(int stringID) const;
 
+      virtual void updateDarkMode();
+
     private:
       // Private members
       //
       const int dialogID;
       bool initializing {false};
+
+      std::vector<HWND> tooltips;
   };
 
 } // namespace

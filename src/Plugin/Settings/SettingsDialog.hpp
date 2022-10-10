@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\Common\Resources.hpp"
 #include "..\UI\MultiTabbedDialog.hpp"
+#include "..\UI\UIParameters.hpp"
 
 #include "..\..\external\npp\URLCtrl.h"
 
@@ -35,7 +36,7 @@ namespace papyrus {
     public:
       using callback_t = std::function<void()>;
 
-      inline SettingsDialog(Settings& settings) : MultiTabbedDialog(IDD_SETTINGS_DIALOG, IDC_SETTINGS_TABS), settings(settings) {}
+      SettingsDialog(Settings& settings, const UIParameters& uiParameters);
       ~SettingsDialog();
 
       void doDialog(callback_t callback);
@@ -88,16 +89,6 @@ namespace papyrus {
       //
       Settings& settings;
       callback_t settingsUpdatedFunc {};
-
-      HWND foldMiddleTooltip {};
-      HWND classNameCachingTooltip {};
-      HWND classLinkTooltip {};
-      HWND matcherTooltip {};
-      HWND matcherIndicatorIdTooltip {};
-      HWND annotationTooltip {};
-      HWND indicationTooltip {};
-      HWND errorIndicatorIdTooltip {};
-      HWND autoModeTooltip {};
 
       URLCtrl stylerConfigLink;
 
