@@ -453,8 +453,8 @@ namespace papyrus {
       if (isUsable() && lexerData->settings.enableClassLink && eventData.second) { // isManagedBuffer
         HWND handle = (eventData.first == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
         ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
-        ::SendMessage(handle, SCI_SETHOTSPOTACTIVEFORE, true, lexerData->settings.classLinkForegroundColor);
-        ::SendMessage(handle, SCI_SETHOTSPOTACTIVEBACK, true, lexerData->settings.classLinkBackgroundColor);
+        ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000);
+        ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
         ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
       }
     });
@@ -474,10 +474,10 @@ namespace papyrus {
     lexerSettings.classLinkForegroundColor.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
-          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEFORE, true, eventData.newValue);
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, eventData.newValue | 0xFF000000);
         }
         if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
-          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETHOTSPOTACTIVEFORE, true, eventData.newValue);
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, eventData.newValue | 0xFF000000);
         }
       }
     });
@@ -485,10 +485,10 @@ namespace papyrus {
     lexerSettings.classLinkBackgroundColor.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
-          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETHOTSPOTACTIVEBACK, true, eventData.newValue);
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, eventData.newValue);
         }
         if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
-          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETHOTSPOTACTIVEBACK, true, eventData.newValue);
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, eventData.newValue);
         }
       }
     });
