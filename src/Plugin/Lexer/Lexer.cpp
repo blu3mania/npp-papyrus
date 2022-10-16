@@ -91,7 +91,7 @@ namespace papyrus {
 
         // Styling
         for (auto iterTokens = tokens.begin(); iterTokens != tokens.end(); ++iterTokens) {
-          std::string tokenString = iterTokens->content;
+          const auto& tokenString = iterTokens->content;
 
           if (messageState == State::CommentDoc) {
             colorToken(styleContext, *iterTokens, State::CommentDoc);
@@ -285,21 +285,6 @@ namespace papyrus {
     }
   }
 
-  bool Lexer::isKeyword(int style) {
-    State styleState = static_cast<State>(style);
-    return styleState == State::Keyword || styleState == State::Keyword2;
-  }
-
-  bool Lexer::isFlowControl(int style) {
-    State styleState = static_cast<State>(style);
-    return styleState == State::FlowControl;
-  }
-
-  bool Lexer::isComment(int style) {
-    State styleState = static_cast<State>(style);
-    return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
-  }
-
   std::wstring Lexer::getClassFilePath(std::string className) {
     // Find relative path from current directory. Support FO4's namespace.
     std::filesystem::path relativePath;
@@ -325,15 +310,7 @@ namespace papyrus {
   //
 
   bool Lexer::isUsable() const {
-    return (lexerData != nullptr && lexerData->usable);
-  }
-
-  const std::vector<WordList*>& Lexer::getInstreWordLists() const {
-    return instreWordLists;
-  }
-
-  const std::vector<WordList*>& Lexer::getTypeWordLists() const {
-    return typeWordLists;
+    return subscriptionHelper->isUsable();
   }
 
   // Private methods
@@ -349,38 +326,38 @@ namespace papyrus {
         break;
       }
 
-      if (isblank(ch)) {
+      if (ch <= 255 && std::isblank(ch)) {
         ch = getNextChar(accessor, index, indexNext);
-      } else if (isalpha(ch) || ch == '_') {
+      } else if ((ch <= 255 && std::isalpha(ch)) || ch == '_') {
         Token token {
           .tokenType = TokenType::Identifier,
           .startPos = index
         };
-        while (isalnum(ch) || ch == '_' || ch == ':') {
-          token.content.push_back(tolower(ch));
+        while ((ch <= 255 && std::isalnum(ch)) || ch == '_' || ch == ':') {
+          token.content.push_back(std::tolower(ch)); // Papyrus script is case insensitive
           ch = getNextChar(accessor, index, indexNext);
         }
         tokens.push_back(token);
-      } else if (isdigit(ch) || ch == '-') {
+      } else if ((ch <= 255 && std::isdigit(ch)) || ch == '-') {
         Token token {
           .tokenType = TokenType::Numeric,
           .startPos = index
         };
         bool hasDigit = false;
-        while (isdigit(ch)
-          || (ch == '-' && index == token.startPos) // leading -
+        while ((ch <= 255 && std::isdigit(ch))
+          || (ch == '-' && index == token.startPos) // leading minus sign
           || (ch == '.' && hasDigit) // decimal point after at least a digit
-          || (tolower(ch) == 'x' && index == token.startPos + 1 && token.content.at(0) == '0') // 0x
-          || (isxdigit(ch) && token.content.size() > 1 && tolower(token.content.at(1)) == 'x')) { // hex value after 0x
-          token.content.push_back(tolower(ch));
-          if (isdigit(ch)) {
+          || ((ch == 'x' || ch == 'X') && index == token.startPos + 1 && token.content.front() == '0') // 0x
+          || (ch <= 255 && std::isxdigit(ch) && token.content.size() > 1 && std::tolower(token.content.at(1)) == 'x')) { // hex value after 0x
+          token.content.push_back(std::tolower(ch));
+          if (ch <= 255 && std::isdigit(ch)) {
             hasDigit = true;
           }
           ch = getNextChar(accessor, index, indexNext);
         }
 
         // In the case when the token is a single '-', it's not numeric.
-        if (token.content.at(0) == '-' && token.content.size() == 1) {
+        if (token.content.front() == '-' && token.content.size() == 1) {
           token.tokenType = TokenType::Special;
         }
         tokens.push_back(token);
@@ -389,7 +366,7 @@ namespace papyrus {
           .tokenType = TokenType::Special,
           .startPos = index
         };
-        token.content.push_back(tolower(ch));
+        token.content.push_back(ch);
         tokens.push_back(token);
         ch = getNextChar(accessor, index, indexNext);
       }
@@ -403,7 +380,7 @@ namespace papyrus {
     }
 
     styleContext.SetState(std::to_underlying(state));
-    styleContext.Forward(token.content.size());
+    styleContext.Forward(token.content.length());
     styleContext.SetState(std::to_underlying(State::Default));
   }
 
@@ -453,7 +430,7 @@ namespace papyrus {
       if (isUsable() && lexerData->settings.enableClassLink && eventData.second) { // isManagedBuffer
         HWND handle = (eventData.first == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
         ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
-        ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000);
+        ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000); // Element color is ABGR
         ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
         ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
       }
@@ -474,10 +451,10 @@ namespace papyrus {
     lexerSettings.classLinkForegroundColor.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
-          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, eventData.newValue | 0xFF000000);
+          ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, eventData.newValue | 0xFF000000); // Element color is ABGR
         }
         if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
-          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, eventData.newValue | 0xFF000000);
+          ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, eventData.newValue | 0xFF000000); // Element color is ABGR
         }
       }
     });
@@ -517,10 +494,6 @@ namespace papyrus {
       }
       restyleDocument();
     });
-  }
-
-  bool SubscriptionHelper::isUsable() const {
-    return (lexerData != nullptr && lexerData->usable);
   }
 
   npp_buffer_t SubscriptionHelper::getApplicableBufferIdOnView(npp_view_t view) const {
@@ -568,21 +541,23 @@ namespace papyrus {
       // Restore previous word chars setting after search.
       ::SendMessage(handle, SCI_SETWORDCHARS, 0, reinterpret_cast<LPARAM>(wordChars + 1));
 
-      char* className = new char[end - start + 1];
-      auto autoCleanupClassName = gsl::finally([&] { delete[] className; });
+      if (end > start) {
+        char* className = new char[end - start + 1];
+        auto autoCleanupClassName = gsl::finally([&] { delete[] className; });
 
-      Sci_TextRange textRange {
-        .chrg = {
-          .cpMin = static_cast<Sci_PositionCR>(start),
-          .cpMax = static_cast<Sci_PositionCR>(end)
-        },
-        .lpstrText = className
-      };
-      ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&textRange));
+        Sci_TextRange textRange {
+          .chrg = {
+            .cpMin = static_cast<Sci_PositionCR>(start),
+            .cpMax = static_cast<Sci_PositionCR>(end)
+          },
+          .lpstrText = className
+        };
+        ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&textRange));
 
       std::wstring filePath = getClassFilePath(className);
-      if (!filePath.empty()) {
-        ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
+        if (!filePath.empty()) {
+          ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
+        }
       }
     }
   }

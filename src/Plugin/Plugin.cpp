@@ -308,11 +308,16 @@ namespace papyrus {
             }
           );
           if (iter != activatedErrorsTrackingList.end()) {
-            // Scintilla's line numberis zero-based.
+            // Scintilla's line number is zero-based.
             int line = iter->line - 1;
 
             // When the buffer is big, asking Scintilla to scroll immediately doesn't always work, so use a short timer.
-            jumpToErrorLineTimer = utility::startTimer(100, [=] { ::SendMessage(scintillaHandle, SCI_GOTOLINE, line, 0); });
+            jumpToErrorLineTimer = utility::startTimer(100, [=] {
+              // Make sure the active document is still the one we are tracking before scrolling.
+              if (bufferID == ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0)) {
+                ::SendMessage(scintillaHandle, SCI_GOTOLINE, line, 0);
+              }
+            });
 
             // Get rid of other errors in the list for the same file.
             while (iter != activatedErrorsTrackingList.end()) {

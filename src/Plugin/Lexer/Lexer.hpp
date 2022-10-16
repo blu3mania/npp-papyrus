@@ -55,10 +55,10 @@ namespace papyrus {
         public:
           SubscriptionHelper();
 
-        private:
           // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used
-          bool isUsable() const;
+          inline bool isUsable() const { return (lexerData != nullptr && lexerData->usable); }
 
+        private:
           // Get current buffer ID on the given view, if it's a applicable
           npp_buffer_t getApplicableBufferIdOnView(npp_view_t view) const;
 
@@ -83,9 +83,20 @@ namespace papyrus {
       void SCI_METHOD Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
 
       // Utility method to check whether a style (from StyleContext) is certain style type defined by this lexer
-      static bool isKeyword(int style);
-      static bool isFlowControl(int style);
-      static bool isComment(int style);
+      inline static bool isKeyword(int style) {
+        State styleState = static_cast<State>(style);
+        return styleState == State::Keyword || styleState == State::Keyword2;
+      }
+
+      inline static bool isFlowControl(int style) {
+        State styleState = static_cast<State>(style);
+        return styleState == State::FlowControl;
+      }
+
+      inline static bool isComment(int style) {
+        State styleState = static_cast<State>(style);
+        return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
+      }
 
       // Utility method to retrieve full path of a class. It supports FO4's namespaces
       static std::wstring getClassFilePath(std::string className);
@@ -95,8 +106,8 @@ namespace papyrus {
       bool isUsable() const override;
 
       // Get word lists pointers for instre1 & 2, type1 - 7
-      const std::vector<WordList*>& getInstreWordLists() const override;
-      const std::vector<WordList*>& getTypeWordLists() const override;
+      inline const std::vector<WordList*>& getInstreWordLists() const override { return instreWordLists; }
+      inline const std::vector<WordList*>& getTypeWordLists() const override { return typeWordLists; }
 
     private:
       // Lexer style states
@@ -177,7 +188,7 @@ namespace papyrus {
       // Document pointer managed by Scintilla
       npp_ptr_t docPointer {nullptr};
 
-      // Supscriptions
+      // Subscriptions
       change_event_topic_t::subscription_t changeEventSubscription;
   };
 
