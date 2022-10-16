@@ -38,12 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-#define LEXER_NAME "Papyrus Script"
-#define LEXER_STATUS_TEXT L"Papyrus Script"  // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
-
-using namespace Scintilla;
-
 namespace papyrus {
+
+  constexpr char LEXER_NAME[] = "Papyrus Script";
+  constexpr TCHAR LEXER_STATUS_TEXT[] = L"Papyrus Script"; // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
 
   class Lexer : public SimpleLexerBase {
     public:

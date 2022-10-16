@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-#define DEFAULT_ERROR_INDICATOR 18
-
 namespace papyrus {
+
+  constexpr int DEFAULT_ERROR_INDICATOR = 18;
 
   struct ErrorAnnotatorSettings {
     utility::PrimitiveTypeValueMonitor<bool>     enableAnnotation;

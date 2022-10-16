@@ -28,10 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <fstream>
 #include <sstream>
 
-#define STDOUT_PIPE_SIZE 10485760   // Allow up to 10 MiB data to be returned from stdout
-#define STDERR_PIPE_SIZE 524288000  // Allow up to 500 MiB data to be returned from stderr
-
 namespace papyrus {
+
+  constexpr DWORD STDOUT_PIPE_SIZE = 10 * 1024 * 1024;  // Allow up to 10 MiB data to be returned from stdout
+  constexpr DWORD STDERR_PIPE_SIZE = 500 * 1024 * 1024; // Allow up to 500 MiB data to be returned from stderr
 
   Compiler::Compiler(HWND messageWindow, const CompilerMessages compilerMessages, const CompilerSettings& settings)
    : messageWindow(messageWindow), messages(compilerMessages), settings(settings) {

@@ -20,4 +20,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 // Start at a big number to avoid potential conflict with other lexers
-#define SCLEX_PAPYRUS_SCRIPT  18000
+constexpr int SCLEX_PAPYRUS_SCRIPT = 18000;

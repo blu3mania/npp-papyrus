@@ -25,21 +25,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-#define KEYWORD_NONE        0
-#define KEYWORD_FUNCTION    1
-#define KEYWORD_STATE       2
-#define KEYWORD_EVENT       4
-#define KEYWORD_PROPERTY    8
-#define KEYWORD_GROUP       16
-#define KEYWORD_STRUCT      32
-#define KEYWORD_IF          64
-#define KEYWORD_ELSE        128
-#define KEYWORD_WHILE       256
-#define KEYWORD_ALL         KEYWORD_FUNCTION | KEYWORD_STATE | KEYWORD_EVENT | KEYWORD_PROPERTY | KEYWORD_GROUP | KEYWORD_STRUCT | KEYWORD_IF | KEYWORD_ELSE | KEYWORD_WHILE
-
-#define DEFAULT_MATCHER_INDICATOR 17
-
 namespace papyrus {
+
+  constexpr int KEYWORD_NONE     = 0;
+  constexpr int KEYWORD_FUNCTION = 0b1;
+  constexpr int KEYWORD_STATE    = 0b10;
+  constexpr int KEYWORD_EVENT    = 0b100;
+  constexpr int KEYWORD_PROPERTY = 0b1000;
+  constexpr int KEYWORD_GROUP    = 0b10000;
+  constexpr int KEYWORD_STRUCT   = 0b100000;
+  constexpr int KEYWORD_IF       = 0b1000000;
+  constexpr int KEYWORD_ELSE     = 0b10000000;
+  constexpr int KEYWORD_WHILE    = 0b100000000;
+  constexpr int KEYWORD_ALL      = KEYWORD_FUNCTION | KEYWORD_STATE | KEYWORD_EVENT | KEYWORD_PROPERTY | KEYWORD_GROUP | KEYWORD_STRUCT | KEYWORD_IF | KEYWORD_ELSE | KEYWORD_WHILE;
+
+  constexpr int DEFAULT_MATCHER_INDICATOR = 17;
 
   struct KeywordMatcherSettings {
     utility::PrimitiveTypeValueMonitor<bool>     enableKeywordMatching;

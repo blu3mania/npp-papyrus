@@ -32,9 +32,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-#define VERSION_KEY L"version"
-
 namespace papyrus {
+
+  constexpr wchar_t VERSION_KEY[] = L"version";
 
   bool SettingsStorage::load() {
     if (!settingsPath.empty()) {
