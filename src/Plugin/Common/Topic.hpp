@@ -41,13 +41,11 @@ namespace utility {
           using topic_t = Topic<T>;
           using handler_t = topic_t::handler_t;
 
-          Subscription(topic_t& topic, handler_t&& func) noexcept : topic(topic), handler(func), subscribed(true) {}
-          ~Subscription() {
-            unsubscribe();
-          }
+          [[nodiscard]] inline Subscription(topic_t& topic, handler_t&& func) noexcept : topic(topic), handler(func), subscribed(true) {}
+          inline ~Subscription() { unsubscribe(); }
 
           // Message from subscribed topic
-          void notify(const T& message) {
+          inline void notify(const T& message) {
             if (subscribed) {
               handler(message);
             }
@@ -74,12 +72,12 @@ namespace utility {
 
       using subscription_t = std::shared_ptr<Subscription<T>>;
 
-      Topic() {}
+      [[nodiscard]] inline Topic() {}
 
       // Disable all copy/move constructors/assignment operators
       Topic(Topic&& other) = delete;
 
-      ~Topic() {
+      inline ~Topic() {
         // Detach all subscriptions
         for (const auto& subscription : subscriptions) {
           subscription->subscribed = false;
@@ -87,12 +85,12 @@ namespace utility {
       }
 
       // Overload assignment operator as a convenient way for publisher
-      const Topic& operator=(const T& value) {
+      inline const Topic& operator=(const T& value) {
         publish(value);
         return *this;
       }
 
-      subscription_t subscribe(handler_t&& func) noexcept {
+      inline subscription_t subscribe(handler_t&& func) noexcept {
         subscription_t subscription(new Subscription<T>(*this, std::forward<handler_t>(func)));
         subscriptions.push_back(subscription);
         return subscription;
@@ -114,7 +112,7 @@ namespace utility {
       }
 
       // Completion notification from topic
-      void publish(const T& message) {
+      inline void publish(const T& message) {
         for (const auto& subscription : subscriptions) {
           subscription->notify(message);
         }

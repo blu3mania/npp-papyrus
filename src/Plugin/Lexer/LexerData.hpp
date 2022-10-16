@@ -35,9 +35,25 @@ namespace papyrus {
 
   using Game = game::Game;
   using game_import_dirs_t = std::map<Game, std::vector<std::wstring>>;
-  using buffer_activated_topic_t = utility::Topic<std::pair<npp_view_t, bool>>;
-  using click_event_topic_t = utility::Topic<std::pair<HWND, Sci_Position>>;
-  using change_event_topic_t = utility::Topic<std::tuple<HWND, Sci_Position, Sci_Position>>;
+
+  struct BufferActivationEventData {
+    npp_view_t view;
+    bool isManagedBuffer;
+  };
+  using buffer_activated_topic_t = utility::Topic<BufferActivationEventData>;
+
+  struct ClickEventData {
+    HWND scintillaHandle;
+    Sci_Position position;
+  };
+  using click_event_topic_t = utility::Topic<ClickEventData>;
+
+  struct ChangeEventData {
+    HWND scintillaHandle;
+    Sci_Position position;
+    Sci_Position linesAdded;
+  };
+  using change_event_topic_t = utility::Topic<ChangeEventData>;
 
   struct LexerData {
     LexerData(const NppData& nppData, const LexerSettings& settings, Game currentGame = Game::Auto, game_import_dirs_t importDirectories = game_import_dirs_t(), bool usable = true)

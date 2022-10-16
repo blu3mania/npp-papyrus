@@ -47,16 +47,18 @@ namespace papyrus {
 
   class Lexer : public SimpleLexerBase {
     public:
-      // A class that helps with subscription to shared Lexer data, since the handling are all static, and not
-      // tied to a specific Lexer instance. For example, restyle currently displayed document, regardless if it's
-      // lexed by current Lexer instance.
-      //
-      class SubscriptionHelper {
+      // A class that helps with management of shared Lexer data, since the handling are all static, and not tied to a specific
+      // Lexer instance. For example, restyle currently displayed document, regardless if it's lexed by current Lexer instance.
+      class Helper {
         public:
-          SubscriptionHelper();
+          Helper();
 
           // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used
           inline bool isUsable() const { return (lexerData != nullptr && lexerData->usable); }
+
+          // Get cached class/non-class names for a game
+          std::set<std::string>& getClassNamesForGame(Game game);
+          std::set<std::string>& getNonClassNamesForGame(Game game);
 
         private:
           // Get current buffer ID on the given view, if it's a applicable
@@ -65,6 +67,10 @@ namespace papyrus {
           // Restyle currently displayed document, which includes Lex and Fold
           void restyleDocument() const;
           void restyleDocument(npp_view_t view) const;
+
+          // Clear cached class/non-class names
+          void clearClassNames();
+          void clearNonClassNames();
 
           // Hotspot click handler
           void handleHotspotClick(HWND handle, Sci_Position position) const;

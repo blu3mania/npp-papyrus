@@ -105,16 +105,16 @@ namespace papyrus {
           break;
         }
 
-        case SCN_UPDATEUI: {
-          if (notification->updated & SC_UPDATE_SELECTION) {
-            handleSelectionChange(notification);
+        case SCN_MODIFIED: {
+          if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
+            handleContentUpdate(notification);
           }
           break;
         }
 
-        case SCN_MODIFIED: {
-          if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-            handleContentUpdate(notification);
+        case SCN_UPDATEUI: {
+          if (notification->updated & SC_UPDATE_SELECTION) {
+            handleSelectionChange(notification);
           }
           break;
         }
@@ -359,7 +359,11 @@ namespace papyrus {
         }
 
         if (lexerData) {
-          lexerData->bufferActivated = std::make_pair(currentView, isManagedBuffer);
+          BufferActivationEventData bufferActivationEventData {
+            .view = currentView,
+            .isManagedBuffer = isManagedBuffer
+          };
+          lexerData->bufferActivated = bufferActivationEventData;
         }
       }
     }
@@ -371,7 +375,23 @@ namespace papyrus {
       && (notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick
       && notification->modifiers == lexerData->settings.classLinkClickModifier
       && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
-      lexerData->clickEventData = std::make_pair(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position);
+      ClickEventData clickEventData {
+        .scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom),
+        .position = notification->position
+      };
+      lexerData->clickEventData = clickEventData;
+    }
+  }
+
+  void Plugin::handleContentUpdate(SCNotification* notification) {
+    // Only handle content change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
+    if (lexerData && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
+      ChangeEventData changeEventData {
+        .scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom),
+        .position = notification->position,
+        .linesAdded = notification->linesAdded
+      };
+      lexerData->changeEventData = changeEventData;
     }
   }
 
@@ -379,13 +399,6 @@ namespace papyrus {
     // Only handle selection change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
     if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
       keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
-    }
-  }
-
-  void Plugin::handleContentUpdate(SCNotification* notification) {
-    // Only handle content change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
-    if (lexerData && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
-      lexerData->changeEventData = std::make_tuple(static_cast<HWND>(notification->nmhdr.hwndFrom), notification->position, notification->linesAdded);
     }
   }
 

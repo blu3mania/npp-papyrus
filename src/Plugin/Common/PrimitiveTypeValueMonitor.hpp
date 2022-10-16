@@ -39,10 +39,10 @@ namespace utility {
       using topic_t = Topic<event_data_t>;
       using subscription_t = topic_t::subscription_t;
 
-      PrimitiveTypeValueMonitor() {}
-      PrimitiveTypeValueMonitor(const T& value) noexcept : value(value) {}
+      [[nodiscard]] inline PrimitiveTypeValueMonitor() {}
+      [[nodiscard]] inline PrimitiveTypeValueMonitor(const T& value) noexcept : value(value) {}
 
-      operator T() const noexcept { return value; }
+      inline operator T() const noexcept { return value; }
 
       // Only assignment operator is monitored
       const PrimitiveTypeValueMonitor& operator=(const T& newValue) {
@@ -56,13 +56,8 @@ namespace utility {
         return *this;
       }
 
-      subscription_t subscribe(callback_t&& watcher) noexcept {
-        return topic.subscribe(std::forward<callback_t>(watcher));
-      }
-
-      bool unsubscribe(subscription_t& watcher) noexcept {
-        return watcher.unsubscribe();
-      }
+      inline subscription_t subscribe(callback_t&& watcher) noexcept { return topic.subscribe(std::forward<callback_t>(watcher)); }
+      inline bool unsubscribe(subscription_t& watcher) noexcept { return watcher.unsubscribe(); }
 
     private:
       T value {};

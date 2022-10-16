@@ -32,19 +32,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <filesystem>
 #include <map>
 #include <memory>
+#include <mutex>
 
 namespace papyrus {
 
-  using SubscriptionHelper = Lexer::SubscriptionHelper;
+  using Helper = Lexer::Helper;
+  using Lock = std::lock_guard<std::mutex>;
 
-  // Static shared subscription helper
+  // Static shared helper and other lexer data
   namespace {
-    std::unique_ptr<SubscriptionHelper> subscriptionHelper;
+    std::unique_ptr<Helper> helper;
 
     // Cache names that are classes (i.e. files in import directories) used in current file, and names that aren't, for better performance.
     // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded. This can be
     // fixed by toggling off this option then toggling it back on in Settings dialog.
+    std::mutex classNamesMutex;
     std::map<Game, std::set<std::string>> classNames;
+    std::mutex nonClassNamesMutex;
     std::map<Game, std::set<std::string>> nonClassNames;
   }
 
@@ -53,16 +57,15 @@ namespace papyrus {
       instreWordLists{&wordListOperators, &wordListFlowControl},
       typeWordLists{&wordListTypes, &wordListKeywords, &wordListKeywords2, &wordListFoldOpen, &wordListFoldMiddle, &wordListFoldClose} {
     // Setup settings change listeners.
-    if (isUsable() && !subscriptionHelper) {
-      subscriptionHelper = std::make_unique<SubscriptionHelper>();
+    if (isUsable() && !helper) {
+      helper = std::make_unique<Helper>();
     }
 
     changeEventSubscription = lexerData->changeEventData.subscribe([&](auto eventData) {
       if (isUsable()) {
-        HWND handle = std::get<0>(eventData);
-        if (docPointer == reinterpret_cast<npp_ptr_t>(::SendMessage(handle, SCI_GETDOCPOINTER, 0, 0))) {
+        if (docPointer == reinterpret_cast<npp_ptr_t>(::SendMessage(eventData.scintillaHandle, SCI_GETDOCPOINTER, 0, 0))) {
           // Change happened on current file.
-          handleContentChange(handle, std::get<1>(eventData), std::get<2>(eventData));
+          handleContentChange(eventData.scintillaHandle, eventData.position, eventData.linesAdded);
         }
       }
     });
@@ -193,12 +196,12 @@ namespace papyrus {
                   colorToken(styleContext, *iterTokens, State::Property);
                 } else {
                   if (lexerData->currentGame != game::Game::Auto) {
-                    auto& currentGameClassNames = classNames[lexerData->currentGame];
+                    auto& currentGameClassNames = helper->getClassNamesForGame(lexerData->currentGame);
                     if (currentGameClassNames.find(tokenString) != currentGameClassNames.end()) {
                       colorToken(styleContext, *iterTokens, State::Class);
                       found = true;
                     } else {
-                      auto& currentGameNonClassNames = nonClassNames[lexerData->currentGame];
+                      auto& currentGameNonClassNames = helper->getNonClassNamesForGame(lexerData->currentGame);
                       if (currentGameNonClassNames.find(tokenString) == currentGameNonClassNames.end()) {
                         if (!getClassFilePath(tokenString).empty()) {
                           colorToken(styleContext, *iterTokens, State::Class);
@@ -310,7 +313,7 @@ namespace papyrus {
   //
 
   bool Lexer::isUsable() const {
-    return subscriptionHelper->isUsable();
+    return helper->isUsable();
   }
 
   // Private methods
@@ -425,10 +428,10 @@ namespace papyrus {
     }
   }
 
-  SubscriptionHelper::SubscriptionHelper() {
+  Helper::Helper() {
     lexerData->bufferActivated.subscribe([&](auto eventData) {
-      if (isUsable() && lexerData->settings.enableClassLink && eventData.second) { // isManagedBuffer
-        HWND handle = (eventData.first == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
+      if (isUsable() && lexerData->settings.enableClassLink && eventData.isManagedBuffer) { // isManagedBuffer
+        HWND handle = (eventData.view == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
         ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
         ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000); // Element color is ABGR
         ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
@@ -482,21 +485,21 @@ namespace papyrus {
     });
 
     lexerData->clickEventData.subscribe([&](auto eventData) {
-      handleHotspotClick(eventData.first, eventData.second);
+      handleHotspotClick(eventData.scintillaHandle, eventData.position);
     });
 
     lexerSettings.enableFoldMiddle.subscribe([&](auto) { restyleDocument(); });
 
     lexerSettings.enableClassNameCache.subscribe([&](auto eventData) {
       if (!eventData.newValue) {
-        classNames.clear();
-        nonClassNames.clear();
+        clearClassNames();
+        clearNonClassNames();
       }
       restyleDocument();
     });
   }
 
-  npp_buffer_t SubscriptionHelper::getApplicableBufferIdOnView(npp_view_t view) const {
+  npp_buffer_t Helper::getApplicableBufferIdOnView(npp_view_t view) const {
     npp_index_t viewDocIndex = static_cast<npp_index_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
     if (viewDocIndex != -1) {
       npp_buffer_t viewBufferID = static_cast<npp_buffer_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERIDFROMPOS, static_cast<WPARAM>(viewDocIndex), static_cast<LPARAM>(view)));
@@ -508,14 +511,14 @@ namespace papyrus {
     return 0;
   }
 
-  void SubscriptionHelper::restyleDocument() const {
+  void Helper::restyleDocument() const {
     if (isUsable()) {
       restyleDocument(MAIN_VIEW);
       restyleDocument(SUB_VIEW);
     }
   }
 
-  void SubscriptionHelper::restyleDocument(npp_view_t view) const {
+  void Helper::restyleDocument(npp_view_t view) const {
     // Ask Scintilla to restyle urrent document on the given view, but only when it is using this lexer.
     if (getApplicableBufferIdOnView(view) != 0) {
       HWND handle = (view == MAIN_VIEW ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle);
@@ -523,7 +526,27 @@ namespace papyrus {
     }
   }
 
-  void SubscriptionHelper::handleHotspotClick(HWND handle, Sci_Position position) const {
+  std::set<std::string>& Helper::getClassNamesForGame(Game game) {
+    Lock lock(classNamesMutex);
+    return classNames[game];
+  }
+
+  std::set<std::string>& Helper::getNonClassNamesForGame(Game game)  {
+    Lock lock(nonClassNamesMutex);
+    return nonClassNames[game];
+  }
+
+  void Helper::clearClassNames() {
+    Lock lock(classNamesMutex);
+    classNames.clear();
+  }
+
+  void Helper::clearNonClassNames() {
+    Lock lock(nonClassNamesMutex);
+    nonClassNames.clear();
+  }
+
+  void Helper::handleHotspotClick(HWND handle, Sci_Position position) const {
     if (isUsable() && lexerData->currentGame != game::Game::Auto) {
       // Change Scintilla word chars to include ':' to support FO4's namespaces.
       size_t length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
