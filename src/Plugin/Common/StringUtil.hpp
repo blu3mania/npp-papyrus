@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <cwctype>
 #include <format>
 #include <sstream>
 #include <string>
@@ -103,12 +104,23 @@ namespace utility {
 
   inline std::wstring toUpper(const std::wstring& str) noexcept {
     std::wstring upper;
-    std::transform(str.begin(), str.end(), std::back_inserter(upper), towupper);
+    std::transform(str.begin(), str.end(), std::back_inserter(upper), std::towupper);
     return upper;
   }
+  inline std::string toUpper(const std::string& str) noexcept {
+    std::string upper;
+    std::transform(str.begin(), str.end(), std::back_inserter(upper), [](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
+    return upper;
+  }
+
   inline std::wstring toLower(const std::wstring& str) noexcept {
     std::wstring lower;
-    std::transform(str.begin(), str.end(), std::back_inserter(lower), towlower);
+    std::transform(str.begin(), str.end(), std::back_inserter(lower), std::towlower);
+    return lower;
+  }
+  inline std::string toLower(const std::string& str) noexcept {
+    std::string lower;
+    std::transform(str.begin(), str.end(), std::back_inserter(lower), [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
     return lower;
   }
 

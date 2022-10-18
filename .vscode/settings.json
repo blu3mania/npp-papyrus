@@ -25,6 +25,7 @@
       "cstring": "cpp",
       "ctime": "cpp",
       "cwchar": "cpp",
+      "cwctype": "cpp",
       "exception": "cpp",
       "filesystem": "cpp",
       "format": "cpp",

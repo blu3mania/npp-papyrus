@@ -255,13 +255,13 @@ When this happens, simply disable the option to force the lexer to re-check for 
 
   IDS_SETTINGS_MATCHER_TOOLTIP, L"Highlight matching keyword pair when cursor is at one of the words in the pair. When matching If/EndIf pair, Else/ElseIf can also be optionally included in the match."
 
-  IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indiator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number."
+  IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indicator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number."
 
   IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP, L"Show annotations under error lines. They are inside a round box. When there are multiple errors on the same line, they are grouped in the same annotation box."
 
   IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP, L"Show indications where errors happen."
 
-  IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indiator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number.\r\n\
+  IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indicator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number.\r\n\
 Note, if changes have been made after indications were shown, changing ID again may cause indications to be rendered incorrectly. Trigger recompilation to fix them if needed."
 
   IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP, L"In this mode, Papyrus compiler to be used is determined by the path of source script file. If it's under a detected game's directory, that game's settings will be used. Otherwise, \
