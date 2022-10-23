@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <filesystem>
 #include <map>
 #include <memory>
-#include <mutex>
 
 namespace papyrus {
 
@@ -47,9 +46,9 @@ namespace papyrus {
     // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded. This can be
     // fixed by toggling off this option then toggling it back on in Settings dialog.
     std::mutex classNamesMutex;
-    std::map<Game, std::set<std::string>> classNames;
+    std::map<Game, names_cache_t> classNames;
     std::mutex nonClassNamesMutex;
-    std::map<Game, std::set<std::string>> nonClassNames;
+    std::map<Game, names_cache_t> nonClassNames;
 
     // Saved Scintilla settings before we make our own changes, in case some other plugins also change them
     Helper::SavedScintillaSettings savedMainViewScintillaSettings;
@@ -199,25 +198,23 @@ namespace papyrus {
                 if (found) {
                   colorToken(styleContext, *iterTokens, State::Property);
                 } else {
-                  if (lexerData->currentGame != game::Game::Auto) {
+                  if (lexerData->settings.enableClassNameCache && lexerData->currentGame != game::Game::Auto) {
                     auto& currentGameClassNames = helper->getClassNamesForGame(lexerData->currentGame);
-                    if (currentGameClassNames.find(tokenString) != currentGameClassNames.end()) {
+                    if (isNameInCache(tokenString, currentGameClassNames.first, currentGameClassNames.second)) {
                       colorToken(styleContext, *iterTokens, State::Class);
                       found = true;
                     } else {
                       auto& currentGameNonClassNames = helper->getNonClassNamesForGame(lexerData->currentGame);
-                      if (currentGameNonClassNames.find(tokenString) == currentGameNonClassNames.end()) {
+                      if (!isNameInCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second)) {
                         if (!getClassFilePath(tokenString).empty()) {
                           colorToken(styleContext, *iterTokens, State::Class);
-                          if (lexerData->settings.enableClassNameCache) {
-                            currentGameClassNames.insert(tokenString);
-                          }
+                          addNameToCache(tokenString, currentGameClassNames.first, currentGameClassNames.second);
                           found = true;
                         }
-                      }
 
-                      if (!found && lexerData->settings.enableClassNameCache) {
-                        currentGameNonClassNames.insert(tokenString);
+                        if (!found) {
+                          addNameToCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second);
+                        }
                       }
                     }
                   }
@@ -404,6 +401,16 @@ namespace papyrus {
     }
   }
 
+  bool Lexer::isNameInCache(const std::string& name, const std::set<std::string>& namesCache, std::mutex& mutex) const {
+    Lock lock(mutex);
+    return namesCache.find(name) != namesCache.end();
+  }
+
+  void Lexer::addNameToCache(const std::string& name, std::set<std::string>& namesCache, std::mutex& mutex) {
+    Lock lock(mutex);
+    namesCache.insert(name);
+  }
+
   void Lexer::handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded) {
     Sci_Position line = static_cast<Sci_Position>(::SendMessage(handle, SCI_LINEFROMPOSITION, position, 0));
 
@@ -551,12 +558,12 @@ namespace papyrus {
     }
   }
 
-  std::set<std::string>& Helper::getClassNamesForGame(Game game) {
+  names_cache_t& Helper::getClassNamesForGame(Game game) {
     Lock lock(classNamesMutex);
     return classNames[game];
   }
 
-  std::set<std::string>& Helper::getNonClassNamesForGame(Game game)  {
+  names_cache_t& Helper::getNonClassNamesForGame(Game game)  {
     Lock lock(nonClassNamesMutex);
     return nonClassNames[game];
   }

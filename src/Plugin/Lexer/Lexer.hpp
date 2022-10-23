@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\..\external\scintilla\ILexer.h"
 
 #include <list>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -39,6 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 namespace papyrus {
+
+  using names_cache_t = std::pair<std::set<std::string>, std::mutex>;
 
   constexpr char LEXER_NAME[] = "Papyrus Script";
   constexpr TCHAR LEXER_STATUS_TEXT[] = L"Papyrus Script"; // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
@@ -62,8 +65,8 @@ namespace papyrus {
           inline bool isUsable() const { return (lexerData != nullptr && lexerData->usable); }
 
           // Get cached class/non-class names for a game
-          std::set<std::string>& getClassNamesForGame(Game game);
-          std::set<std::string>& getNonClassNamesForGame(Game game);
+          names_cache_t& getClassNamesForGame(Game game);
+          names_cache_t& getNonClassNamesForGame(Game game);
 
         private:
           // Get current buffer ID on the given view, if it's a applicable
@@ -169,6 +172,12 @@ namespace papyrus {
 
       // Get next character (wide char supported)
       int getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const;
+
+      // Check whether a given name is in a names cache
+      bool isNameInCache(const std::string& name, const std::set<std::string>& namesCache, std::mutex& mutex) const;
+
+      // Add a given name to a names cache
+      void addNameToCache(const std::string& name, std::set<std::string>& namesCache, std::mutex& mutex);
 
       // Content change handler. Update property list to make sure it's correct
       void handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded);
