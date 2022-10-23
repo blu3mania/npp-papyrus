@@ -33,8 +33,8 @@ jobs:
         run: |
           msbuild /m /p:Configuration=Release /p:Platform=${{ matrix.build_platform }} ${{ env.SOLUTION_FILE_PATH }}
           copy bin\${{ matrix.build_platform }}\Papyrus.dll .
-          & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.build_platform }}.zip Papyrus.dll Papyrus.xml extras
-          & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.build_platform }}-with-manuals.zip Papyrus.dll Papyrus.xml extras ..\*.md
+          & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.build_platform }}.zip Papyrus.dll Papyrus.xml extras themes
+          & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.build_platform }}-with-manuals.zip Papyrus.dll Papyrus.xml extras themes ..\*.md
 
       - name: Upload release package
         uses: actions/upload-release-asset@v1

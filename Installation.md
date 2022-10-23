@@ -16,6 +16,23 @@ launch Notepad++ and the plugin should be able to automatically copy *"Papyrus.x
 *"plugins\config"* directory under Notepad++'s data folder, similar to the handling when it's installed by
 *Plugins Admin*.
 
+**Dark Mode Note**
+
+Above instructions are for normal (light) mode. If using dark mode, manual handling is needed for now since
+Notepad++ doesn't handle themes/dark mode for external lexers' style configurations (see
+[this reported issue](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/12190)). You need to
+perform either of the two following actions:
+- Use Notepad++'s *Style Configurator* dialog under *Settings* menu to change styles for Papyrus Script
+  manually (theme selector here doesn't really matter since Notepad++ always saves to the same style
+  configuration file for external lexers no matter what theme is currently selected, but for correctness
+  and proper UI styling you should choose *"DarkModeDefault"* in the theme selector).
+- Copy bundled *"Papyrus.xml"* file under *"themes\DarkModeDefault"* to *"plugins\config"* directory under
+  Notepad++'s data folder.
+
+**Note,** if you decide to switch back to normal mode you will need to do this again, i.e. use *Style
+Configurator* to configure the styles again (choose *"Default (styles.xml)"* theme in this case), or copy
+the bundled *"Papyrus.xml"* file to *"plugins\config"* directory under Notepad++'s data folder.
+
 **WARNING:**
 - Do not install versions prior to v0.3.0 if you are using Notepad++ v8.3+.
 - Do not install v0.3.0+ if you are using a Notepad++ version prior to v8.3.

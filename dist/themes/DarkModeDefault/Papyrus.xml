@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+
+<!--
+This file is part of Papyrus Plugin for Notepad++
+
+Copyright (C) 2016 Tschilkroete <tschilkroete@gmail.com> (original author)
+Copyright (C) 2021 blu3mania (modified for Notepad++ 7.8.x-7.9.x)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<NotepadPlus lexerConfigVersion="3">
+    <Languages>
+        <Language name="Papyrus Script" ext="psc" commentLine="; " commentStart=";/" commentEnd="/;">
+            <!-- Make sure you keep keyword names instre1, instre2, type1 - type7 unchanged -->
+            <Keywords name="instre1">( ) [ ] , = + - * / % . ! &gt; &lt; | &amp; as is</Keywords>
+            <Keywords name="instre2">if else elseif endif while endwhile</Keywords>
+            <Keywords name="type1">bool float int string var</Keywords>
+            <Keywords name="type2">scriptname extends import debugonly betaonly default event endevent state endstate function endfunction global native struct endstruct property endproperty auto autoreadonly conditional hidden const mandatory group endgroup collapsed collapsedonref collapsedonbase new return length</Keywords>
+            <Keywords name="type3">none parent self true false</Keywords>
+            <Keywords name="type4">if while function struct property group event state</Keywords>
+            <Keywords name="type5">else elseif</Keywords>
+            <Keywords name="type6">endif endwhile endfunction native endstruct endproperty auto autoreadonly endgroup endevent endstate</Keywords>
+        </Language>
+    </Languages>
+    <LexerStyles>
+        <LexerType name="Papyrus Script" desc="Papyrus Script" ext="" excluded="no">
+            <WordsStyle name="Default" styleID="0" fgColor="DCDCCC" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" />
+            <WordsStyle name="Operator" styleID="1" fgColor="DCDCCC" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="instre1" />
+            <WordsStyle name="Flow control" styleID="2" fgColor="DFC47D" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="instre2" />
+            <WordsStyle name="Type" styleID="3" fgColor="CEDF99" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="type1" />
+            <WordsStyle name="Keyword" styleID="4" fgColor="DFC47D" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="type2" />
+            <WordsStyle name="Keyword2" styleID="5" fgColor="CEDF99" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="type3" />
+            <WordsStyle name="Fold (open)" styleID="6" fgColor="C000C0" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="type4" />
+            <WordsStyle name="Fold (middle)" styleID="7" fgColor="C000C0" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="type5" />
+            <WordsStyle name="Fold (close)" styleID="8" fgColor="C000C0" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" keywordClass="type6" />
+            <WordsStyle name="Comment (single line)" styleID="9" fgColor="3F9F3F" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="2" />
+            <WordsStyle name="Comment (multi-line)" styleID="10" fgColor="3F9F3F" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="2" />
+            <WordsStyle name="Comment (document)" styleID="11" fgColor="3F9F3F" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="2" />
+            <WordsStyle name="Number" styleID="12" fgColor="8CD0D3" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" />
+            <WordsStyle name="String" styleID="13" fgColor="CC9393" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" />
+            <WordsStyle name="Property" styleID="14" fgColor="3F9494" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="1" />
+            <WordsStyle name="Class" styleID="15" fgColor="418ECA" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" />
+            <WordsStyle name="Function" styleID="16" fgColor="FFCFAF" bgColor="3F3F3F" fontName="" fontSize="" fontStyle="0" />
+        </LexerType>
+    </LexerStyles>
+</NotepadPlus>
