@@ -106,7 +106,7 @@ namespace papyrus {
             }
           } else if (messageState == State::CommentMultiLine) {
             colorToken(styleContext, *iterTokens, State::CommentMultiLine);
-              // A multi-line comment ends with "/;" and there can't be spaces in between.
+            // A multi-line comment ends with "/;" and there can't be spaces in between.
             if (tokenString == ";" && iterTokens != tokens.begin() && std::prev(iterTokens)->content == "/" && iterTokens->startPos == std::prev(iterTokens)->startPos + 1) {
               messageState = State::Default;
             }
@@ -132,20 +132,16 @@ namespace papyrus {
           } else {
             // Determine the type of the token and color it.
             if (tokenString == "{") {
-              colorToken(styleContext, *iterTokens, State::CommentDoc);
-              messageState = State::CommentDoc;
+              colorToken(styleContext, *iterTokens, messageState = State::CommentDoc);
             } else if (tokenString == ";") {
               // A multi-line comment starts with ";/" and there can't be spaces in between.
               if (std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content == "/" && iterTokens->startPos == std::next(iterTokens)->startPos - 1) {
-                colorToken(styleContext, *iterTokens, State::CommentMultiLine);
-                messageState = State::CommentMultiLine;
+                colorToken(styleContext, *iterTokens, messageState = State::CommentMultiLine);
               } else {
-                colorToken(styleContext, *iterTokens, State::Comment);
-                messageState = State::Comment;
+                colorToken(styleContext, *iterTokens, messageState = State::Comment);
               }
             } else if (tokenString == "\"") {
-              colorToken(styleContext, *iterTokens, State::String);
-              messageState = State::String;
+              colorToken(styleContext, *iterTokens, messageState = State::String);
             } else if (iterTokens->tokenType == TokenType::Numeric) {
               colorToken(styleContext, *iterTokens, State::Number);
             } else if (iterTokens->tokenType == TokenType::Identifier) {
@@ -380,12 +376,13 @@ namespace papyrus {
 
   void Lexer::colorToken(StyleContext & styleContext, Token token, State state) const {
     if (styleContext.currentPos < (Sci_PositionU)token.startPos) {
+      // White spaces
+      styleContext.SetState(std::to_underlying(State::Default));
       styleContext.Forward(token.startPos - styleContext.currentPos);
     }
 
     styleContext.SetState(std::to_underlying(state));
     styleContext.Forward(token.content.length());
-    styleContext.SetState(std::to_underlying(State::Default));
   }
 
   int Lexer::getNextChar(Accessor& accessor, Sci_Position& index, Sci_Position& indexNext) const {
@@ -441,32 +438,34 @@ namespace papyrus {
 
   Helper::Helper() {
     lexerData->bufferActivated.subscribe([&](auto eventData) {
-      SavedScintillaSettings& savedScintillaSettings = (eventData.view == MAIN_VIEW) ? savedMainViewScintillaSettings : savedSecondViewScintillaSettings;
-      HWND handle = (eventData.view == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
-      if (isUsable() && eventData.isManagedBuffer) { // isManagedBuffer
-        // Save current Scintilla settings as we are about to change them
-        if (!savedScintillaSettings.saved) {
-          savedScintillaSettings.hotspotActiveForegroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, 0);
-          savedScintillaSettings.hotspotActiveBackgroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, 0);
-          savedScintillaSettings.hotspotActiveUnderline = ::SendMessage(handle, SCI_GETHOTSPOTACTIVEUNDERLINE, 0, 0);
-          savedScintillaSettings.saved = true;
-        }
+      if (isUsable()) {
+        SavedScintillaSettings& savedScintillaSettings = (eventData.view == MAIN_VIEW) ? savedMainViewScintillaSettings : savedSecondViewScintillaSettings;
+        HWND handle = (eventData.view == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
+        if (eventData.isManagedBuffer) { // isManagedBuffer
+          // Save current Scintilla settings as we are about to change them
+          if (!savedScintillaSettings.saved) {
+            savedScintillaSettings.hotspotActiveForegroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, 0);
+            savedScintillaSettings.hotspotActiveBackgroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, 0);
+            savedScintillaSettings.hotspotActiveUnderline = ::SendMessage(handle, SCI_GETHOTSPOTACTIVEUNDERLINE, 0, 0);
+            savedScintillaSettings.saved = true;
+          }
 
-        if (lexerData->settings.enableClassLink) {
-          ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
-          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000); // Element color is ABGR
-          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
-          ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
-        }
-      } else {
-        // Re-apply saved Scintilla settings as current buffer is not managed by this lexer
-        if (savedScintillaSettings.saved) {
-          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, savedScintillaSettings.hotspotActiveForegroundColor);
-          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, savedScintillaSettings.hotspotActiveBackgroundColor);
-          ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, savedScintillaSettings.hotspotActiveUnderline, 0);
+          if (lexerData->settings.enableClassLink) {
+            ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
+            ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000); // Element color is ABGR
+            ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
+            ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
+          }
+        } else {
+          // Re-apply saved Scintilla settings as current buffer is not managed by this lexer
+          if (savedScintillaSettings.saved) {
+            ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, savedScintillaSettings.hotspotActiveForegroundColor);
+            ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, savedScintillaSettings.hotspotActiveBackgroundColor);
+            ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, savedScintillaSettings.hotspotActiveUnderline, 0);
 
-          // Other plugins may change these settings so we better reset the cached flag to make sure we don't use stale saved settings
-          savedScintillaSettings.saved = false;
+            // Other plugins may change these settings so we better reset the cached flag to make sure we don't use stale saved settings
+            savedScintillaSettings.saved = false;
+          }
         }
       }
     });
