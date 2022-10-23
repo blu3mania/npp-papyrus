@@ -49,6 +49,13 @@ namespace papyrus {
       // Lexer instance. For example, restyle currently displayed document, regardless if it's lexed by current Lexer instance.
       class Helper {
         public:
+          struct SavedScintillaSettings {
+            bool saved {false};
+            int hotspotActiveForegroundColor;
+            int hotspotActiveBackgroundColor;
+            bool hotspotActiveUnderline;
+          };
+
           Helper();
 
           // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used

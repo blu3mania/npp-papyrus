@@ -55,6 +55,7 @@ namespace papyrus {
   };
   using change_event_topic_t = utility::Topic<ChangeEventData>;
 
+  // Pass data from plugin to lexer, e.g. settings and event data received from NPP or Scintilla
   struct LexerData {
     LexerData(const NppData& nppData, const LexerSettings& settings, Game currentGame = Game::Auto, game_import_dirs_t importDirectories = game_import_dirs_t(), bool usable = true)
       : nppData(nppData), settings(settings), currentGame(currentGame), importDirectories(importDirectories), scriptLangID(0), usable(usable) {
@@ -68,6 +69,7 @@ namespace papyrus {
     buffer_activated_topic_t bufferActivated;
     click_event_topic_t clickEventData;
     change_event_topic_t changeEventData;
+    utility::PrimitiveTypeValueMonitor<bool> nppReady {false};
     bool usable;
   };
 

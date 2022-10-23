@@ -122,6 +122,7 @@ namespace papyrus {
     } else if (notification->nmhdr.hwndFrom == nppData._nppHandle) {
       switch (notification->nmhdr.code) {
         case NPPN_READY: {
+          lexerData->nppReady = true;
           setupAdvancedMenu();
           break;
         }

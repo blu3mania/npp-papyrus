@@ -50,6 +50,10 @@ namespace papyrus {
     std::map<Game, std::set<std::string>> classNames;
     std::mutex nonClassNamesMutex;
     std::map<Game, std::set<std::string>> nonClassNames;
+
+    // Saved Scintilla settings before we make our own changes, in case some other plugins also change them
+    Helper::SavedScintillaSettings savedMainViewScintillaSettings;
+    Helper::SavedScintillaSettings savedSecondViewScintillaSettings;
   }
 
   Lexer::Lexer()
@@ -77,7 +81,7 @@ namespace papyrus {
 
   void SCI_METHOD Lexer::Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int, IDocument* pAccess) {
     if (isUsable()) {
-      if (docPointer == nullptr) {
+      if (docPointer == nullptr && lexerData->nppReady) {
         npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
         HWND handle = (currentView == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
         docPointer = reinterpret_cast<npp_ptr_t>(::SendMessage(handle, SCI_GETDOCPOINTER, 0, 0));
@@ -430,12 +434,33 @@ namespace papyrus {
 
   Helper::Helper() {
     lexerData->bufferActivated.subscribe([&](auto eventData) {
-      if (isUsable() && lexerData->settings.enableClassLink && eventData.isManagedBuffer) { // isManagedBuffer
-        HWND handle = (eventData.view == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
-        ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
-        ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000); // Element color is ABGR
-        ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
-        ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
+      SavedScintillaSettings& savedScintillaSettings = (eventData.view == MAIN_VIEW) ? savedMainViewScintillaSettings : savedSecondViewScintillaSettings;
+      HWND handle = (eventData.view == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
+      if (isUsable() && eventData.isManagedBuffer) { // isManagedBuffer
+        // Save current Scintilla settings as we are about to change them
+        if (!savedScintillaSettings.saved) {
+          savedScintillaSettings.hotspotActiveForegroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, 0);
+          savedScintillaSettings.hotspotActiveBackgroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, 0);
+          savedScintillaSettings.hotspotActiveUnderline = ::SendMessage(handle, SCI_GETHOTSPOTACTIVEUNDERLINE, 0, 0);
+          savedScintillaSettings.saved = true;
+        }
+
+        if (lexerData->settings.enableClassLink) {
+          ::SendMessage(handle, SCI_STYLESETHOTSPOT, std::to_underlying(State::Class), true);
+          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, lexerData->settings.classLinkForegroundColor | 0xFF000000); // Element color is ABGR
+          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
+          ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
+        }
+      } else {
+        // Re-apply saved Scintilla settings as current buffer is not managed by this lexer
+        if (savedScintillaSettings.saved) {
+          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, savedScintillaSettings.hotspotActiveForegroundColor);
+          ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, savedScintillaSettings.hotspotActiveBackgroundColor);
+          ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, savedScintillaSettings.hotspotActiveUnderline, 0);
+
+          // Other plugins may change these settings so we better reset the cached flag to make sure we don't use stale saved settings
+          savedScintillaSettings.saved = false;
+        }
       }
     });
 
