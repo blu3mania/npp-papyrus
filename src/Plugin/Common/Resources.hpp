@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PLUGIN_NAME     L"Papyrus"
 #define MAJOR_VERSION   0
 #define MINOR_VERSION   5
-#define PATCH_VERSION   0
+#define PATCH_VERSION   1
 #define BUILD_NUMBER    0 // This number will be replaced by build script
 #define PLUGIN_VERSION  STR(MAJOR_VERSION) L"." STR(MINOR_VERSION) L"." STR(PATCH_VERSION)
 
