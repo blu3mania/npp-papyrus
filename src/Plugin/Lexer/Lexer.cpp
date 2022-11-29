@@ -194,24 +194,29 @@ namespace papyrus {
                 if (found) {
                   colorToken(styleContext, *iterTokens, State::Property);
                 } else {
-                  if (lexerData->settings.enableClassNameCache && lexerData->currentGame != game::Game::Auto) {
-                    auto& currentGameClassNames = helper->getClassNamesForGame(lexerData->currentGame);
-                    if (isNameInCache(tokenString, currentGameClassNames.first, currentGameClassNames.second)) {
-                      colorToken(styleContext, *iterTokens, State::Class);
-                      found = true;
-                    } else {
-                      auto& currentGameNonClassNames = helper->getNonClassNamesForGame(lexerData->currentGame);
-                      if (!isNameInCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second)) {
-                        if (!getClassFilePath(tokenString).empty()) {
-                          colorToken(styleContext, *iterTokens, State::Class);
-                          addNameToCache(tokenString, currentGameClassNames.first, currentGameClassNames.second);
-                          found = true;
-                        }
+                  if (lexerData->currentGame != game::Game::Auto) {
+                    if (lexerData->settings.enableClassNameCache) {
+                      auto& currentGameClassNames = helper->getClassNamesForGame(lexerData->currentGame);
+                      if (isNameInCache(tokenString, currentGameClassNames.first, currentGameClassNames.second)) {
+                        colorToken(styleContext, *iterTokens, State::Class);
+                        found = true;
+                      } else {
+                        auto& currentGameNonClassNames = helper->getNonClassNamesForGame(lexerData->currentGame);
+                        if (!isNameInCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second)) {
+                          if (!getClassFilePath(tokenString).empty()) {
+                            colorToken(styleContext, *iterTokens, State::Class);
+                            addNameToCache(tokenString, currentGameClassNames.first, currentGameClassNames.second);
+                            found = true;
+                          }
 
-                        if (!found) {
-                          addNameToCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second);
+                          if (!found) {
+                            addNameToCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second);
+                          }
                         }
                       }
+                    } else if (!getClassFilePath(tokenString).empty()) {
+                        colorToken(styleContext, *iterTokens, State::Class);
+                        found = true;
                     }
                   }
 
