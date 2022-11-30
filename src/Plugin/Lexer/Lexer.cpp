@@ -613,7 +613,7 @@ namespace papyrus {
         };
         ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&textRange));
 
-      std::wstring filePath = getClassFilePath(className);
+        std::wstring filePath = getClassFilePath(className);
         if (!filePath.empty()) {
           ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
         }

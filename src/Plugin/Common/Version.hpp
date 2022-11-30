@@ -38,7 +38,7 @@ namespace utility {
     inline operator std::wstring() const noexcept { return toWString(); }
 
     friend std::ostream& operator<<(std::ostream& output, const Version& version) noexcept { output << version.toString(); return output; }
-    friend std::wostream& operator<<(std::wostream& output, const Version& version) noexcept  { output << version.toWString(); return output; }
+    friend std::wostream& operator<<(std::wostream& output, const Version& version) noexcept { output << version.toWString(); return output; }
 
     // Private members
     //

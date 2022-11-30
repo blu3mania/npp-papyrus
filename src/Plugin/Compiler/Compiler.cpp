@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Compiler.hpp"
 
+#include "..\Common\Logger.hpp"
 #include "..\Common\StringUtil.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
@@ -90,7 +91,7 @@ namespace papyrus {
         if (::CreatePipe(&outputReadHandle, &startupInfo.hStdOutput, &attr, STDOUT_PIPE_SIZE) && ::CreatePipe(&errorReadHandle, &startupInfo.hStdError, &attr, STDERR_PIPE_SIZE)) {
           // Run the process.
           PROCESS_INFORMATION compilationProcess {};
-          if (::CreateProcess(nullptr, const_cast<LPWSTR>(commandLine.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, nullptr, &startupInfo, &compilationProcess)) {
+          if (::CreateProcess(nullptr, const_cast<LPWSTR>(commandLine.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, std::filesystem::path(request.filePath).parent_path().c_str(), &startupInfo, &compilationProcess)) {
             if (::WaitForSingleObject(compilationProcess.hProcess, INFINITE) != WAIT_FAILED) {
               DWORD size {};
               if (::PeekNamedPipe(errorReadHandle, nullptr, 0, nullptr, &size, nullptr)) {
