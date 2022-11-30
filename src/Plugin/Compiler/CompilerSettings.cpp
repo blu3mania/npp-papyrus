@@ -46,7 +46,7 @@ namespace papyrus {
   }
 
   GameSettings& CompilerSettings::gameSettings(Game game) {
-    return const_cast<GameSettings&>(const_cast<const CompilerSettings*>(this)->gameSettings(game));
+    return const_cast<GameSettings&>(std::as_const(*this).gameSettings(game));
   }
 
 } // namespace
