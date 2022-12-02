@@ -373,6 +373,7 @@ namespace papyrus {
       && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
       ClickEventData clickEventData {
         .scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom),
+        .bufferID = ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0),
         .position = notification->position
       };
       lexerData->clickEventData = clickEventData;

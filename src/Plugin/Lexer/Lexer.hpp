@@ -81,7 +81,7 @@ namespace papyrus {
           void clearNonClassNames();
 
           // Hotspot click handler
-          void handleHotspotClick(HWND handle, Sci_Position position) const;
+          void handleHotspotClick(HWND handle, npp_buffer_t bufferID, Sci_Position position) const;
       };
 
       Lexer();
@@ -111,9 +111,6 @@ namespace papyrus {
         State styleState = static_cast<State>(style);
         return styleState == State::Comment || styleState == State::CommentMultiLine || styleState == State::CommentDoc;
       }
-
-      // Utility method to retrieve full path of a class. It supports FO4's namespaces
-      static std::wstring getClassFilePath(std::string className);
 
     protected:
       // Only when configuration file exists under Notepad++'s plugin config folder can this lexer be used
@@ -184,6 +181,9 @@ namespace papyrus {
 
       // Try to detect current document's Notepad++ buffer ID
       void detectBufferId();
+
+      // Utility method to retrieve the full path of a class. It supports FO4's namespaces
+      static std::wstring getClassFilePath(npp_buffer_t bufferID, std::string className);
 
       // Private members
       //

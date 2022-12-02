@@ -212,7 +212,7 @@ namespace papyrus {
                       } else {
                         auto& currentGameNonClassNames = helper->getNonClassNamesForGame(lexerData->currentGame);
                         if (!isNameInCache(tokenString, currentGameNonClassNames.first, currentGameNonClassNames.second)) {
-                          if (!getClassFilePath(tokenString).empty()) {
+                          if (!getClassFilePath(bufferID, tokenString).empty()) {
                             colorToken(styleContext, *iterTokens, State::Class);
                             addNameToCache(tokenString, currentGameClassNames.first, currentGameClassNames.second);
                             found = true;
@@ -223,7 +223,7 @@ namespace papyrus {
                           }
                         }
                       }
-                    } else if (!getClassFilePath(tokenString).empty()) {
+                    } else if (!getClassFilePath(bufferID, tokenString).empty()) {
                         colorToken(styleContext, *iterTokens, State::Class);
                         found = true;
                     }
@@ -297,27 +297,6 @@ namespace papyrus {
         levelPrev += levelDelta;
       }
     }
-  }
-
-  std::wstring Lexer::getClassFilePath(std::string className) {
-    // Find relative path from current directory. Support FO4's namespace.
-    std::filesystem::path relativePath;
-    auto pathComponents = utility::split(className, ":");
-    for (const auto& pathComponent : pathComponents) {
-      relativePath /= pathComponent;
-    }
-    relativePath.replace_extension(".psc");
-
-    // Find the relative path in configured import directories.
-    for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
-      std::wstring filePath = std::filesystem::path(path) / relativePath;
-      if (utility::fileExists(filePath)) {
-        return filePath;
-      }
-    }
-
-    // Not found
-    return std::wstring();
   }
 
   // Protected methods
@@ -470,6 +449,36 @@ namespace papyrus {
     }
   }
 
+  std::wstring Lexer::getClassFilePath(npp_buffer_t bufferID, std::string className) {
+    // Find relative path from search directory. Support FO4's namespace.
+    std::filesystem::path relativePath;
+    auto pathComponents = utility::split(className, ":");
+    for (const auto& pathComponent : pathComponents) {
+      relativePath /= pathComponent;
+    }
+    relativePath.replace_extension(".psc");
+
+    // PapyrusCompiler searches in current directory before searching in import directories.
+    auto currentBufferFilePath = utility::getFilePathFromBuffer(lexerData->nppData._nppHandle, bufferID);
+    if (!currentBufferFilePath.empty()) {
+      std::wstring filePath = std::filesystem::path(currentBufferFilePath).parent_path() / relativePath;
+      if (utility::fileExists(filePath)) {
+        return filePath;
+      }
+    }
+
+    // Find the relative path in configured import directories.
+    for (const auto& path : lexerData->importDirectories[lexerData->currentGame]) {
+      std::wstring filePath = std::filesystem::path(path) / relativePath;
+      if (utility::fileExists(filePath)) {
+        return filePath;
+      }
+    }
+
+    // Not found
+    return std::wstring();
+  }
+
   // Helper class methods
   //
 
@@ -553,7 +562,7 @@ namespace papyrus {
     });
 
     lexerData->clickEventData.subscribe([&](auto eventData) {
-      handleHotspotClick(eventData.scintillaHandle, eventData.position);
+      handleHotspotClick(eventData.scintillaHandle, eventData.bufferID, eventData.position);
     });
 
     lexerSettings.enableFoldMiddle.subscribe([&](auto) { restyleDocument(); });
@@ -607,7 +616,7 @@ namespace papyrus {
     nonClassNames.clear();
   }
 
-  void Helper::handleHotspotClick(HWND handle, Sci_Position position) const {
+  void Helper::handleHotspotClick(HWND handle, npp_buffer_t bufferID, Sci_Position position) const {
     if (isUsable() && lexerData->currentGame != game::Game::Auto) {
       // Change Scintilla word chars to include ':' to support FO4's namespaces.
       size_t length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
@@ -638,7 +647,7 @@ namespace papyrus {
         };
         ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&textRange));
 
-        std::wstring filePath = getClassFilePath(className);
+        std::wstring filePath = getClassFilePath(bufferID, className);
         if (!filePath.empty()) {
           ::SendMessage(lexerData->nppData._nppHandle, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(filePath.c_str()));
         }

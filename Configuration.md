@@ -40,6 +40,10 @@ of requiring double click can be configured in *Papyrus.ini*. **But be warned**,
 causes large amount of text gets selected in the newly opened file window so it will be more of a trouble
 than convenience.
 
+**Note,** PapyrusCompiler searches referenced scripts in current folder first, then in specified import
+directories ("-i"). If there are multiple directories specified, it will search from the first directory to
+the last one. This plugin matches this behavior when opening a referenced script file.
+
 ### Papyrus Script Lexer styles
 These styles can be configured from Notepad++'s *Style Configurator* dialog under *Settings* menu. A convenient
 link is provided.

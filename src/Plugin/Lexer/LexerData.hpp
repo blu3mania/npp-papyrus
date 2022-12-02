@@ -45,6 +45,7 @@ namespace papyrus {
 
   struct ClickEventData {
     HWND scintillaHandle;
+    npp_buffer_t bufferID;
     Sci_Position position;
   };
   using click_event_topic_t = utility::Topic<ClickEventData>;
