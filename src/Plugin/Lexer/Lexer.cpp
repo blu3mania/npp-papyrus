@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "LexerIDs.hpp"
 #include "..\Common\FileSystemUtil.hpp"
+#include "..\Common\Logger.hpp"
 #include "..\Common\StringUtil.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
@@ -66,7 +67,11 @@ namespace papyrus {
 
     changeEventSubscription = lexerData->changeEventData.subscribe([&](auto eventData) {
       if (isUsable()) {
-        if (docPointer == reinterpret_cast<npp_ptr_t>(::SendMessage(eventData.scintillaHandle, SCI_GETDOCPOINTER, 0, 0))) {
+        if (bufferID == 0) {
+          detectBufferId();
+        }
+
+        if (bufferID == eventData.bufferID) {
           // Change happened on current file.
           handleContentChange(eventData.scintillaHandle, eventData.position, eventData.linesAdded);
         }
@@ -80,10 +85,8 @@ namespace papyrus {
 
   void SCI_METHOD Lexer::Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int, IDocument* pAccess) {
     if (isUsable()) {
-      if (docPointer == nullptr && lexerData->nppReady) {
-        npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
-        HWND handle = (currentView == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
-        docPointer = reinterpret_cast<npp_ptr_t>(::SendMessage(handle, SCI_GETDOCPOINTER, 0, 0));
+      if (bufferID == 0) {
+        detectBufferId();
       }
 
       Accessor accessor(pAccess, nullptr);
@@ -106,7 +109,7 @@ namespace papyrus {
             }
           } else if (messageState == State::CommentMultiLine) {
             colorToken(styleContext, *iterTokens, State::CommentMultiLine);
-            // A multi-line comment ends with "/;" and there can't be spaces in between.
+              // A multi-line comment ends with "/;" and there can't be spaces in between.
             if (tokenString == ";" && iterTokens != tokens.begin() && std::prev(iterTokens)->content == "/" && iterTokens->startPos == std::prev(iterTokens)->startPos + 1) {
               messageState = State::Default;
             }
@@ -154,7 +157,13 @@ namespace papyrus {
                 colorToken(styleContext, *iterTokens, State::FlowControl);
               } else if (wordListKeywords.InList(tokenString.c_str())) {
                 // Check if a new property needs to be added, and update existing property list
-                if (tokenString == "property" && std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content != ";") {
+                if (tokenString == "scriptname" && std::next(iterTokens) != tokens.end()) {
+                  auto detectedScriptName = utility::split(std::next(iterTokens)->content, ":").back();
+                  if (!utility::compare(scriptName, detectedScriptName)) {
+                    scriptName = detectedScriptName;
+                    detectBufferId();
+                  }
+                } else if (tokenString == "property" && std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content != ";") {
                   std::string propertyName = std::next(iterTokens)->content;
                   auto iter = std::find_if(propertyLines.begin(), propertyLines.end(),
                     [&](const auto& property) {
@@ -441,12 +450,35 @@ namespace papyrus {
     }
   }
 
+  void Lexer::detectBufferId() {
+    // Can only detect buffer ID if script name is known
+    if (!scriptName.empty()) {
+      // Check if the file name of the active document on current view matches detected script name
+      npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
+      npp_buffer_t candidateBufferID = utility::getActiveBufferIdOnView(lexerData->nppData._nppHandle, currentView);
+      std::filesystem::path filePath = utility::getFilePathFromBuffer(lexerData->nppData._nppHandle, candidateBufferID);
+      if (utility::compare(scriptName + ".psc", filePath.filename().string())) {
+        bufferID = candidateBufferID;
+      } else {
+        // Does not match. CHeck the other view
+        candidateBufferID = utility::getActiveBufferIdOnView(lexerData->nppData._nppHandle, currentView == MAIN_VIEW ? SUB_VIEW : MAIN_VIEW);
+        filePath = utility::getFilePathFromBuffer(lexerData->nppData._nppHandle, candidateBufferID);
+        if (utility::compare(scriptName + ".psc", filePath.filename().string())) {
+          bufferID = candidateBufferID;
+        }
+      }
+    }
+  }
+
+  // Helper class methods
+  //
+
   Helper::Helper() {
     lexerData->bufferActivated.subscribe([&](auto eventData) {
       if (isUsable()) {
         SavedScintillaSettings& savedScintillaSettings = (eventData.view == MAIN_VIEW) ? savedMainViewScintillaSettings : savedSecondViewScintillaSettings;
         HWND handle = (eventData.view == MAIN_VIEW) ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle;
-        if (eventData.isManagedBuffer) { // isManagedBuffer
+        if (eventData.isManagedBuffer) {
           // Save current Scintilla settings as we are about to change them
           if (!savedScintillaSettings.saved) {
             savedScintillaSettings.hotspotActiveForegroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, 0);
@@ -536,15 +568,8 @@ namespace papyrus {
   }
 
   npp_buffer_t Helper::getApplicableBufferIdOnView(npp_view_t view) const {
-    npp_index_t viewDocIndex = static_cast<npp_index_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
-    if (viewDocIndex != -1) {
-      npp_buffer_t viewBufferID = static_cast<npp_buffer_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERIDFROMPOS, static_cast<WPARAM>(viewDocIndex), static_cast<LPARAM>(view)));
-      if (viewBufferID != 0 && lexerData->scriptLangID == static_cast<npp_lang_type_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERLANGTYPE, static_cast<WPARAM>(viewBufferID), 0))) {
-        return viewBufferID;
-      }
-    }
-
-    return 0;
+    npp_buffer_t viewBufferID = utility::getActiveBufferIdOnView(lexerData->nppData._nppHandle, view);
+    return (viewBufferID != 0 && lexerData->scriptLangID == static_cast<npp_lang_type_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETBUFFERLANGTYPE, static_cast<WPARAM>(viewBufferID), 0)) ? viewBufferID : 0);
   }
 
   void Helper::restyleDocument() const {

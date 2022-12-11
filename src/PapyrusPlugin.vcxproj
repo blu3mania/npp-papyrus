@@ -229,6 +229,7 @@
     <ClCompile Include="external\XMessageBox\XMessageBox.cpp" />
     <ClCompile Include="Plugin\Common\Game.cpp" />
     <ClCompile Include="Plugin\Common\Logger.cpp" />
+    <ClCompile Include="Plugin\Common\NotepadPlusPlus.cpp" />
     <ClCompile Include="Plugin\Common\StringUtil.cpp" />
     <ClCompile Include="Plugin\Common\Timer.cpp" />
     <ClCompile Include="Plugin\Common\Version.cpp" />

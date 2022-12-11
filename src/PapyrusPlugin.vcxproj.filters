@@ -188,6 +188,9 @@
     <ClCompile Include="Plugin\Common\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Plugin\Common\NotepadPlusPlus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Plugin\Common\StringUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

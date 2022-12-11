@@ -132,20 +132,10 @@ namespace papyrus {
   //
 
   std::wstring ErrorAnnotator::getApplicableFilePathOnView(npp_view_t view) const {
-    // Check whether there is an active doc on the given view.
-    npp_index_t docIndex = static_cast<npp_index_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTDOCINDEX, 0, static_cast<LPARAM>(view)));
-    if (docIndex != -1) {
-      npp_buffer_t bufferID = static_cast<npp_buffer_t>(::SendMessage(nppData._nppHandle, NPPM_GETBUFFERIDFROMPOS, static_cast<WPARAM>(docIndex), static_cast<LPARAM>(view)));
-      if (bufferID != 0) {
-        // Make sure it is a Papyrus script
-        wchar_t filePathArray[MAX_PATH];
-        if (::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), reinterpret_cast<LPARAM>(filePathArray)) != -1) {
-          std::wstring filePath(filePathArray);
-          if (utility::endsWith(filePath, L".psc") || utility::endsWith(filePath, L".pas")) {
-            return filePath;
-          }
-        }
-      }
+    // Make sure it is a Papyrus script
+    std::wstring filePath = utility::getActiveFilePathOnView(nppData._nppHandle, view);
+    if (utility::endsWith(filePath, L".psc") || utility::endsWith(filePath, L".pas")) {
+      return filePath;
     }
 
     return std::wstring();

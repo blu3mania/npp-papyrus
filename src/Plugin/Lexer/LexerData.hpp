@@ -38,6 +38,7 @@ namespace papyrus {
 
   struct BufferActivationEventData {
     npp_view_t view;
+    npp_buffer_t bufferID;
     bool isManagedBuffer;
   };
   using buffer_activated_topic_t = utility::Topic<BufferActivationEventData>;
@@ -50,12 +51,13 @@ namespace papyrus {
 
   struct ChangeEventData {
     HWND scintillaHandle;
+    npp_buffer_t bufferID;
     Sci_Position position;
     Sci_Position linesAdded;
   };
   using change_event_topic_t = utility::Topic<ChangeEventData>;
 
-  // Pass data from plugin to lexer, e.g. settings and event data received from NPP or Scintilla
+  // Pass data from plugin to lexer, e.g. settings, and event data received from NPP or Scintilla
   struct LexerData {
     LexerData(const NppData& nppData, const LexerSettings& settings, Game currentGame = Game::Auto, game_import_dirs_t importDirectories = game_import_dirs_t(), bool usable = true)
       : nppData(nppData), settings(settings), currentGame(currentGame), importDirectories(importDirectories), scriptLangID(0), usable(usable) {

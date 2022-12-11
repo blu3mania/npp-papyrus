@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include <string>
+
 #include <windows.h>
 
 using npp_view_t      = int;
@@ -42,3 +44,16 @@ using npp_ptr_t       = void*;
 // They are unlikely to change but make sure they are checked and updated as needed
 // with each new Notepad++ releases.
 #define NB_MAX_EXTERNAL_LANG        30
+
+namespace utility {
+
+  // Retrieve the full file path of a document from its Notepad++ buffer ID
+  std::wstring getFilePathFromBuffer(HWND nppHandle, npp_buffer_t bufferID);
+
+  // Retrieve the full file path of the active document on a given view
+  std::wstring getActiveFilePathOnView(HWND nppHandle, npp_view_t view);
+
+  // Retrieve the Notepad++ buffer ID of the active document on a given view
+  npp_buffer_t getActiveBufferIdOnView(HWND nppHandle, npp_view_t view);
+
+} // namespace

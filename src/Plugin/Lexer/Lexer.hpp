@@ -182,6 +182,9 @@ namespace papyrus {
       // Content change handler. Update property list to make sure it's correct
       void handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded);
 
+      // Try to detect current document's Notepad++ buffer ID
+      void detectBufferId();
+
       // Private members
       //
 
@@ -205,8 +208,11 @@ namespace papyrus {
       // Cache property names defined in current file, for better performance
       std::set<std::string> propertyNames;
 
-      // Document pointer managed by Scintilla
-      npp_ptr_t docPointer {nullptr};
+      // Current script's name
+      std::string scriptName {};
+
+      // Current document's buffer ID managed by Notepad++
+      npp_buffer_t bufferID {0};
 
       // Subscriptions
       change_event_topic_t::subscription_t changeEventSubscription;

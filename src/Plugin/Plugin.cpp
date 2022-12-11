@@ -278,94 +278,89 @@ namespace papyrus {
     detectLangID();
 
     npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
-    npp_size_t filePathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), 0));
-    if (filePathLength > 0) {
-      wchar_t* filePathCharArray = new wchar_t[filePathLength + 1];
-      auto autoCleanup = gsl::finally([&] { delete[] filePathCharArray; });
-      if (::SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, static_cast<WPARAM>(bufferID), reinterpret_cast<LPARAM>(filePathCharArray)) != -1) {
-        std::wstring filePath(filePathCharArray);
+    std::wstring filePath = utility::getFilePathFromBuffer(nppData._nppHandle, bufferID);
+    if (!filePath.empty()) {
+      // Set detected game for lexer.
+      auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);
+      if (lexerData && !fromLangChange) {
+        lexerData->currentGame = detectedGame;
+      }
 
-        // Set detected game for lexer.
-        auto [detectedGame, useAutoModeOutputDirectory] = detectGameType(filePath, settings.compilerSettings);
-        if (lexerData && !fromLangChange) {
-          lexerData->currentGame = detectedGame;
+      // Check if active compilation file is still the current one on either view.
+      if (activeCompilationRequest.bufferID != 0) {
+        isComplingCurrentFile = utility::compare(activeCompilationRequest.filePath, filePath);
+        if (isComplingCurrentFile && !fromLangChange) {
+          ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(L"Compiling..."));
         }
+      }
 
-        // Check if active compilation file is still the current one on either view.
-        if (activeCompilationRequest.bufferID != 0) {
-          isComplingCurrentFile = utility::compare(activeCompilationRequest.filePath, filePath);
-          if (isComplingCurrentFile && !fromLangChange) {
-            ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(L"Compiling..."));
+      // Check if we are waiting for a file to open as a result of user selecting an error from list.
+      HWND scintillaHandle = (currentView == MAIN_VIEW) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
+      if (!activatedErrorsTrackingList.empty() && !fromLangChange) {
+        // Check if activated file is in the tracking list.
+        auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
+          [&](const auto& error) {
+            return utility::compare(error.file, filePath);
           }
-        }
+        );
+        if (iter != activatedErrorsTrackingList.end()) {
+          // Scintilla's line number is zero-based.
+          int line = iter->line - 1;
 
-        // Check if we are waiting for a file to open as a result of user selecting an error from list.
-        HWND scintillaHandle = (currentView == MAIN_VIEW) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
-        if (!activatedErrorsTrackingList.empty() && !fromLangChange) {
-          // Check if activated file is in the tracking list.
-          auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
-            [&](const auto& error) {
-              return utility::compare(error.file, filePath);
+          // When the buffer is big, asking Scintilla to scroll immediately doesn't always work, so use a short timer.
+          jumpToErrorLineTimer = utility::startTimer(100, [=] {
+            // Make sure the active document is still the one we are tracking before scrolling.
+            if (bufferID == ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0)) {
+              ::SendMessage(scintillaHandle, SCI_GOTOLINE, line, 0);
             }
-          );
-          if (iter != activatedErrorsTrackingList.end()) {
-            // Scintilla's line number is zero-based.
-            int line = iter->line - 1;
+          });
 
-            // When the buffer is big, asking Scintilla to scroll immediately doesn't always work, so use a short timer.
-            jumpToErrorLineTimer = utility::startTimer(100, [=] {
-              // Make sure the active document is still the one we are tracking before scrolling.
-              if (bufferID == ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0)) {
-                ::SendMessage(scintillaHandle, SCI_GOTOLINE, line, 0);
+          // Get rid of other errors in the list for the same file.
+          while (iter != activatedErrorsTrackingList.end()) {
+            activatedErrorsTrackingList.erase(iter++);
+            iter = std::find_if(iter, activatedErrorsTrackingList.end(),
+              [&](const auto& error) {
+                return utility::compare(error.file, filePath);
               }
-            });
-
-            // Get rid of other errors in the list for the same file.
-            while (iter != activatedErrorsTrackingList.end()) {
-              activatedErrorsTrackingList.erase(iter++);
-              iter = std::find_if(iter, activatedErrorsTrackingList.end(),
-                [&](const auto& error) {
-                  return utility::compare(error.file, filePath);
-                }
-              );
-            }
+            );
           }
         }
+      }
 
-        bool isManagedBuffer = false;
-        bool isPapyrusScriptFile = utility::endsWith(filePath, L".psc");
-        npp_lang_type_t currentFileLangID;
-        ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
-        if (currentFileLangID == scriptLangID) {
-          // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
-          isManagedBuffer = true;
+      bool isManagedBuffer = false;
+      bool isPapyrusScriptFile = utility::endsWith(filePath, L".psc");
+      npp_lang_type_t currentFileLangID;
+      ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
+      if (currentFileLangID == scriptLangID) {
+        // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
+        isManagedBuffer = true;
 
-          // If not compiling current file, check its game type and update status message (if applicable).
-          if (!isComplingCurrentFile && detectedGame != Game::Auto) {
-            std::wstring gameSpecificStatus(L"[" + game::gameNames[std::to_underlying(detectedGame)].second + L"] " + Lexer::statusText());
-            ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
-          }
-
-          if (fromLangChange) {
-            keywordMatcher.match(scintillaHandle);
-          }
-        } else if (isPapyrusScriptFile && fromLangChange) {
-          // Papyrus script file changed to other language, clear keyword matching.
-          keywordMatcher.clear();
+        // If not compiling current file, check its game type and update status message (if applicable).
+        if (!isComplingCurrentFile && detectedGame != Game::Auto) {
+          std::wstring gameSpecificStatus(L"[" + game::gameNames[std::to_underlying(detectedGame)].second + L"] " + Lexer::statusText());
+          ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
         }
 
-        // Only Papyrus script and assembly files can be annotated.
-        if (errorAnnotator && (isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange) {
-          errorAnnotator->annotate(currentView, filePath);
+        if (fromLangChange) {
+          keywordMatcher.match(scintillaHandle);
         }
+      } else if (isPapyrusScriptFile && fromLangChange) {
+        // Papyrus script file changed to other language, clear keyword matching.
+        keywordMatcher.clear();
+      }
 
-        if (lexerData) {
-          BufferActivationEventData bufferActivationEventData {
-            .view = currentView,
-            .isManagedBuffer = isManagedBuffer
-          };
-          lexerData->bufferActivated = bufferActivationEventData;
-        }
+      // Only Papyrus script and assembly files can be annotated.
+      if (errorAnnotator && (isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange) {
+        errorAnnotator->annotate(currentView, filePath);
+      }
+
+      if (lexerData) {
+        BufferActivationEventData bufferActivationEventData {
+          .view = currentView,
+          .bufferID = bufferID,
+          .isManagedBuffer = isManagedBuffer
+        };
+        lexerData->bufferActivated = bufferActivationEventData;
       }
     }
   }
@@ -389,6 +384,7 @@ namespace papyrus {
     if (lexerData && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
       ChangeEventData changeEventData {
         .scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom),
+        .bufferID = ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0),
         .position = notification->position,
         .linesAdded = notification->linesAdded
       };
