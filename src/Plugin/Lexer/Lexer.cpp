@@ -65,6 +65,19 @@ namespace papyrus {
       helper = std::make_unique<Helper>();
     }
 
+    hoverEventSubscription = lexerData->hoverEventData.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (bufferID == 0) {
+          detectBufferId();
+        }
+
+        if (bufferID == eventData.bufferID) {
+          // Mouse hovering over a word in current file.
+          handleMouseHover(eventData.scintillaHandle, eventData.hovering, eventData.position);
+        }
+      }
+    });
+
     changeEventSubscription = lexerData->changeEventData.subscribe([&](auto eventData) {
       if (isUsable()) {
         if (bufferID == 0) {
@@ -80,6 +93,7 @@ namespace papyrus {
   }
 
   Lexer::~Lexer() {
+    hoverEventSubscription->unsubscribe();
     changeEventSubscription->unsubscribe();
   }
 
@@ -401,6 +415,68 @@ namespace papyrus {
     namesCache.insert(name);
   }
 
+  void Lexer::handleMouseHover(HWND handle, bool hovering, Sci_Position position) const {
+    if (isUsable() && lexerData->settings.enableHover) {
+      // Cancel any displayed call tips
+      ::SendMessage(handle, SCI_CALLTIPCANCEL, 0, 0);
+
+      if (hovering) {
+        Sci_Position start = ::SendMessage(handle, SCI_WORDSTARTPOSITION, position, true);
+        Sci_Position end = ::SendMessage(handle, SCI_WORDENDPOSITION, position, true);
+
+        if (end > start) {
+          char* callTips = nullptr;
+          auto autoCleanupCallTips = gsl::finally([&] { delete[] callTips; });
+
+          int style = static_cast<int>(::SendMessage(handle, SCI_GETSTYLEAT, start, 0));
+          switch (style) {
+            case std::to_underlying(State::Property): {
+              if (lexerData->settings.enabledHoverCategories & HOVER_CATEGORY_PROPERTY) {
+                char* propertyName = new char[end - start + 1];
+                auto autoCleanupPropertyName = gsl::finally([&] { delete[] propertyName; });
+
+                Sci_TextRange propertyNameTextRange {
+                  .chrg = {
+                    .cpMin = static_cast<Sci_PositionCR>(start),
+                    .cpMax = static_cast<Sci_PositionCR>(end)
+                  },
+                  .lpstrText = propertyName
+                };
+                ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&propertyNameTextRange));
+
+                auto iter = std::find_if(propertyLines.begin(), propertyLines.end(),
+                  [&](const auto& property) {
+                    return property.name == utility::toLower(propertyName);
+                  }
+                );
+                if (iter != propertyLines.end()) {
+                  Sci_Position propertyDefinitionStart = ::SendMessage(handle, SCI_POSITIONFROMLINE, iter->line, 0);
+                  Sci_Position propertyDefinitionEnd = ::SendMessage(handle, SCI_GETLINEENDPOSITION, iter->line, 0);
+                  callTips = new char[propertyDefinitionEnd - propertyDefinitionStart + 1];
+
+                  Sci_TextRange propertyDefinitionTextRange {
+                    .chrg = {
+                      .cpMin = static_cast<Sci_PositionCR>(propertyDefinitionStart),
+                      .cpMax = static_cast<Sci_PositionCR>(propertyDefinitionEnd)
+                    },
+                    .lpstrText = callTips
+                  };
+                  ::SendMessage(handle, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&propertyDefinitionTextRange));
+                }
+              }
+              break;
+            }
+          }
+
+          if (callTips != nullptr) {
+            ::SendMessage(handle, SCI_CALLTIPSETPOSITION, true, 0);
+            ::SendMessage(handle, SCI_CALLTIPSHOW, start, reinterpret_cast<LPARAM>(callTips));
+          }
+        }
+      }
+    }
+  }
+
   void Lexer::handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded) {
     Sci_Position line = static_cast<Sci_Position>(::SendMessage(handle, SCI_LINEFROMPOSITION, position, 0));
 
@@ -493,6 +569,7 @@ namespace papyrus {
             savedScintillaSettings.hotspotActiveForegroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, 0);
             savedScintillaSettings.hotspotActiveBackgroundColor = ::SendMessage(handle, SCI_GETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, 0);
             savedScintillaSettings.hotspotActiveUnderline = ::SendMessage(handle, SCI_GETHOTSPOTACTIVEUNDERLINE, 0, 0);
+            savedScintillaSettings.mouseDwellTime = ::SendMessage(handle, SCI_GETMOUSEDWELLTIME, 0, 0);
             savedScintillaSettings.saved = true;
           }
 
@@ -502,12 +579,19 @@ namespace papyrus {
             ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, lexerData->settings.classLinkBackgroundColor);
             ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, lexerData->settings.classLinkUnderline, 0);
           }
+
+          if (lexerData->settings.enableHover) {
+            ::SendMessage(handle, SCI_SETMOUSEDWELLTIME, lexerData->settings.hoverDelay, 0);
+          } else {
+            ::SendMessage(handle, SCI_SETMOUSEDWELLTIME, SC_TIME_FOREVER, 0);
+          }
         } else {
           // Re-apply saved Scintilla settings as current buffer is not managed by this lexer
           if (savedScintillaSettings.saved) {
             ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE, savedScintillaSettings.hotspotActiveForegroundColor);
             ::SendMessage(handle, SCI_SETELEMENTCOLOUR, SC_ELEMENT_HOT_SPOT_ACTIVE_BACK, savedScintillaSettings.hotspotActiveBackgroundColor);
             ::SendMessage(handle, SCI_SETHOTSPOTACTIVEUNDERLINE, savedScintillaSettings.hotspotActiveUnderline, 0);
+            ::SendMessage(handle, SCI_SETMOUSEDWELLTIME, savedScintillaSettings.mouseDwellTime, 0);
 
             // Other plugins may change these settings so we better reset the cached flag to make sure we don't use stale saved settings
             savedScintillaSettings.saved = false;
@@ -557,6 +641,40 @@ namespace papyrus {
         }
         if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
           ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETHOTSPOTACTIVEUNDERLINE, eventData.newValue, 0);
+        }
+      }
+    });
+
+    lexerSettings.enableHover.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
+          if (eventData.newValue) {
+            ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETMOUSEDWELLTIME, lexerData->settings.hoverDelay, 0);
+          } else {
+            ::SendMessage(lexerData->nppData._scintillaMainHandle, SCI_SETMOUSEDWELLTIME, SC_TIME_FOREVER, 0);
+          }
+        }
+        if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
+          if (eventData.newValue) {
+            ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETMOUSEDWELLTIME, lexerData->settings.hoverDelay, 0);
+          } else {
+            ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETMOUSEDWELLTIME, SC_TIME_FOREVER, 0);
+          }
+        }
+      }
+    });
+
+    lexerSettings.hoverDelay.subscribe([&](auto eventData) {
+      if (isUsable()) {
+        if (getApplicableBufferIdOnView(MAIN_VIEW) != 0) {
+          if (lexerData->settings.enableHover) {
+            ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETMOUSEDWELLTIME, eventData.newValue, 0);
+          }
+        }
+        if (getApplicableBufferIdOnView(SUB_VIEW) != 0) {
+          if (lexerData->settings.enableHover) {
+            ::SendMessage(lexerData->nppData._scintillaSecondHandle, SCI_SETMOUSEDWELLTIME, eventData.newValue, 0);
+          }
         }
       }
     });
@@ -617,7 +735,7 @@ namespace papyrus {
   }
 
   void Helper::handleHotspotClick(HWND handle, npp_buffer_t bufferID, Sci_Position position) const {
-    if (isUsable() && lexerData->currentGame != game::Game::Auto) {
+    if (isUsable() && lexerData->settings.enableClassLink && lexerData->currentGame != game::Game::Auto) {
       // Change Scintilla word chars to include ':' to support FO4's namespaces.
       size_t length = ::SendMessage(handle, SCI_GETWORDCHARS, 0, 0);
       char* wordChars = new char[length + 2]; // To add ':' and also null terminator

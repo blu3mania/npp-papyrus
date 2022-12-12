@@ -28,7 +28,7 @@ namespace papyrus {
 
   bool Settings::loadSettings(SettingsStorage& storage, utility::Version currentVersion) {
     if (!storage.load()) {
-      // This would initialize settings to current version's default
+      // This will initialize settings to current version's default
       readSettings(storage);
       storage.setVersion(currentVersion);
       return false;
@@ -51,6 +51,9 @@ namespace papyrus {
     storage.putString(L"lexer.classLinkBackgroundColor", utility::colorToHexStr(lexerSettings.classLinkBackgroundColor));
     storage.putString(L"lexer.classLinkRequiresDoubleClick", utility::boolToStr(lexerSettings.classLinkRequiresDoubleClick));
     storage.putString(L"lexer.classLinkClickModifier", std::to_wstring(lexerSettings.classLinkClickModifier));
+    storage.putString(L"lexer.enableHover", utility::boolToStr(lexerSettings.enableHover));
+    storage.putString(L"lexer.enabledHoverCategories", std::to_wstring(lexerSettings.enabledHoverCategories));
+    storage.putString(L"lexer.hoverDelay", std::to_wstring(lexerSettings.hoverDelay));
 
     storage.putString(L"keywordMatcher.enableKeywordMatching", utility::boolToStr(keywordMatcherSettings.enableKeywordMatching));
     storage.putString(L"keywordMatcher.enabledKeywords", std::to_wstring(keywordMatcherSettings.enabledKeywords));
@@ -143,6 +146,31 @@ namespace papyrus {
       lexerSettings.classLinkClickModifier = std::stoi(value);
     } else {
       lexerSettings.classLinkClickModifier = SCMOD_CTRL;
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.enableHover", value)) {
+      lexerSettings.enableHover = utility::strToBool(value);
+    } else {
+      lexerSettings.enableHover = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.enabledHoverCategories", value)) {
+      lexerSettings.enabledHoverCategories = std::stoi(value);
+    } else {
+      lexerSettings.enabledHoverCategories = HOVER_CATEGORY_ALL;
+      updated = true;
+    }
+
+    if (storage.getString(L"lexer.hoverDelay", value)) {
+      lexerSettings.hoverDelay = std::stoi(value);
+      if (lexerSettings.hoverDelay <= 0) {
+        lexerSettings.hoverDelay = DEFAULT_HOVER_DELAY;
+        updated = true;
+      }
+    } else {
+      lexerSettings.hoverDelay = DEFAULT_HOVER_DELAY;
       updated = true;
     }
 

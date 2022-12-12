@@ -59,6 +59,7 @@ namespace papyrus {
 
       enum class Group {
         ClassLink,
+        Hover,
         Matcher,
         Annotation,
         Indication,

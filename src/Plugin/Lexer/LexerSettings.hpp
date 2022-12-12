@@ -27,6 +27,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace papyrus {
 
+  constexpr int HOVER_CATEGORY_NONE     = 0;
+  constexpr int HOVER_CATEGORY_PROPERTY = 0b1;
+  constexpr int HOVER_CATEGORY_ALL      = HOVER_CATEGORY_PROPERTY;
+
+  constexpr int DEFAULT_HOVER_DELAY     = 300;
+
   struct LexerSettings {
     utility::PrimitiveTypeValueMonitor<bool>     enableFoldMiddle;
     utility::PrimitiveTypeValueMonitor<bool>     enableClassNameCache;
@@ -36,6 +42,9 @@ namespace papyrus {
     utility::PrimitiveTypeValueMonitor<COLORREF> classLinkBackgroundColor;
     utility::PrimitiveTypeValueMonitor<bool>     classLinkRequiresDoubleClick;
     utility::PrimitiveTypeValueMonitor<int>      classLinkClickModifier;
+    utility::PrimitiveTypeValueMonitor<bool>     enableHover;
+    utility::PrimitiveTypeValueMonitor<int>      enabledHoverCategories;
+    utility::PrimitiveTypeValueMonitor<int>      hoverDelay;
   };
 
 } // namespace

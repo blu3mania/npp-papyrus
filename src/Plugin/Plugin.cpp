@@ -105,9 +105,19 @@ namespace papyrus {
           break;
         }
 
+        case SCN_DWELLSTART: {
+          handleMouseHover(notification, true);
+          break;
+        }
+
+        case SCN_DWELLEND: {
+          handleMouseHover(notification, false);
+          break;
+        }
+
         case SCN_MODIFIED: {
           if (notification->modificationType & SC_MOD_INSERTTEXT || notification->modificationType & SC_MOD_DELETETEXT) {
-            handleContentUpdate(notification);
+            handleContentChange(notification);
           }
           break;
         }
@@ -371,21 +381,37 @@ namespace papyrus {
       && (notification->nmhdr.code == SCN_HOTSPOTDOUBLECLICK) == lexerData->settings.classLinkRequiresDoubleClick
       && notification->modifiers == lexerData->settings.classLinkClickModifier
       && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
+      HWND scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom);
       ClickEventData clickEventData {
-        .scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom),
-        .bufferID = ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0),
+        .scintillaHandle = scintillaHandle,
+        .bufferID = getBufferFromScintillaHandle(scintillaHandle),
         .position = notification->position
       };
       lexerData->clickEventData = clickEventData;
     }
   }
 
-  void Plugin::handleContentUpdate(SCNotification* notification) {
-    // Only handle content change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
-    if (lexerData && isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
+  void Plugin::handleMouseHover(SCNotification* notification, bool hovering) {
+    // Since lexer checks for buffer ID, there is not need to ensure current buffer is a Papyrus Script buffer.
+    if (lexerData) {
+      HWND scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom);
+      HoverEventData hoverEventData {
+        .scintillaHandle = scintillaHandle,
+        .bufferID = getBufferFromScintillaHandle(scintillaHandle),
+        .hovering = hovering,
+        .position = notification->position
+      };
+      lexerData->hoverEventData = hoverEventData;
+    }
+  }
+
+  void Plugin::handleContentChange(SCNotification* notification) {
+    // Since lexer checks for buffer ID, there is not need to ensure current buffer is a Papyrus Script buffer.
+    if (lexerData) {
+      HWND scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom);
       ChangeEventData changeEventData {
-        .scintillaHandle = static_cast<HWND>(notification->nmhdr.hwndFrom),
-        .bufferID = ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0),
+        .scintillaHandle = scintillaHandle,
+        .bufferID = getBufferFromScintillaHandle(scintillaHandle),
         .position = notification->position,
         .linesAdded = notification->linesAdded
       };
@@ -460,7 +486,11 @@ namespace papyrus {
     return (currentFileLangID == scriptLangID);
   }
 
-  std::pair<Game, bool> Plugin::detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings) {
+  npp_buffer_t Plugin::getBufferFromScintillaHandle(HWND scintillaHandle) const {
+    return utility::getActiveBufferIdOnView(nppData._nppHandle, scintillaHandle == nppData._scintillaMainHandle ? MAIN_VIEW : SUB_VIEW);
+  }
+
+  std::pair<Game, bool> Plugin::detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings) const {
     Game detectedGameType = compilerSettings.gameMode;
     bool useAutoModeOutputDirectory = false;
     if (detectedGameType == Game::Auto) {

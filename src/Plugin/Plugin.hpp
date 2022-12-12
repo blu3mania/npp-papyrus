@@ -92,8 +92,11 @@ namespace papyrus {
       // Scintilla notification SCN_HOTSPOTCLICK handler
       void handleHotspotClick(SCNotification* notification);
 
+      // Scintilla notification SCN_DWELLSTART/SCN_DWELLEND handler
+      void handleMouseHover(SCNotification* notification, bool hovering);
+
       // Scintilla notification SCN_MODIFIED handler, when texts are added/deleted
-      void handleContentUpdate(SCNotification* notification);
+      void handleContentChange(SCNotification* notification);
 
       // Scintilla notification SCN_UPDATEUI handler, when selection updated
       void handleSelectionChange(SCNotification* notification);
@@ -108,8 +111,11 @@ namespace papyrus {
       // Check if current buffer on given Scintilla view is the active buffer and is managed by this plugin's lexer
       bool isCurrentBufferManaged(HWND scintillaHandle);
 
+      // Retrieve Notepad++ buffer ID on the view that matches passed in Scintilla handle
+      npp_buffer_t getBufferFromScintillaHandle(HWND scintillaHandle) const;
+
       // Find out game type based on file path and settings
-      std::pair<Game, bool> detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings);
+      std::pair<Game, bool> detectGameType(const std::wstring& filePath, const CompilerSettings& compilerSettings) const;
 
       // Clear cached active compilation request, so when buffer gets switched
       // in NPP it can be properly handled

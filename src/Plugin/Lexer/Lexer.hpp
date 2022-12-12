@@ -57,6 +57,7 @@ namespace papyrus {
             int hotspotActiveForegroundColor;
             int hotspotActiveBackgroundColor;
             bool hotspotActiveUnderline;
+            int mouseDwellTime;
           };
 
           Helper();
@@ -176,6 +177,9 @@ namespace papyrus {
       // Add a given name to a names cache
       void addNameToCache(const std::string& name, std::set<std::string>& namesCache, std::mutex& mutex);
 
+      // Mouse hover handler
+      void handleMouseHover(HWND handle, bool hovering, Sci_Position position) const;
+
       // Content change handler. Update property list to make sure it's correct
       void handleContentChange(HWND handle, Sci_Position position, Sci_Position linesAdded);
 
@@ -215,6 +219,7 @@ namespace papyrus {
       npp_buffer_t bufferID {0};
 
       // Subscriptions
+      hover_event_topic_t::subscription_t hoverEventSubscription;
       change_event_topic_t::subscription_t changeEventSubscription;
   };
 

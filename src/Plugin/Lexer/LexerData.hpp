@@ -50,6 +50,14 @@ namespace papyrus {
   };
   using click_event_topic_t = utility::Topic<ClickEventData>;
 
+  struct HoverEventData {
+    HWND scintillaHandle;
+    npp_buffer_t bufferID;
+    bool hovering;
+    Sci_Position position;
+  };
+  using hover_event_topic_t = utility::Topic<HoverEventData>;
+
   struct ChangeEventData {
     HWND scintillaHandle;
     npp_buffer_t bufferID;
@@ -71,6 +79,7 @@ namespace papyrus {
     npp_lang_type_t scriptLangID;
     buffer_activated_topic_t bufferActivated;
     click_event_topic_t clickEventData;
+    hover_event_topic_t hoverEventData;
     change_event_topic_t changeEventData;
     utility::PrimitiveTypeValueMonitor<bool> nppReady {false};
     bool usable;

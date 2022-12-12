@@ -112,13 +112,13 @@ namespace papyrus {
   void SettingsDialog::onTabDialogCreated(tab_id_t tab) {
     switch (tab) {
       case std::to_underlying(Tab::Lexer):
-        enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
         setChecked(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, settings.lexerSettings.enableFoldMiddle);
         createToolTip(tab, IDC_SETTINGS_LEXER_FOLD_MIDDLE, IDS_SETTINGS_LEXER_FOLD_MIDDLE_TOOLTIP);
 
         setChecked(tab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, settings.lexerSettings.enableClassNameCache);
         createToolTip(tab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING, IDS_SETTINGS_LEXER_CLASS_NAME_CACHING_TOOLTIP);
 
+        enableGroup(Group::ClassLink, settings.lexerSettings.enableClassLink);
         setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK, settings.lexerSettings.enableClassLink);
         createToolTip(tab, IDC_SETTINGS_LEXER_CLASS_LINK, IDS_SETTINGS_LEXER_CLASS_LINK_TOOLTIP);
         setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE, settings.lexerSettings.classLinkUnderline);
@@ -126,9 +126,14 @@ namespace papyrus {
         classLinkFgColorPicker.setColour(settings.lexerSettings.classLinkForegroundColor);
         initColorPicker(tab, classLinkBgColorPicker, IDC_SETTINGS_LEXER_CLASS_LINK_BGCOLOR_LABEL);
         classLinkBgColorPicker.setColour(settings.lexerSettings.classLinkBackgroundColor);
-        setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, (settings.lexerSettings.classLinkClickModifier & SCMOD_SHIFT) != 0);
-        setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, (settings.lexerSettings.classLinkClickModifier & SCMOD_CTRL) != 0);
-        setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, (settings.lexerSettings.classLinkClickModifier & SCMOD_ALT) != 0);
+        setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, settings.lexerSettings.classLinkClickModifier & SCMOD_SHIFT);
+        setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, settings.lexerSettings.classLinkClickModifier & SCMOD_CTRL);
+        setChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, settings.lexerSettings.classLinkClickModifier & SCMOD_ALT);
+
+        enableGroup(Group::Hover, settings.lexerSettings.enableHover);
+        setChecked(tab, IDC_SETTINGS_LEXER_HOVER, settings.lexerSettings.enableHover);
+        setChecked(tab, IDC_SETTINGS_LEXER_HOVER_CATEGORY_PROPERTY, settings.lexerSettings.enabledHoverCategories & HOVER_CATEGORY_PROPERTY);
+        setText(tab, IDC_SETTINGS_LEXER_HOVER_DELAY, std::to_wstring(settings.lexerSettings.hoverDelay));
 
         stylerConfigLink.init(getHinst(), getHSelf());
         stylerConfigLink.create(getControl(tab, IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK), IDC_SETTINGS_LEXER_STYLER_CONFIG_LINK);
@@ -251,6 +256,12 @@ namespace papyrus {
 
         case IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE: {
           settings.lexerSettings.classLinkUnderline = getChecked(tab, IDC_SETTINGS_LEXER_CLASS_LINK_UNDERLINE);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_LEXER_HOVER: {
+          settings.lexerSettings.enableHover = getChecked(tab, IDC_SETTINGS_LEXER_HOVER);
+          enableGroup(Group::Hover, settings.lexerSettings.enableHover);
           return FALSE;
         }
 
@@ -410,6 +421,14 @@ namespace papyrus {
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT, enabled);
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL, enabled);
         setControlEnabled(tab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT, enabled);
+        break;
+      }
+
+      case Group::Hover: {
+        constexpr tab_id_t tab = std::to_underlying(Tab::Lexer);
+        setControlEnabled(tab, IDC_SETTINGS_LEXER_HOVER_CATEGORY_PROPERTY, enabled);
+        setControlEnabled(tab, IDC_SETTINGS_LEXER_HOVER_DELAY_LABEL, enabled);
+        setControlEnabled(tab, IDC_SETTINGS_LEXER_HOVER_DELAY, enabled);
         break;
       }
 
@@ -643,22 +662,31 @@ namespace papyrus {
   }
 
   bool SettingsDialog::saveSettings() {
-    constexpr tab_id_t errorAnnotatorTab = std::to_underlying(Tab::ErrorAnnotator);
-    if (isTabDialogCreated(errorAnnotatorTab)) {
-      std::wstring errorIndicatorIDStr = getText(errorAnnotatorTab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
-      if (!utility::isNumber(errorIndicatorIDStr)) {
-        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+    constexpr tab_id_t lexerTab = std::to_underlying(Tab::Lexer);
+    if (isTabDialogCreated(lexerTab)) {
+      std::wstring hoverDelayStr = getText(lexerTab, IDC_SETTINGS_LEXER_HOVER_DELAY);
+      if (!utility::isNumber(hoverDelayStr)) {
+        ::MessageBox(getHSelf(), L"Hover delay needs to be a positive number (in millisecond)", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
         return false;
       }
 
-      int errorIndicatorID {};
-      std::wistringstream(errorIndicatorIDStr) >> errorIndicatorID;
-      if (errorIndicatorID < 9 || errorIndicatorID > 20) {
-        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+      int hoverDelay {};
+      std::wistringstream(hoverDelayStr) >> hoverDelay;
+      if (hoverDelay <= 0) {
+        ::MessageBox(getHSelf(), L"Hover delay needs to be a positive number (in millisecond)", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
         return false;
       }
 
-      settings.errorAnnotatorSettings.indicatorID = errorIndicatorID;
+      settings.lexerSettings.enableClassNameCache = getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
+      settings.lexerSettings.classLinkClickModifier = SCMOD_NORM |
+        (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT) ? SCMOD_SHIFT : SCMOD_NORM) |
+        (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL) ? SCMOD_CTRL : SCMOD_NORM) |
+        (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT) ? SCMOD_ALT : SCMOD_NORM);
+
+      settings.lexerSettings.enableHover = getChecked(lexerTab, IDC_SETTINGS_LEXER_HOVER);
+      settings.lexerSettings.enabledHoverCategories =
+        (getChecked(lexerTab, IDC_SETTINGS_LEXER_HOVER_CATEGORY_PROPERTY) ? HOVER_CATEGORY_PROPERTY : HOVER_CATEGORY_NONE);
+      settings.lexerSettings.hoverDelay = hoverDelay;
     }
 
     constexpr tab_id_t keywordMatcherTab = std::to_underlying(Tab::KeywordMatcher);
@@ -679,13 +707,22 @@ namespace papyrus {
       settings.keywordMatcherSettings.indicatorID = matcherIndicatorID;
     }
 
-    constexpr tab_id_t lexerTab = std::to_underlying(Tab::Lexer);
-    if (isTabDialogCreated(lexerTab)) {
-      settings.lexerSettings.enableClassNameCache = getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_NAME_CACHING);
-      settings.lexerSettings.classLinkClickModifier = SCMOD_NORM |
-        (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_SHIFT) ? SCMOD_SHIFT : SCMOD_NORM) |
-        (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_CTRL) ? SCMOD_CTRL : SCMOD_NORM) |
-        (getChecked(lexerTab, IDC_SETTINGS_LEXER_CLASS_LINK_MODIFIER_ALT) ? SCMOD_ALT : SCMOD_NORM);
+    constexpr tab_id_t errorAnnotatorTab = std::to_underlying(Tab::ErrorAnnotator);
+    if (isTabDialogCreated(errorAnnotatorTab)) {
+      std::wstring errorIndicatorIDStr = getText(errorAnnotatorTab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
+      if (!utility::isNumber(errorIndicatorIDStr)) {
+        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        return false;
+      }
+
+      int errorIndicatorID {};
+      std::wistringstream(errorIndicatorIDStr) >> errorIndicatorID;
+      if (errorIndicatorID < 9 || errorIndicatorID > 20) {
+        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        return false;
+      }
+
+      settings.errorAnnotatorSettings.indicatorID = errorIndicatorID;
     }
 
     constexpr tab_id_t compilerTab = std::to_underlying(Tab::Compiler);
