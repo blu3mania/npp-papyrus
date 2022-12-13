@@ -57,7 +57,7 @@ namespace papyrus {
       };
 
       void match();
-      void matchKeyword(Sci_CharacterRange currentWordPos, word_list_t matchingWords, bool searchForward = true);
+      void matchKeyword(Sci_CharacterRange currentWordPos, const char* currentWord, word_list_t matchingWords, bool searchForward = true);
       void matchFlowControl(Sci_CharacterRange currentWordPos, const char* currentWord, const char* matchingWord, word_list_t otherWords, bool searchForward = true);
       Sci_CharacterRange matchFlowControl(Sci_CharacterRange currentWordPos, const char* currentWord, const char* matchingWord, word_list_t otherWords, result_list_t& otherWordsPosList, bool searchForward = true);
       Sci_CharacterRange findText(const char* text, Sci_PositionCR start, Sci_PositionCR end, SearchWordType searchWordType, bool searchForward = true, int searchFlags = SCFIND_WHOLEWORD);

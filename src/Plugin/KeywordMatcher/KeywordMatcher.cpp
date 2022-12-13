@@ -111,69 +111,69 @@ namespace papyrus {
             if (isKeyword) {
               if (utility::compare(currentWord, "Function")) {
                 if (settings.enabledKeywords & KEYWORD_FUNCTION) {
-                  matchKeyword(textRange.chrg, { "EndFunction", "Native" });
+                  matchKeyword(textRange.chrg, word, { "EndFunction", "Native" });
                 }
               } else if (utility::compare(currentWord, "EndFunction") || utility::compare(currentWord, "Native")) {
                 if (settings.enabledKeywords & KEYWORD_FUNCTION) {
-                  matchKeyword(textRange.chrg, { "Function" }, false);
+                  matchKeyword(textRange.chrg, word, { "Function" }, false);
                 }
               } else if (utility::compare(currentWord, "Struct")) {
                 if (settings.enabledKeywords & KEYWORD_STRUCT) {
-                  matchKeyword(textRange.chrg, { "EndStruct" });
+                  matchKeyword(textRange.chrg, word, { "EndStruct" });
                 }
               } else if (utility::compare(currentWord, "EndStruct")) {
                 if (settings.enabledKeywords & KEYWORD_STRUCT) {
-                  matchKeyword(textRange.chrg, { "Struct" }, false);
+                  matchKeyword(textRange.chrg, word, { "Struct" }, false);
                 }
               } else if (utility::compare(currentWord, "Property")) {
                 if (settings.enabledKeywords & KEYWORD_PROPERTY) {
-                  matchKeyword(textRange.chrg, { "EndProperty", "Auto", "AutoReadOnly" });
+                  matchKeyword(textRange.chrg, word, { "EndProperty", "Auto", "AutoReadOnly" });
                 }
               } else if (utility::compare(currentWord, "EndProperty") || utility::compare(currentWord, "Auto") || utility::compare(currentWord, "AutoReadOnly")) {
                 if (settings.enabledKeywords & KEYWORD_PROPERTY) {
-                  matchKeyword(textRange.chrg, { "Property" }, false);
+                  matchKeyword(textRange.chrg, word, { "Property" }, false);
                 }
               } else if (utility::compare(currentWord, "Group")) {
                 if (settings.enabledKeywords & KEYWORD_GROUP) {
-                  matchKeyword(textRange.chrg, { "EndGroup" });
+                  matchKeyword(textRange.chrg, word, { "EndGroup" });
                 }
               } else if (utility::compare(currentWord, "EndGroup")) {
                 if (settings.enabledKeywords & KEYWORD_GROUP) {
-                  matchKeyword(textRange.chrg, { "Group" }, false);
+                  matchKeyword(textRange.chrg, word, { "Group" }, false);
                 }
               } else if (utility::compare(currentWord, "State")) {
                 if (settings.enabledKeywords & KEYWORD_STATE) {
-                  matchKeyword(textRange.chrg, { "EndState" });
+                  matchKeyword(textRange.chrg, word, { "EndState" });
                 }
               } else if (utility::compare(currentWord, "EndState")) {
                 if (settings.enabledKeywords & KEYWORD_STATE) {
-                  matchKeyword(textRange.chrg, { "State" }, false);
+                  matchKeyword(textRange.chrg, word, { "State" }, false);
                 }
               } else if (utility::compare(currentWord, "Event")) {
                 if (settings.enabledKeywords & KEYWORD_EVENT) {
-                  matchKeyword(textRange.chrg, { "EndEvent" });
+                  matchKeyword(textRange.chrg, word, { "EndEvent" });
                 }
               } else if (utility::compare(currentWord, "EndEvent")) {
                 if (settings.enabledKeywords & KEYWORD_EVENT) {
-                  matchKeyword(textRange.chrg, { "Event" }, false);
+                  matchKeyword(textRange.chrg, word, { "Event" }, false);
                 }
               }
             } else { // isFlowControl
               if (utility::compare(currentWord, "While")) {
                 if (settings.enabledKeywords & KEYWORD_WHILE) {
-                  matchFlowControl(textRange.chrg, "While", "EndWhile", {});
+                  matchFlowControl(textRange.chrg, word, "EndWhile", {});
                 }
               } else if (utility::compare(currentWord, "EndWhile")) {
                 if (settings.enabledKeywords & KEYWORD_WHILE) {
-                  matchFlowControl(textRange.chrg, "EndWhile", "While", {}, false);
+                  matchFlowControl(textRange.chrg, word, "While", {}, false);
                 }
               } else if (utility::compare(currentWord, "If")) {
                 if (settings.enabledKeywords & KEYWORD_IF) {
-                  matchFlowControl(textRange.chrg, "If", "EndIf", (settings.enabledKeywords & KEYWORD_ELSE) ? otherFlowControlHighlightingWords : emptyWords);
+                  matchFlowControl(textRange.chrg, word, "EndIf", (settings.enabledKeywords & KEYWORD_ELSE) ? otherFlowControlHighlightingWords : emptyWords);
                 }
               } else if (utility::compare(currentWord, "EndIf")) {
                 if (settings.enabledKeywords & KEYWORD_IF) {
-                  matchFlowControl(textRange.chrg, "EndIf", "If", (settings.enabledKeywords & KEYWORD_ELSE) ? otherFlowControlHighlightingWords : emptyWords, false);
+                  matchFlowControl(textRange.chrg, word, "If", (settings.enabledKeywords & KEYWORD_ELSE) ? otherFlowControlHighlightingWords : emptyWords, false);
                 }
               } else if (utility::compare(currentWord, "Else") || utility::compare(currentWord, "ElseIf")) {
                 if ((settings.enabledKeywords & KEYWORD_IF) && (settings.enabledKeywords & KEYWORD_ELSE)) {
@@ -188,7 +188,7 @@ namespace papyrus {
     }
   }
 
-  void KeywordMatcher::matchKeyword(Sci_CharacterRange currentWordPos, word_list_t matchingWords, bool searchForward) {
+  void KeywordMatcher::matchKeyword(Sci_CharacterRange currentWordPos, const char* currentWord, word_list_t matchingWords, bool searchForward) {
     SavedSearch savedSearch(handle);
     Sci_PositionCR searchStart = searchForward ? currentWordPos.cpMax : currentWordPos.cpMin;
     Sci_PositionCR searchEnd = searchForward ? docLength : 0;
@@ -210,6 +210,16 @@ namespace papyrus {
     }
 
     matched = (matchedStart != searchEnd);
+    if (matched) {
+      // Find the closest match of current word
+      auto foundComparison = findText(currentWord, searchStart, searchEnd, SearchWordType::Keyword, searchForward);
+
+      // Check if the found current word is closer than matching word
+      if (foundComparison.cpMin >= 0 && ((searchForward && foundComparison.cpMin < matchedStart) || (!searchForward && foundComparison.cpMin > matchedStart))) {
+        // In this case, the found matching keyword is not a true match.
+        matched = false;
+      }
+    }
 
     setupIndicator();
     Sci_PositionCR fillRange = currentWordPos.cpMax - currentWordPos.cpMin;
