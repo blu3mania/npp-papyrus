@@ -47,7 +47,12 @@ namespace papyrus {
 
       KeywordMatcher(const KeywordMatcherSettings& settings);
 
-      void match(HWND scintillaHandle);
+      bool match(HWND scintillaHandle);
+      inline void goToMatchedPos() const {
+        if (handle != 0 && matched) {
+          ::SendMessage(handle, SCI_GOTOPOS, matchedPos, 0);
+        }
+      }
       void clear();
 
     private:
@@ -74,6 +79,7 @@ namespace papyrus {
       HWND handle {0};
       Sci_PositionCR docLength {0};
       bool matched {false};
+      Sci_PositionCR matchedPos {0};
   };
 
 } // namespace

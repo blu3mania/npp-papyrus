@@ -68,6 +68,7 @@ namespace papyrus {
   Plugin::Plugin()
     : funcs{
       FuncItem{ L"Compile", compileMenuFunc, 0, false, new ShortcutKey{true, false, true, 0x43} },
+      FuncItem{ L"Go to matched keyword", goToMatchMenuFunc, 0, false, new ShortcutKey{true, true, false, 0xDC} },
       FuncItem{ L"Settings...", settingsMenuFunc, 0, false, nullptr },
       FuncItem{}, // Separator1
       FuncItem{ L"Advanced", advancedMenuFunc, 0, false, nullptr },
@@ -341,6 +342,8 @@ namespace papyrus {
       bool isPapyrusScriptFile = utility::endsWith(filePath, L".psc");
       npp_lang_type_t currentFileLangID;
       ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTLANGTYPE, 0, reinterpret_cast<LPARAM>(&currentFileLangID));
+
+      bool keywordMatched = false;
       if (currentFileLangID == scriptLangID) {
         // Papyrus script file lexed by this plugin's lexer, need to check/update annotation.
         isManagedBuffer = true;
@@ -351,13 +354,14 @@ namespace papyrus {
           ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
         }
 
-        if (fromLangChange) {
-          keywordMatcher.match(scintillaHandle);
-        }
+        keywordMatched = keywordMatcher.match(scintillaHandle);
       } else if (isPapyrusScriptFile && fromLangChange) {
         // Papyrus script file changed to other language, clear keyword matching.
         keywordMatcher.clear();
       }
+
+      HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
+      ::EnableMenuItem(menu, funcs[std::to_underlying(Menu::GoToMatch)]._cmdID, MF_BYCOMMAND | (keywordMatched ? MF_ENABLED : MF_DISABLED));
 
       // Only Papyrus script and assembly files can be annotated.
       if (errorAnnotator && (isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange) {
@@ -421,9 +425,13 @@ namespace papyrus {
 
   void Plugin::handleSelectionChange(SCNotification* notification) {
     // Only handle selection change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
+    bool keywordMatched = false;
     if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
-      keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
+      keywordMatched = keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
     }
+
+    HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
+    ::EnableMenuItem(menu, funcs[std::to_underlying(Menu::GoToMatch)]._cmdID, MF_BYCOMMAND | (keywordMatched ? MF_ENABLED : MF_DISABLED));
   }
 
   void Plugin::onSettingsUpdated() {
@@ -852,6 +860,14 @@ namespace papyrus {
     } else {
       ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(L"Waiting for completing Papyrus settings..."));
     }
+  }
+
+  void Plugin::goToMatchMenuFunc() {
+    papyrusPlugin.goToMatch();
+  }
+
+  void Plugin::goToMatch() {
+    keywordMatcher.goToMatchedPos();
   }
 
   void Plugin::settingsMenuFunc() {

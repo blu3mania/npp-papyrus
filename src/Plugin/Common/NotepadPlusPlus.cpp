@@ -40,11 +40,6 @@ namespace utility {
     return std::wstring();
   }
 
-  std::wstring getActiveFilePathOnView(HWND nppHandle, npp_view_t view) {
-    npp_buffer_t bufferID = getActiveBufferIdOnView(nppHandle, view);
-    return (bufferID != 0 ? getFilePathFromBuffer(nppHandle, bufferID) : std::wstring());
-  }
-
   npp_buffer_t getActiveBufferIdOnView(HWND nppHandle, npp_view_t view) {
     npp_buffer_t bufferID {0};
     // Check whether there is an active doc on the given view.

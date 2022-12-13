@@ -146,10 +146,12 @@ in your local repository.
 │   └── workflows - GitHub action workflows
 ├── .vscode - configuration files for VS Code
 ├── dist - output folder, used by build script to create the release package
-│   └── extras - extra configuration files that can be used in Notepad++
-│       ├── autoCompletion - auto completion configuration file for Papyrus scripts
-│       ├── functionList - function list configuration file for Papyrus scripts
-│       └── userDefineLangs - user-defined Papyrus language instead of this plugin's lexer
+│   ├── extras - extra configuration files that can be used in Notepad++
+│   │   ├── autoCompletion - auto completion configuration file for Papyrus scripts
+│   │   ├── functionList - function list configuration file for Papyrus scripts
+│   │   └── userDefineLangs - user-defined Papyrus language instead of this plugin's lexer
+│   └── themes - lexer configuration files for specific themes
+│       └── DarkModeDefault - lexer configuration file for Dark Mode
 └── src - source code
     ├── external - source files from external projects (may be modified)
     │   ├── gsl - references GSL as submodule

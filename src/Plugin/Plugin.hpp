@@ -64,6 +64,7 @@ namespace papyrus {
     private:
       enum class Menu {
         Compile,
+        GoToMatch,
         Options,
         Seperator1,
         Advanced,
@@ -140,6 +141,8 @@ namespace papyrus {
 
       static void compileMenuFunc();
       void compile();
+      static void goToMatchMenuFunc();
+      void goToMatch();
       static void settingsMenuFunc();
       void showSettings();
       static void aboutMenuFunc();

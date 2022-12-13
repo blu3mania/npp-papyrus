@@ -50,10 +50,13 @@ namespace utility {
   // Retrieve the full file path of a document from its Notepad++ buffer ID
   std::wstring getFilePathFromBuffer(HWND nppHandle, npp_buffer_t bufferID);
 
-  // Retrieve the full file path of the active document on a given view
-  std::wstring getActiveFilePathOnView(HWND nppHandle, npp_view_t view);
-
   // Retrieve the Notepad++ buffer ID of the active document on a given view
   npp_buffer_t getActiveBufferIdOnView(HWND nppHandle, npp_view_t view);
+
+  // Retrieve the full file path of the active document on a given view
+  inline std::wstring getActiveFilePathOnView(HWND nppHandle, npp_view_t view) {
+    npp_buffer_t bufferID = getActiveBufferIdOnView(nppHandle, view);
+    return (bufferID != 0 ? getFilePathFromBuffer(nppHandle, bufferID) : std::wstring());
+  }
 
 } // namespace

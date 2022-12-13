@@ -64,9 +64,10 @@ namespace papyrus {
     subscribableSettings.unmatchedIndicatorForegroundColor.subscribe([&](auto) { if (handle != 0 && !matched) { setupIndicator(); } });
    }
 
-  void KeywordMatcher::match(HWND scintillaHandle) {
+  bool KeywordMatcher::match(HWND scintillaHandle) {
     handle = scintillaHandle;
     match();
+    return matched;
   }
 
   void KeywordMatcher::clear() {
@@ -74,6 +75,9 @@ namespace papyrus {
       docLength = static_cast<Sci_PositionCR>(::SendMessage(handle, SCI_GETLENGTH, 0, 0));
       ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
       ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
+
+      matched = false;
+      matchedPos = 0;
     }
   }
 
@@ -225,6 +229,7 @@ namespace papyrus {
     Sci_PositionCR fillRange = currentWordPos.cpMax - currentWordPos.cpMin;
     ::SendMessage(handle, SCI_INDICATORFILLRANGE, currentWordPos.cpMin, fillRange);
     if (matched) {
+      matchedPos = matchedStart;
       fillRange = matchedEnd - matchedStart;
       ::SendMessage(handle, SCI_INDICATORFILLRANGE, matchedStart, fillRange);
     }
@@ -245,6 +250,7 @@ namespace papyrus {
     }
 
     if (matched) {
+      matchedPos = found.cpMin;
       fillRange = found.cpMax - found.cpMin;
       ::SendMessage(handle, SCI_INDICATORFILLRANGE, found.cpMin, fillRange);
     }
