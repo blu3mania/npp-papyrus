@@ -42,18 +42,6 @@ namespace papyrus {
   // Static shared helper and other lexer data
   namespace {
     std::unique_ptr<Helper> helper;
-
-    // Cache names that are classes (i.e. files in import directories) used in current file, and names that aren't, for better performance.
-    // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded. This can be
-    // fixed by toggling off this option then toggling it back on in Settings dialog.
-    std::mutex classNamesMutex;
-    std::map<Game, names_cache_t> classNames;
-    std::mutex nonClassNamesMutex;
-    std::map<Game, names_cache_t> nonClassNames;
-
-    // Saved Scintilla settings before we make our own changes, in case some other plugins also change them
-    Helper::SavedScintillaSettings savedMainViewScintillaSettings;
-    Helper::SavedScintillaSettings savedSecondViewScintillaSettings;
   }
 
   Lexer::Lexer()
@@ -325,6 +313,7 @@ namespace papyrus {
 
   std::vector<Lexer::Token> Lexer::tokenize(Accessor& accessor, Sci_Position line) const {
     std::vector<Token> tokens;
+    TokenType previousTokenType = TokenType::Special;
     auto index = accessor.LineStart(line);
     auto indexNext = index;
     int ch = getNextChar(accessor, index, indexNext);
@@ -333,48 +322,60 @@ namespace papyrus {
         break;
       }
 
-      if (ch <= 255 && std::isblank(ch)) {
-        ch = getNextChar(accessor, index, indexNext);
-      } else if ((ch <= 255 && std::isalpha(ch)) || ch == '_') {
-        Token token {
-          .tokenType = TokenType::Identifier,
-          .startPos = index
-        };
-        while ((ch <= 255 && std::isalnum(ch)) || ch == '_' || ch == ':') {
-          token.content.push_back(std::tolower(ch)); // Papyrus script is case insensitive
+      bool processed = false;
+      if (ch <= 255) {
+        if (std::isblank(ch)) {
           ch = getNextChar(accessor, index, indexNext);
-        }
-        tokens.push_back(token);
-      } else if ((ch <= 255 && std::isdigit(ch)) || ch == '-') {
-        Token token {
-          .tokenType = TokenType::Numeric,
-          .startPos = index
-        };
-        bool hasDigit = false;
-        while ((ch <= 255 && std::isdigit(ch))
-          || (ch == '-' && index == token.startPos) // leading minus sign
-          || (ch == '.' && hasDigit) // decimal point after at least a digit
-          || ((ch == 'x' || ch == 'X') && index == token.startPos + 1 && token.content.front() == '0') // 0x
-          || (ch <= 255 && std::isxdigit(ch) && token.content.size() > 1 && std::tolower(token.content.at(1)) == 'x')) { // hex value after 0x
-          token.content.push_back(std::tolower(ch));
-          if (ch <= 255 && std::isdigit(ch)) {
-            hasDigit = true;
+          processed = true;
+        } else if (std::isalpha(ch) || ch == '_') {
+          Token token {
+            .tokenType = TokenType::Identifier,
+            .startPos = index
+          };
+          while (ch <= 255 && (std::isalnum(ch) || ch == '_' || ch == ':')) {
+            token.content.push_back(std::tolower(ch)); // Papyrus script is case insensitive
+            ch = getNextChar(accessor, index, indexNext);
           }
-          ch = getNextChar(accessor, index, indexNext);
-        }
+          tokens.push_back(token);
+          previousTokenType = token.tokenType;
+          processed = true;
+        } else if (std::isdigit(ch) || (ch == '-' && previousTokenType == TokenType::Special)) { // For a minus sign to be treated as leading minus sign rather than minus operator, previous token cannot be an identifier or a number
+          Token token {
+            .tokenType = TokenType::Numeric,
+            .startPos = index
+          };
+          bool hasDigit = false;
+          while (ch <= 255
+            && (std::isdigit(ch)
+              || (ch == '-' && index == token.startPos) // leading minus sign
+              || (ch == '.' && hasDigit) // decimal point after at least a digit
+              || ((ch == 'x' || ch == 'X') && index == token.startPos + 1 && token.content.front() == '0') // 0x
+              || (std::isxdigit(ch) && token.content.size() > 1 && std::tolower(token.content.at(1)) == 'x'))) { // hex value after 0x
+            token.content.push_back(std::tolower(ch));
+            if (!hasDigit && std::isdigit(ch)) {
+              hasDigit = true;
+            }
+            ch = getNextChar(accessor, index, indexNext);
+          }
 
-        // In the case when the token is a single '-', it's not numeric.
-        if (token.content.front() == '-' && token.content.size() == 1) {
-          token.tokenType = TokenType::Special;
+          // In the case when the token is a single '-', it's not numeric.
+          if (token.content.front() == '-' && token.content.size() == 1) {
+            token.tokenType = TokenType::Special;
+          }
+          tokens.push_back(token);
+          previousTokenType = token.tokenType;
+          processed = true;
         }
-        tokens.push_back(token);
-      } else {
+      }
+
+      if (!processed) {
         Token token {
           .tokenType = TokenType::Special,
           .startPos = index
         };
         token.content.push_back(ch);
         tokens.push_back(token);
+        previousTokenType = token.tokenType;
         ch = getNextChar(accessor, index, indexNext);
       }
     }

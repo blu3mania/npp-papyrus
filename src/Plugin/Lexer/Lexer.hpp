@@ -83,6 +83,21 @@ namespace papyrus {
 
           // Hotspot click handler
           void handleHotspotClick(HWND handle, npp_buffer_t bufferID, Sci_Position position) const;
+
+          // Private members
+          //
+
+          // Cached names that are classes (i.e. files in import directories) per each game type, and names that aren't, for better performance.
+          // Caveat: when a new class is saved to the import directory it won't be reflected, so current file needs to be reloaded. This can be
+          // fixed by toggling off this option then toggling it back on in Settings dialog.
+          std::mutex classNamesMutex;
+          std::map<Game, names_cache_t> classNames;
+          std::mutex nonClassNamesMutex;
+          std::map<Game, names_cache_t> nonClassNames;
+
+          // Saved Scintilla settings before we make our own changes, in case some other plugins also change them
+          Helper::SavedScintillaSettings savedMainViewScintillaSettings;
+          Helper::SavedScintillaSettings savedSecondViewScintillaSettings;
       };
 
       Lexer();

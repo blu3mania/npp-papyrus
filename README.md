@@ -1,9 +1,9 @@
 # Papyrus Plugin for Notepad++
 [![GPL v3 License](https://img.shields.io/badge/License-GPL%20v3-blue)](https://raw.githubusercontent.com/blu3mania/npp-papyrus/main/LICENSE)
+[![Notepad++ Plugin](https://img.shields.io/badge/Notepad++-Plugin-blue.svg?&logo=notepad%2B%2B)](https://notepad-plus-plus.org/)
 [![Visual Studio 2022](https://img.shields.io/badge/Visual%20Studio-2022-blue?logo=visual-studio)](https://visualstudio.microsoft.com/downloads/)
 [![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-grey?logo=visual-studio-code)](https://code.visualstudio.com/)
 [![C++](https://img.shields.io/badge/c++-blue.svg?&logo=c%2B%2B)](https://www.open-std.org/jtc1/sc22/wg21/docs/standards)
-[![Notepad++ Plugin](https://img.shields.io/badge/Notepad++-Plugin-blue.svg?&logo=notepad%2B%2B)](https://notepad-plus-plus.org/)
 
 [![Build Status](https://github.com/blu3mania/npp-papyrus/workflows/Build/badge.svg?branch=main)](https://github.com/blu3mania/npp-papyrus/actions/workflows/build.yml)
 [![CodeQL Status](https://github.com/blu3mania/npp-papyrus/workflows/CodeQL/badge.svg?branch=main)](https://github.com/blu3mania/npp-papyrus/actions/workflows/codeql-analysis.yml)
@@ -89,8 +89,10 @@ enhancements, and made to work with the latest Notepad++ release.
 - **[Lexer]** Syntax highlighting of function names.
 - **[Lexer]** Class names can be styled as links to open the script files. FO4's namespace support is included.
   Configurable behavior, default on (Ctrl + double click).
+- **[Lexer]** Hover support on properties.
 - **[Matcher]** Highlight on matching keywords.
-- **[Lexer]** A new *Advanced* submenu with:
+- **[Matcher]** Go to matching keyword.
+- **[UI]** A new *Advanced* submenu with:
   - *Show langID* - can be used to find out internal langID assigned to Papyrus Script lexer, which is useful
     if you need to manually configure Notepad++'s functionList feature.
   - *Install auto completion support* - provides auto-completion support for functions defined in base game,

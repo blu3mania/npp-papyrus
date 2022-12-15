@@ -81,7 +81,6 @@ namespace papyrus {
     click_event_topic_t clickEventData;
     hover_event_topic_t hoverEventData;
     change_event_topic_t changeEventData;
-    utility::PrimitiveTypeValueMonitor<bool> nppReady {false};
     bool usable;
   };
 

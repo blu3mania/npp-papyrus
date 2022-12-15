@@ -44,6 +44,10 @@ than convenience.
 directories ("-i"). If there are multiple directories specified, it will search from the first directory to
 the last one. This plugin matches this behavior when opening a referenced script file.
 
+### Hover support
+When hovering over supported identifiers a widget similar to a tooltip will show the definition of the
+identifier. Currently only properties are supported.
+
 ### Papyrus Script Lexer styles
 These styles can be configured from Notepad++'s *Style Configurator* dialog under *Settings* menu. A convenient
 link is provided.
