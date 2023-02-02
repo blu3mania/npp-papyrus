@@ -22,14 +22,15 @@
 
 #include "dpiManager.h"  // PapyrusPlugin modification -- to replace the one provided by NppParameters
 
-#include <Uxtheme.h>
-#include <Vssym32.h>
+#include <uxtheme.h>
+#include <vssym32.h>
 
 //#include "Parameters.h"  // PapyrusPlugin modification -- not used
 //#include "resource.h"  // PapyrusPlugin modification -- not used
 
-#include <Shlwapi.h>
+#include <shlwapi.h>
 
+#include <array>
 #include <cmath>  // PapyrusPlugin modification -- added for "std::pow"
 #include <cassert>  // PapyrusPlugin modification -- added to solve "assert" definition issue
 
@@ -40,7 +41,18 @@
 #define WINAPI_LAMBDA
 #endif
 
+#ifdef _MSC_VER
 #pragma comment(lib, "uxtheme.lib")
+#endif
+
+constexpr COLORREF HEXRGB(DWORD rrggbb) {
+	// from 0xRRGGBB like natural #RRGGBB
+	// to the little-endian 0xBBGGRR
+	return
+		((rrggbb & 0xFF0000) >> 16) |
+		((rrggbb & 0x00FF00)) |
+		((rrggbb & 0x0000FF) << 16);
+}
 
 namespace NppDarkMode
 {
@@ -339,6 +351,7 @@ namespace NppDarkMode
 	}
 
 	static Options _options;			// actual runtime options
+	static AdvancedOptions g_advOptions;
 
 // PapyrusPlugin modification -- not used
 /*
@@ -391,9 +404,32 @@ namespace NppDarkMode
 // End of PapyrusPlugin modification
 
 		initExperimentalDarkMode();
-		setDarkMode(_options.enable, true);
+// PapyrusPlugin modification -- not used
+/*
+		initAdvancedOptions();
+*/
+// End of PapyrusPlugin modification
 
 		g_isAtLeastWindows10 = NppDarkMode::isWindows10();
+
+		if (!g_isAtLeastWindows10)
+		{
+			g_advOptions._enableWindowsMode = false;
+		}
+// PapyrusPlugin modification -- not used
+/*
+		else if (NppDarkMode::isWindowsModeEnabled())
+		{
+			NppParameters& nppParam = NppParameters::getInstance();
+			NppGUI& nppGUI = nppParam.getNppGUI();
+			nppGUI._darkmode._isEnabled = NppDarkMode::isDarkModeReg() && !IsHighContrast();
+			_options.enable = nppGUI._darkmode._isEnabled;
+			_options.enableMenubar = _options.enable;
+		}
+*/
+// End of PapyrusPlugin modification
+
+		setDarkMode(_options.enable, true);
 
 		using PWINEGETVERSION = const CHAR* (__cdecl *)(void);
 
@@ -451,6 +487,16 @@ namespace NppDarkMode
 	}
 // End of PapyrusPlugin modification
 
+	void initAdvancedOptions()
+	{
+// PapyrusPlugin modification -- not used
+/*
+		NppGUI& nppGui = NppParameters::getInstance().getNppGUI();
+		g_advOptions = nppGui._darkmode._advOptions;
+*/
+// End of PapyrusPlugin modification
+	}
+
 	bool isEnabled()
 	{
 		return _options.enable;
@@ -475,6 +521,79 @@ namespace NppDarkMode
 	{
 		return g_darkModeSupported;
 	}
+
+// PapyrusPlugin modification -- not used
+/*
+	bool isWindowsModeEnabled()
+	{
+		return g_advOptions._enableWindowsMode;
+	}
+
+	void setWindowsMode(bool enable)
+	{
+		g_advOptions._enableWindowsMode = enable;
+	}
+
+	void setThemeName(const generic_string& newThemeName)
+	{
+		if (NppDarkMode::isEnabled())
+			g_advOptions._darkDefaults._xmlFileName = newThemeName;
+		else
+			g_advOptions._lightDefaults._xmlFileName = newThemeName;
+	}
+
+	generic_string getThemeName()
+	{
+		auto& theme = NppDarkMode::isEnabled() ? g_advOptions._darkDefaults._xmlFileName : g_advOptions._lightDefaults._xmlFileName;
+		return (lstrcmp(theme.c_str(), L"stylers.xml") == 0) ? L"" : theme;
+	}
+
+	static bool g_isCustomToolIconUsed = NppParameters::getInstance().getCustomizedToolIcons() != nullptr;
+
+	void setToolBarIconSet(int state2Set, bool useDark)
+	{
+		if (useDark)
+			g_advOptions._darkDefaults._toolBarIconSet = state2Set;
+		else
+			g_advOptions._lightDefaults._toolBarIconSet = state2Set;
+	}
+
+	int getToolBarIconSet(bool useDark)
+	{
+		if (g_isCustomToolIconUsed)
+		{
+			return -1;
+		}
+		return useDark ? g_advOptions._darkDefaults._toolBarIconSet : g_advOptions._lightDefaults._toolBarIconSet;
+	}
+
+	void setTabIconSet(bool useAltIcons, bool useDark)
+	{
+		if (useDark)
+			g_advOptions._darkDefaults._tabIconSet = useAltIcons ? 1 : 2;
+		else	
+			g_advOptions._lightDefaults._tabIconSet = useAltIcons ? 1 : 0;
+	}
+
+	int getTabIconSet(bool useDark)
+	{
+		return useDark ? g_advOptions._darkDefaults._tabIconSet : g_advOptions._lightDefaults._tabIconSet;
+	}
+
+	bool useTabTheme()
+	{
+		return NppDarkMode::isEnabled() ? g_advOptions._darkDefaults._tabUseTheme : g_advOptions._lightDefaults._tabUseTheme;
+	}
+
+	void setAdvancedOptions()
+	{
+		NppGUI& nppGui = NppParameters::getInstance().getNppGUI();
+		auto& advOpt = nppGui._darkmode._advOptions;
+
+		advOpt = g_advOptions;
+	}
+*/
+// End of PapyrusPlugin modification
 
 	bool isWindows10()
 	{
@@ -507,7 +626,7 @@ namespace NppDarkMode
 		WORD l = 0;
 		ColorRGBToHLS(c, &h, &l, &s);
 
-		l = min(240 - l, 211);
+		l = std::min<WORD>(240U - l, 211U);
 
 		COLORREF invert_c = ColorHLSToRGB(h, l, s);
 
@@ -665,7 +784,7 @@ namespace NppDarkMode
 
 	// handle events
 
-	void handleSettingChange(HWND hwnd, LPARAM lParam)
+	void handleSettingChange(HWND hwnd, LPARAM lParam, bool isFromBtn)
 	{
 		UNREFERENCED_PARAMETER(hwnd);
 
@@ -674,10 +793,28 @@ namespace NppDarkMode
 			return;
 		}
 
-		if (IsColorSchemeChangeMessage(lParam))
+		if (IsColorSchemeChangeMessage(lParam) || isFromBtn)
 		{
-			g_darkModeEnabled = ShouldAppsUseDarkMode() && !IsHighContrast();
+			// ShouldAppsUseDarkMode() is not reliable from 1903+, use NppDarkMode::isDarkModeReg() instead
+			g_darkModeEnabled = NppDarkMode::isDarkModeReg() && !IsHighContrast();
 		}
+	}
+
+	bool isDarkModeReg()
+	{
+		DWORD data{};
+		DWORD dwBufSize = sizeof(data);
+		LPCTSTR lpSubKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
+		LPCTSTR lpValue = L"AppsUseLightTheme";
+
+		auto result = RegGetValue(HKEY_CURRENT_USER, lpSubKey, lpValue, RRF_RT_REG_DWORD, nullptr, &data, &dwBufSize);
+		if (result != ERROR_SUCCESS)
+		{
+			return false;
+		}
+
+		// dark mode is 0, light mode is 1
+		return data == 0UL;
 	}
 
 // PapyrusPlugin modification -- not used
@@ -694,14 +831,15 @@ namespace NppDarkMode
 		case WM_UAHDRAWMENU:
 		{
 			UAHMENU* pUDM = (UAHMENU*)lParam;
-			RECT rc = {};
+			RECT rc{};
 
 			// get the menubar rect
 			{
-				MENUBARINFO mbi = { sizeof(mbi) };
+				MENUBARINFO mbi{};
+				mbi.cbSize = sizeof(MENUBARINFO);
 				GetMenuBarInfo(hWnd, OBJID_MENU, 0, &mbi);
 
-				RECT rcWindow;
+				RECT rcWindow{};
 				GetWindowRect(hWnd, &rcWindow);
 
 				// the rcBar is offset by the window rect
@@ -723,8 +861,10 @@ namespace NppDarkMode
 
 			// get the menu item string
 			wchar_t menuString[256] = { '\0' };
-			MENUITEMINFO mii = { sizeof(mii), MIIM_STRING };
+			MENUITEMINFO mii{};
 			{
+				mii.cbSize = sizeof(MENUITEMINFO);
+				mii.fMask = MIIM_STRING;
 				mii.dwTypeData = menuString;
 				mii.cch = (sizeof(menuString) / 2) - 1;
 
@@ -785,7 +925,8 @@ namespace NppDarkMode
 			{
 				DrawThemeBackground(g_menuTheme, pUDMI->um.hdc, MENU_POPUPITEM, iBackgroundStateID, &pUDMI->dis.rcItem, nullptr);
 			}
-			DTTOPTS dttopts = { sizeof(dttopts) };
+			DTTOPTS dttopts{};
+			dttopts.dwSize = sizeof(DTTOPTS);
 			if (iTextStateID == MPI_NORMAL || iTextStateID == MPI_HOT)
 			{
 				dttopts.dwFlags |= DTT_TEXTCOLOR;
@@ -819,17 +960,18 @@ namespace NppDarkMode
 
 	void drawUAHMenuNCBottomLine(HWND hWnd)
 	{
-		MENUBARINFO mbi = { sizeof(mbi) };
+		MENUBARINFO mbi{};
+		mbi.cbSize = sizeof(MENUBARINFO);
 		if (!GetMenuBarInfo(hWnd, OBJID_MENU, 0, &mbi))
 		{
 			return;
 		}
 
-		RECT rcClient = {};
+		RECT rcClient{};
 		GetClientRect(hWnd, &rcClient);
 		MapWindowPoints(hWnd, nullptr, (POINT*)&rcClient, 2);
 
-		RECT rcWindow = {};
+		RECT rcWindow{};
 		GetWindowRect(hWnd, &rcWindow);
 
 		OffsetRect(&rcClient, -rcWindow.left, -rcWindow.top);
@@ -917,16 +1059,16 @@ namespace NppDarkMode
 
 	void renderButton(HWND hwnd, HDC hdc, HTHEME hTheme, int iPartID, int iStateID)
 	{
-		RECT rcClient = {};
+		RECT rcClient{};
 		WCHAR szText[256] = { '\0' };
 		DWORD nState = static_cast<DWORD>(SendMessage(hwnd, BM_GETSTATE, 0, 0));
 		DWORD uiState = static_cast<DWORD>(SendMessage(hwnd, WM_QUERYUISTATE, 0, 0));
-		DWORD nStyle = GetWindowLong(hwnd, GWL_STYLE);
+		auto nStyle = ::GetWindowLongPtr(hwnd, GWL_STYLE);
 
 		HFONT hFont = nullptr;
 		HFONT hOldFont = nullptr;
 		HFONT hCreatedFont = nullptr;
-		LOGFONT lf = {};
+		LOGFONT lf{};
 		if (SUCCEEDED(GetThemeFont(hTheme, hdc, iPartID, iStateID, TMT_FONT, &lf)))
 		{
 			hCreatedFont = CreateFontIndirect(&lf);
@@ -971,7 +1113,9 @@ namespace NppDarkMode
 		DrawThemeParentBackground(hwnd, hdc, &rcClient);
 		DrawThemeBackground(hTheme, hdc, iPartID, iStateID, &rcBackground, nullptr);
 
-		DTTOPTS dtto = { sizeof(DTTOPTS), DTT_TEXTCOLOR };
+		DTTOPTS dtto{};
+		dtto.dwSize = sizeof(DTTOPTS);
+		dtto.dwFlags = DTT_TEXTCOLOR;
 		dtto.crText = NppDarkMode::getTextColor();
 
 		if (nStyle & WS_DISABLED)
@@ -1033,14 +1177,15 @@ namespace NppDarkMode
 			return;
 		}
 
-		BP_ANIMATIONPARAMS animParams = { sizeof(animParams) };
+		BP_ANIMATIONPARAMS animParams{};
+		animParams.cbSize = sizeof(BP_ANIMATIONPARAMS);
 		animParams.style = BPAS_LINEAR;
 		if (iStateID != buttonData.iStateID)
 		{
 			GetThemeTransitionDuration(buttonData.hTheme, iPartID, buttonData.iStateID, iStateID, TMT_TRANSITIONDURATIONS, &animParams.dwDuration);
 		}
 
-		RECT rcClient = {};
+		RECT rcClient{};
 		GetClientRect(hwnd, &rcClient);
 
 		HDC hdcFrom = nullptr;
@@ -1112,7 +1257,7 @@ namespace NppDarkMode
 			case WM_PAINT:
 				if (NppDarkMode::isEnabled() && pButtonData->ensureTheme(hWnd))
 				{
-					PAINTSTRUCT ps = {};
+					PAINTSTRUCT ps{};
 					HDC hdc = reinterpret_cast<HDC>(wParam);
 					if (!hdc)
 					{
@@ -1157,12 +1302,12 @@ namespace NppDarkMode
 
 	void paintGroupbox(HWND hwnd, HDC hdc, ButtonData& buttonData)
 	{
-		DWORD nStyle = GetWindowLong(hwnd, GWL_STYLE);
+		auto nStyle = ::GetWindowLongPtr(hwnd, GWL_STYLE);
 		bool isDisabled = (nStyle & WS_DISABLED) == WS_DISABLED;
 		int iPartID = BP_GROUPBOX;
 		int iStateID = isDisabled ? GBS_DISABLED : GBS_NORMAL;
 
-		RECT rcClient = {};
+		RECT rcClient{};
 		GetClientRect(hwnd, &rcClient);
 
 		RECT rcText = rcClient;
@@ -1171,7 +1316,7 @@ namespace NppDarkMode
 		HFONT hFont = nullptr;
 		HFONT hOldFont = nullptr;
 		HFONT hCreatedFont = nullptr;
-		LOGFONT lf = {};
+		LOGFONT lf{};
 		if (SUCCEEDED(GetThemeFont(buttonData.hTheme, hdc, iPartID, iStateID, TMT_FONT, &lf)))
 		{
 			hCreatedFont = CreateFontIndirect(&lf);
@@ -1193,7 +1338,7 @@ namespace NppDarkMode
 
 		if (szText[0])
 		{
-			SIZE textSize = {};
+			SIZE textSize{};
 			GetTextExtentPoint32(hdc, szText, static_cast<int>(wcslen(szText)), &textSize);
 
 			int centerPosX = isCenter ? ((rcClient.right - rcClient.left - textSize.cx) / 2) : 7;
@@ -1207,7 +1352,7 @@ namespace NppDarkMode
 		}
 		else
 		{
-			SIZE textSize = {};
+			SIZE textSize{};
 			GetTextExtentPoint32(hdc, L"M", 1, &textSize);
 			rcBackground.top += textSize.cy / 2;
 		}
@@ -1227,7 +1372,9 @@ namespace NppDarkMode
 			rcText.right -= 2;
 			rcText.left += 2;
 
-			DTTOPTS dtto = { sizeof(DTTOPTS), DTT_TEXTCOLOR };
+			DTTOPTS dtto{};
+			dtto.dwSize = sizeof(DTTOPTS);
+			dtto.dwFlags = DTT_TEXTCOLOR;
 			dtto.crText = isDisabled ? NppDarkMode::getDisabledTextColor() : NppDarkMode::getTextColor();
 
 			DWORD textFlags = isCenter ? DT_CENTER : DT_LEFT;
@@ -1276,7 +1423,7 @@ namespace NppDarkMode
 		case WM_PAINT:
 			if (NppDarkMode::isEnabled() && pButtonData->ensureTheme(hWnd))
 			{
-				PAINTSTRUCT ps = {};
+				PAINTSTRUCT ps{};
 				HDC hdc = reinterpret_cast<HDC>(wParam);
 				if (!hdc)
 				{
@@ -1336,7 +1483,7 @@ namespace NppDarkMode
 				break;
 			}
 
-			PAINTSTRUCT ps;
+			PAINTSTRUCT ps{};
 			HDC hdc = ::BeginPaint(hWnd, &ps);
 			::FillRect(hdc, &ps.rcPaint, NppDarkMode::getDarkerBackgroundBrush());
 
@@ -1352,7 +1499,7 @@ namespace NppDarkMode
 			HFONT hFont = reinterpret_cast<HFONT>(SendMessage(hWnd, WM_GETFONT, 0, 0));
 			auto hOldFont = SelectObject(hdc, hFont);
 
-			POINT ptCursor = {};
+			POINT ptCursor{};
 			::GetCursorPos(&ptCursor);
 			ScreenToClient(hWnd, &ptCursor);
 
@@ -1361,11 +1508,11 @@ namespace NppDarkMode
 			int nSelTab = TabCtrl_GetCurSel(hWnd);
 			for (int i = 0; i < nTabs; ++i)
 			{
-				RECT rcItem = {};
+				RECT rcItem{};
 				TabCtrl_GetItemRect(hWnd, i, &rcItem);
 				RECT rcFrame = rcItem;
 
-				RECT rcIntersect = {};
+				RECT rcIntersect{};
 				if (IntersectRect(&rcIntersect, &ps.rcPaint, &rcItem))
 				{
 					bool bHot = PtInRect(&rcItem, ptCursor);
@@ -1389,7 +1536,7 @@ namespace NppDarkMode
 					SetBkMode(hdc, TRANSPARENT);
 
 					TCHAR label[MAX_PATH]{};
-					TCITEM tci = {};
+					TCITEM tci{};
 					tci.mask = TCIF_TEXT;
 					tci.pszText = label;
 					tci.cchTextMax = MAX_PATH - 1;
@@ -1398,7 +1545,7 @@ namespace NppDarkMode
 
           // PapyrusPlugin modification -- use locally defined DPIManager
 					//auto dpiManager = NppParameters::getInstance()._dpiManager;
-					auto dpiManager = _dpiManager;
+					auto& dpiManager = _dpiManager;
 
 					RECT rcText = rcItem;
 					rcText.left += dpiManager.scaleX(5);
@@ -1654,7 +1801,7 @@ namespace NppDarkMode
 					break;
 				}
 
-				RECT rc = {};
+				RECT rc{};
 				::GetClientRect(hWnd, &rc);
 
 				PAINTSTRUCT ps{};
@@ -1666,13 +1813,26 @@ namespace NppDarkMode
 				auto holdBrush = ::SelectObject(hdc, NppDarkMode::getDarkerBackgroundBrush());
 
         // PapyrusPlugin modification -- use locally defined DPIManager
-				//auto dpiManager = NppParameters::getInstance()._dpiManager;
-				auto dpiManager = _dpiManager;
+				//auto& dpiManager = NppParameters::getInstance()._dpiManager;
+				auto& dpiManager = _dpiManager;
 
-				RECT rcArrow = {
-				rc.right - dpiManager.scaleX(17), rc.top + 1,
-				rc.right - 1, rc.bottom - 1
-				};
+				RECT rcArrow{};
+
+				COMBOBOXINFO cbi{};
+				cbi.cbSize = sizeof(COMBOBOXINFO);
+				const bool resultCbi = ::GetComboBoxInfo(hWnd, &cbi) != FALSE;
+				if (resultCbi)
+				{
+					rcArrow = cbi.rcButton;
+					rcArrow.left -= 1;
+				}
+				else
+				{
+					rcArrow = {
+					rc.right - dpiManager.scaleX(17), rc.top + 1,
+					rc.right - 1, rc.bottom - 1
+					};
+				}
 
 				bool hasFocus = false;
 
@@ -1682,11 +1842,21 @@ namespace NppDarkMode
 				{
 					hasFocus = ::GetFocus() == hWnd;
 
-					RECT rcTextBg = rc;
-					rcTextBg.left += 1;
-					rcTextBg.top += 1;
-					rcTextBg.right = rcArrow.left - 1;
-					rcTextBg.bottom -= 1;
+					RECT rcTextBg{};
+					if (resultCbi)
+					{
+						rcTextBg = cbi.rcItem;
+					}
+					else
+					{
+						rcTextBg = rc;
+
+						rcTextBg.left += 1;
+						rcTextBg.top += 1;
+						rcTextBg.right = rcArrow.left - 1;
+						rcTextBg.bottom -= 1;
+					}
+
 					::FillRect(hdc, &rcTextBg, NppDarkMode::getBackgroundBrush()); // erase background on item change
 
 					auto index = static_cast<int>(::SendMessage(hWnd, CB_GETCURSEL, 0, 0));
@@ -1698,9 +1868,9 @@ namespace NppDarkMode
 						TCHAR* buffer = new TCHAR[(bufferLen + 1)];
 						::SendMessage(hWnd, CB_GETLBTEXT, index, reinterpret_cast<LPARAM>(buffer));
 
-						RECT rcText = rc;
+						RECT rcText = rcTextBg;
 						rcText.left += 4;
-						rcText.right = rcArrow.left - 5;
+						rcText.right -= 4;
 
 						::DrawText(hdc, buffer, -1, &rcText, DT_NOPREFIX | DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 						delete[]buffer;
@@ -1711,7 +1881,7 @@ namespace NppDarkMode
 					hasFocus = ::GetFocus() == hwndEdit;
 				}
 
-				POINT ptCursor = {};
+				POINT ptCursor{};
 				::GetCursorPos(&ptCursor);
 				::ScreenToClient(hWnd, &ptCursor);
 
@@ -1722,13 +1892,9 @@ namespace NppDarkMode
 				auto colorEnabledText = isHot ? NppDarkMode::getTextColor() : NppDarkMode::getDarkerTextColor();
 				::SetTextColor(hdc, isWindowEnabled ? colorEnabledText : NppDarkMode::getDisabledTextColor());
 				::SetBkColor(hdc, isHot ? NppDarkMode::getHotBackgroundColor() : NppDarkMode::getBackgroundColor());
-				::ExtTextOut(hdc,
-					rcArrow.left + (rcArrow.right - rcArrow.left) / 2 - dpiManager.scaleX(4),
-					rcArrow.top + 3,
-					ETO_OPAQUE | ETO_CLIPPED,
-					&rcArrow, L"˅",
-					1,
-					nullptr);
+				::FillRect(hdc, &rcArrow, isHot ? NppDarkMode::getHotBackgroundBrush() : NppDarkMode::getBackgroundBrush());
+				TCHAR arrow[] = L"˅";
+				::DrawText(hdc, arrow, -1, &rcArrow, DT_NOPREFIX | DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_NOCLIP);
 				::SetBkColor(hdc, NppDarkMode::getBackgroundColor());
 
 				auto hEnabledPen = (isHot || hasFocus) ? NppDarkMode::getHotEdgePen() : NppDarkMode::getEdgePen();
@@ -1848,7 +2014,7 @@ namespace NppDarkMode
 
 		EnumChildWindows(hwndParent, [](HWND hwnd, LPARAM lParam) WINAPI_LAMBDA {
 			auto& p = *reinterpret_cast<NppDarkModeParams*>(lParam);
-			constexpr size_t classNameLen = 16;
+			constexpr size_t classNameLen = 32;
 			TCHAR className[classNameLen]{};
 			GetClassName(hwnd, className, classNameLen);
 
@@ -1906,6 +2072,24 @@ namespace NppDarkMode
 				NppDarkMode::themeRichEdit(hwnd, p);
 				return TRUE;
 			}
+
+			/*
+			// for debugging 
+			if (wcscmp(className, L"#32770") == 0)
+			{
+				return TRUE;
+			}
+
+			if (wcscmp(className, L"Static") == 0)
+			{
+				return TRUE;
+			}
+
+			if (wcscmp(className, L"msctls_trackbar32") == 0)
+			{
+				return TRUE;
+			}
+			*/
 
 			return TRUE;
 		}, reinterpret_cast<LPARAM>(&p));
@@ -1976,7 +2160,7 @@ namespace NppDarkMode
 
 		if ((style & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST || (style & CBS_DROPDOWN) == CBS_DROPDOWN)
 		{
-			COMBOBOXINFO cbi = {};
+			COMBOBOXINFO cbi{};
 			cbi.cbSize = sizeof(COMBOBOXINFO);
 			BOOL result = ::GetComboBoxInfo(hwnd, &cbi);
 			if (result == TRUE)
@@ -2115,7 +2299,7 @@ namespace NppDarkMode
 				{
           // PapyrusPlugin modification -- use locally defined DPIManager
 					//auto dpiManager = NppParameters::getInstance()._dpiManager;
-					auto dpiManager = _dpiManager;
+					auto& dpiManager = _dpiManager;
 					roundCornerValue = NppDarkMode::isWindows11() ? dpiManager.scaleX(5) : 0;
 
 					::FillRect(nmtbcd->nmcd.hdc, &nmtbcd->nmcd.rc, NppDarkMode::getDarkerBackgroundBrush());
@@ -2318,7 +2502,7 @@ namespace NppDarkMode
 			{
 				if (NppDarkMode::isEnabled())
 				{
-					RECT rect = {};
+					RECT rect{};
 					GetClientRect(hWnd, &rect);
 					::FillRect(reinterpret_cast<HDC>(wParam), &rect, NppDarkMode::getDarkerBackgroundBrush());
 					return TRUE;
@@ -2344,17 +2528,30 @@ namespace NppDarkMode
 
 			case WM_CTLCOLOREDIT:
 			{
-				return NppDarkMode::onCtlColorSofter(reinterpret_cast<HDC>(wParam));
+				if (NppDarkMode::isEnabled())
+				{
+					return NppDarkMode::onCtlColorSofter(reinterpret_cast<HDC>(wParam));
+				}
+				break;
 			}
 
 			case WM_CTLCOLORLISTBOX:
 			{
-				return NppDarkMode::onCtlColorListbox(wParam, lParam);
+				if (NppDarkMode::isEnabled())
+				{
+					return NppDarkMode::onCtlColorListbox(wParam, lParam);
+				}
+				break;
 			}
 
 			case WM_CTLCOLORDLG:
 			{
-				return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
+
+				if (NppDarkMode::isEnabled())
+				{
+					return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
+				}
+				break;
 			}
 
 			case WM_CTLCOLORSTATIC:
@@ -2441,7 +2638,7 @@ namespace NppDarkMode
 		{
 			case WM_NCDESTROY:
 			{
-				::RemoveWindowSubclass(hWnd, PluginDockWindowSubclass, uIdSubclass);
+				::RemoveWindowSubclass(hWnd, WindowNotifySubclass, uIdSubclass);
 				break;
 			}
 
@@ -2520,7 +2717,7 @@ namespace NppDarkMode
 
         // PapyrusPlugin modification -- use locally defined DPIManager
 				//auto dpiManager = NppParameters::getInstance()._dpiManager;
-				auto dpiManager = _dpiManager;
+				auto& dpiManager = _dpiManager;
 
 				RECT rcArrowLeft = {
 					rcClient.left, rcClient.top,
@@ -2532,7 +2729,7 @@ namespace NppDarkMode
 					rcClient.right, rcClient.bottom
 				};
 
-				POINT ptCursor = {};
+				POINT ptCursor{};
 				::GetCursorPos(&ptCursor);
 				::ScreenToClient(hWnd, &ptCursor);
 
@@ -2552,7 +2749,7 @@ namespace NppDarkMode
 					::FillRect(hdc, &rcArrowRight, isHotRight ? NppDarkMode::getHotBackgroundBrush() : NppDarkMode::getBackgroundBrush());
 				}
 
-				LOGFONT lf = {};
+				LOGFONT lf{};
 				auto font = reinterpret_cast<HFONT>(SendMessage(hWnd, WM_GETFONT, 0, 0));
 				::GetObject(font, sizeof(lf), &lf);
 				lf.lfHeight = (dpiManager.scaleY(16) - 5) * -1;
@@ -2806,6 +3003,11 @@ namespace NppDarkMode
 		}
 	}
 
+	bool isThemeDark()
+	{
+		return g_treeViewStyle == TreeViewStyle::dark;
+	}
+
 	void setBorder(HWND hwnd, bool border)
 	{
 		auto style = static_cast<long>(::GetWindowLongPtr(hwnd, GWL_STYLE));
@@ -2925,5 +3127,49 @@ namespace NppDarkMode
 			return static_cast<INT_PTR>(NppDarkMode::onCtlColorSofter(hdc));
 		}
 		return static_cast<INT_PTR>(NppDarkMode::onCtlColor(hdc));
+	}
+
+	struct HLSColour
+	{
+		WORD _hue;
+		WORD _lightness;
+		WORD _saturation;
+
+		COLORREF toRGB() const { return ColorHLSToRGB(_hue, _lightness, _saturation); }
+	};
+
+	using IndividualTabColours = std::array<HLSColour, 5>;
+
+	static constexpr IndividualTabColours individualTabHuesFor_Dark  { { HLSColour{37, 60, 60}, HLSColour{70, 60, 60}, HLSColour{144, 70, 60}, HLSColour{255, 60, 60}, HLSColour{195, 60, 60} } };
+	static const IndividualTabColours individualTabHues              { { HLSColour{37, 210, 150}, HLSColour{70, 210, 150}, HLSColour{144, 210, 150}, HLSColour{255, 210, 150}, HLSColour{195, 210, 150}}};
+
+
+	COLORREF getIndividualTabColour(int colourIndex, bool themeDependant, bool saturated)
+	{
+		if (colourIndex < 0 || colourIndex > 4) return {};
+
+		HLSColour result;
+		if (themeDependant)
+		{
+			result = individualTabHuesFor_Dark[colourIndex];
+
+			if (saturated)
+			{
+				result._lightness = 146U;
+				result._saturation = std::min<WORD>(240U, result._saturation + 100U);
+			}
+		}
+		else
+		{
+			result = individualTabHues[colourIndex];
+
+			if (saturated)
+			{
+				result._lightness = 140U;
+				result._saturation = std::min<WORD>(240U, result._saturation + 30U);
+			}
+		}
+
+		return result.toRGB();
 	}
 }

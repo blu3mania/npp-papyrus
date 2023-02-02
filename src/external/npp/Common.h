@@ -38,25 +38,14 @@ const bool dirDown = false;
 #define BCKGRD_COLOR (RGB(255,102,102))
 #define TXT_COLOR    (RGB(255,255,255))
 
-#define generic_strtol wcstol
-#define generic_strncpy wcsncpy
-#define generic_stricmp _wcsicmp  // PapyrusPlugin modification -- make MS build tool happy...
-#define generic_strncmp wcsncmp
-#define generic_strnicmp wcsnicmp
-#define generic_strncat wcsncat
-#define generic_strchr wcschr
-#define generic_atoi _wtoi
-#define generic_itoa _itow
-#define generic_atof _wtof
-#define generic_strtok wcstok
-#define generic_strftime wcsftime
-#define generic_fprintf fwprintf
-#define generic_sprintf swprintf
-#define generic_sscanf swscanf
-#define generic_fopen _wfopen
-#define generic_fgets fgetws
-#define COPYDATA_FILENAMES COPYDATA_FILENAMESW
-#define NPP_INTERNAL_FUCTION_STR TEXT("Notepad++::InternalFunction")
+#ifndef __MINGW32__
+#define WCSTOK wcstok
+#else
+#define WCSTOK wcstok_s
+#endif
+
+
+#define NPP_INTERNAL_FUCTION_STR L"Notepad++::InternalFunction"
 
 typedef std::basic_string<TCHAR> generic_string;
 typedef std::basic_stringstream<TCHAR> generic_stringstream;
@@ -79,7 +68,7 @@ void ScreenRectToClientRect(HWND hWnd, RECT* rect);
 std::wstring string2wstring(const std::string & rString, UINT codepage);
 std::string wstring2string(const std::wstring & rwString, UINT codepage);
 bool isInList(const TCHAR *token, const TCHAR *list);
-generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generic_string &filename);
+generic_string BuildMenuFileName(int filenameLen, unsigned int pos, const generic_string &filename, bool ordinalNumber = true);
 
 //std::string getFileContent(const TCHAR *file2read);  // PapyrusPlugin modification -- not used, and causing secure warnings
 generic_string relativeFilePathToFullFilePath(const TCHAR *relativeFilePath);
@@ -133,7 +122,7 @@ protected:
 			{
 				if (_allocLen)
 					delete[] _str;
-				_allocLen = max(size, initSize);
+				_allocLen = std::max<size_t>(size, initSize);
 				_str = new T[_allocLen];
 			}
 		}
@@ -226,13 +215,17 @@ template<typename T> size_t vecRemoveDuplicates(std::vector<T>& vec, bool isSort
 }
 
 void trim(generic_string& str);
-//bool endsWith(const generic_string& s, const generic_string& suffix);  // PapyrusPlugin modification -- not used
 
 int nbDigitsFromNbLines(size_t nbLines);
 
 generic_string getDateTimeStrFrom(const generic_string& dateTimeFormat, const SYSTEMTIME& st);
 
 HFONT createFont(const TCHAR* fontName, int fontSize, bool isBold, HWND hDestParent);
+
+bool isWin32NamespacePrefixedFileName(const generic_string& fileName);
+bool isWin32NamespacePrefixedFileName(const TCHAR* szFileName);
+bool isUnsupportedFileName(const generic_string& fileName);
+bool isUnsupportedFileName(const TCHAR* szFileName);
 
 // PapyrusPlugin modification -- not used
 /*

@@ -50,10 +50,7 @@ namespace papyrus {
           initializing = true;
           goToCenter();
 
-          auto EnableDlgTheme = reinterpret_cast<ETDTProc>(::SendMessage(getHParent(), NPPM_GETENABLETHEMETEXTUREFUNC, 0, 0));
-          if (EnableDlgTheme != nullptr) {
-            EnableDlgTheme(getHSelf(), ETDT_ENABLETAB);
-          }
+          ::EnableThemeDialogTexture(getHSelf(), ETDT_ENABLETAB);
 
           initControls();
 

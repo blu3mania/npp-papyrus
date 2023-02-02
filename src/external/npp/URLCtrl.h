@@ -26,7 +26,8 @@ public:
   void create(HWND itemHandle, int cmd, HWND msgDest = NULL);
   void destroy();
 private:
-  void action();
+	HCURSOR& loadHandCursor();
+	void action();
 protected :
   generic_string _URL;
   HFONT _hfUnderlined = nullptr;

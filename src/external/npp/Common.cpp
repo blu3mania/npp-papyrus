@@ -63,7 +63,7 @@ std::string getFileContent(const TCHAR *file2read)
 	const size_t blockSize = 1024;
 	char data[blockSize];
 	std::string wholeFileContent = "";
-	FILE *fp = generic_fopen(file2read, TEXT("rb"));
+	FILE *fp = _wfopen(file2read, TEXT("rb"));
 
 	size_t lenFile = 0;
 	do
@@ -141,7 +141,7 @@ void writeLog(const TCHAR *logFileName, const char *log2write)
 
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
-		LARGE_INTEGER offset;
+		LARGE_INTEGER offset{};
 		offset.QuadPart = 0;
 		::SetFilePointerEx(hFile, offset, NULL, FILE_END);
 
@@ -204,7 +204,7 @@ generic_string getFolderName(HWND parent, const TCHAR *defaultDir)
 
 void ClientRectToScreenRect(HWND hWnd, RECT* rect)
 {
-	POINT		pt;
+	POINT		pt{};
 
 	pt.x		 = rect->left;
 	pt.y		 = rect->top;
@@ -245,7 +245,7 @@ std::vector<generic_string> tokenizeString(const generic_string & tokenString, c
 
 void ScreenRectToClientRect(HWND hWnd, RECT* rect)
 {
-	POINT		pt;
+	POINT		pt{};
 
 	pt.x		 = rect->left;
 	pt.y		 = rect->top;
@@ -277,7 +277,7 @@ bool isInList(const TCHAR *token, const TCHAR *list)
 	const size_t wordLen = 64;
 	size_t listLen = lstrlen(list);
 
-	TCHAR word[wordLen];
+	TCHAR word[wordLen] = { '\0' };
 	size_t i = 0;
 	size_t j = 0;
 
@@ -290,7 +290,7 @@ bool isInList(const TCHAR *token, const TCHAR *list)
 				word[j] = '\0';
 				j = 0;
 
-				if (!generic_stricmp(token, word))
+				if (!_wcsicmp(token, word))  // PapyrusPlugin modification -- use C++ conformant _wcsicmp instead of wcsicmp
 					return true;
 			}
 		}
@@ -348,7 +348,7 @@ const wchar_t * WcharMbcsConvertor::char2wchar(const char * mbcs2Convert, size_t
 		return nullptr;
 
 	// Do not process empty strings
-	if (lenMbcs == 0 || lenMbcs == -1 && mbcs2Convert[0] == 0)
+	if (lenMbcs == 0 || (lenMbcs == -1 && mbcs2Convert[0] == 0))
 	{
 		_wideCharStr.empty();
 		return _wideCharStr;
@@ -447,8 +447,9 @@ const wchar_t * WcharMbcsConvertor::char2wchar(const char * mbcs2Convert, size_t
 
 const char* WcharMbcsConvertor::wchar2char(const wchar_t * wcharStr2Convert, size_t codepage, int lenWc, int* pLenMbcs)
 {
-	if (nullptr == wcharStr2Convert)
+	if (!wcharStr2Convert)
 		return nullptr;
+
 	UINT cp = static_cast<UINT>(codepage);
 	int lenMbcs = WideCharToMultiByte(cp, 0, wcharStr2Convert, lenWc, NULL, 0, NULL, NULL);
 	if (lenMbcs > 0)
@@ -467,8 +468,9 @@ const char* WcharMbcsConvertor::wchar2char(const wchar_t * wcharStr2Convert, siz
 
 const char * WcharMbcsConvertor::wchar2char(const wchar_t * wcharStr2Convert, size_t codepage, intptr_t* mstart, intptr_t* mend)
 {
-	if (nullptr == wcharStr2Convert)
+	if (!wcharStr2Convert)
 		return nullptr;
+
 	UINT cp = static_cast<UINT>(codepage);
 	int len = WideCharToMultiByte(cp, 0, wcharStr2Convert, -1, NULL, 0, NULL, NULL);
 	if (len > 0)
@@ -737,7 +739,7 @@ COLORREF getCtrlBgColor(HWND hWnd)
 generic_string stringToUpper(generic_string strToConvert)
 {
     std::transform(strToConvert.begin(), strToConvert.end(), strToConvert.begin(), 
-        [](TCHAR ch){ return static_cast<TCHAR>(_totupper(ch)); }
+        [](wchar_t ch){ return static_cast<wchar_t>(towupper(ch)); }
     );
     return strToConvert;
 }
@@ -949,7 +951,7 @@ bool str2Clipboard(const generic_string &str2cpy, HWND hwnd)
 		::CloseClipboard();
 		return false;
 	}
-	_tcscpy_s(pStr, len2Allocate / sizeof(TCHAR), str2cpy.c_str());
+	wcscpy_s(pStr, len2Allocate / sizeof(TCHAR), str2cpy.c_str());
 	::GlobalUnlock(hglbCopy);
 	// Place the handle on the clipboard.
 	unsigned int clipBoardFormat = CF_UNICODETEXT;
@@ -980,7 +982,7 @@ bool buf2Clipborad(const std::vector<Buffer*>& buffers, bool isFullPath, HWND hw
 			if (fileName)
 				selection += fileName;
 		}
-		if (!selection.empty() && !endsWith(selection, crlf))
+		if (!selection.empty() && !selection.ends_with(crlf))
 			selection += crlf;
 	}
 	if (!selection.empty())
@@ -1172,7 +1174,7 @@ bool isCertificateValidated(const generic_string & fullFilePath, const generic_s
 	DWORD dwFormatType = 0;
 	PCMSG_SIGNER_INFO pSignerInfo = NULL;
 	DWORD dwSignerInfo = 0;
-	CERT_INFO CertInfo;
+	CERT_INFO CertInfo{};
 	LPTSTR szName = NULL;
 
 	generic_string subjectName;
@@ -1312,7 +1314,6 @@ bool isAssoCommandExisting(LPCTSTR FullPathName)
 		hres = AssocQueryString(ASSOCF_VERIFY|ASSOCF_INIT_IGNOREUNKNOWN, ASSOCSTR_COMMAND, ext, NULL, buffer, &bufferLen);
         
         isAssoCommandExisting = (hres == S_OK)                  // check if association exist and no error
-			&& (buffer != NULL)                                 // check if buffer is not NULL
 			&& (wcsstr(buffer, TEXT("notepad++.exe")) == NULL); // check association with notepad++
         
 	}
@@ -1324,7 +1325,7 @@ bool isAssoCommandExisting(LPCTSTR FullPathName)
 std::wstring s2ws(const std::string& str)
 {
 	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX("Error in N++ string conversion s2ws!", L"Error in N++ string conversion s2ws!");
+	std::wstring_convert<convert_typeX, wchar_t> converterX("Error in Notepad++ string conversion s2ws!", L"Error in Notepad++ string conversion s2ws!");
 
 	return converterX.from_bytes(str);
 }
@@ -1332,7 +1333,7 @@ std::wstring s2ws(const std::string& str)
 std::string ws2s(const std::wstring& wstr)
 {
 	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX("Error in N++ string conversion ws2s!", L"Error in N++ string conversion ws2s!");
+	std::wstring_convert<convert_typeX, wchar_t> converterX("Error in Notepad++ string conversion ws2s!", L"Error in Notepad++ string conversion ws2s!");
 
 	return converterX.to_bytes(wstr);
 }
@@ -1402,18 +1403,6 @@ void trim(generic_string& str)
 	}
 	else str.erase(str.begin(), str.end());
 }
-
-// PapyrusPlugin modification -- not used
-/*
-bool endsWith(const generic_string& s, const generic_string& suffix)
-{
-#if defined(_MSVC_LANG) && (_MSVC_LANG > 201402L)
-#error Replace this function with basic_string::ends_with
-#endif
-	size_t pos = s.find(suffix);
-	return pos != s.npos && ((s.length() - pos) == suffix.length());
-}
-*/
 
 int nbDigitsFromNbLines(size_t nbLines)
 {
@@ -1554,7 +1543,7 @@ HFONT createFont(const TCHAR* fontName, int fontSize, bool isBold, HWND hDestPar
 	if (isBold)
 		logFont.lfWeight = FW_BOLD;
 
-	_tcscpy_s(logFont.lfFaceName, fontName);
+	wcscpy_s(logFont.lfFaceName, fontName);
 
 	HFONT newFont = CreateFontIndirect(&logFont);
 
@@ -1562,6 +1551,109 @@ HFONT createFont(const TCHAR* fontName, int fontSize, bool isBold, HWND hDestPar
 
 	return newFont;
 }
+
+// "For file I/O, the "\\?\" prefix to a path string tells the Windows APIs to disable all string parsing
+// and to send the string that follows it straight to the file system..."
+// Ref: https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#win32-file-namespaces
+bool isWin32NamespacePrefixedFileName(const generic_string& fileName)
+{
+	// TODO:
+	// ?! how to handle similar NT Object Manager path style prefix case \??\...
+	// (the \??\ prefix instructs the NT Object Manager to search in the caller's local device directory for an alias...)
+
+	// the following covers the \\?\... raw Win32-filenames or the \\?\UNC\... UNC equivalents
+	// and also its *nix like forward slash equivalents
+	return (fileName.starts_with(TEXT("\\\\?\\")) || fileName.starts_with(TEXT("//?/")));
+}
+
+bool isWin32NamespacePrefixedFileName(const TCHAR* szFileName)
+{
+	const generic_string fileName = szFileName;
+	return isWin32NamespacePrefixedFileName(fileName);
+}
+
+bool isUnsupportedFileName(const generic_string& fileName)
+{
+	bool isUnsupported = true;
+
+	// until the Notepad++ (and its plugins) will not be prepared for filenames longer than the MAX_PATH,
+	// we have to limit also the maximum supported length below
+	if ((fileName.size() > 0) && (fileName.size() < MAX_PATH))
+	{
+		// possible raw filenames can contain space(s) or dot(s) at its end (e.g. "\\?\C:\file."), but the Notepad++ advanced
+		// Open/SaveAs IFileOpenDialog/IFileSaveDialog COM-interface based dialogs currently do not handle this well
+		// (but e.g. direct Notepad++ Ctrl+S works ok even with these filenames)
+		if (!fileName.ends_with(_T('.')) && !fileName.ends_with(_T(' ')))
+		{
+			bool invalidASCIIChar = false;
+
+			for (size_t pos = 0; pos < fileName.size(); ++pos)
+			{
+				TCHAR c = fileName.at(pos);
+				if (c <= 31)
+				{
+					invalidASCIIChar = true;
+				}
+				else
+				{
+					// as this could be also a complete filename with path and there could be also a globbing used,
+					// we tolerate here some other reserved Win32-filename chars: /, \, :, ?, *
+					switch (c)
+					{
+						case '<':
+						case '>':
+						case '"':
+						case '|':
+							invalidASCIIChar = true;
+							break;
+					}
+				}
+
+				if (invalidASCIIChar)
+					break;
+			}
+
+			if (!invalidASCIIChar)
+			{
+				// strip input string to a filename without a possible path and extension(s)
+				generic_string fileNameOnly;
+				size_t pos = fileName.find_first_of(TEXT("."));
+				if (pos != std::string::npos)
+					fileNameOnly = fileName.substr(0, pos);
+				else
+					fileNameOnly = fileName;
+
+				pos = fileNameOnly.find_last_of(TEXT("\\"));
+				if (pos == std::string::npos)
+					pos = fileNameOnly.find_last_of(TEXT("/"));
+				if (pos != std::string::npos)
+					fileNameOnly = fileNameOnly.substr(pos + 1);
+
+				const std::vector<generic_string>  reservedWin32NamespaceDeviceList{
+				TEXT("CON"), TEXT("PRN"), TEXT("AUX"), TEXT("NUL"),
+				TEXT("COM1"), TEXT("COM2"), TEXT("COM3"), TEXT("COM4"), TEXT("COM5"), TEXT("COM6"), TEXT("COM7"), TEXT("COM8"), TEXT("COM9"),
+				TEXT("LPT1"), TEXT("LPT2"), TEXT("LPT3"), TEXT("LPT4"), TEXT("LPT5"), TEXT("LPT6"), TEXT("LPT7"), TEXT("LPT8"), TEXT("LPT9")
+				};
+
+				// last check is for all the old reserved Windows OS filenames
+				if (std::find(reservedWin32NamespaceDeviceList.begin(), reservedWin32NamespaceDeviceList.end(), fileNameOnly) == reservedWin32NamespaceDeviceList.end())
+				{
+					// ok, the current filename tested is not even on the blacklist
+					isUnsupported = false;
+				}
+			}
+		}
+	}
+
+	return isUnsupported;
+}
+
+bool isUnsupportedFileName(const TCHAR* szFileName)
+{
+	const generic_string fileName = szFileName;
+	return isUnsupportedFileName(fileName);
+}
+
 
 // PapyrusPlugin modification -- not used
 /*
