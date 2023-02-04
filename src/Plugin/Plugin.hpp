@@ -108,6 +108,7 @@ namespace papyrus {
 
       // Find out langID assigned to Papyrus Script lexer
       void detectLangID();
+      bool checkLangName(npp_lang_type_t langID, std::wstring lexerName);
 
       // Check if current buffer on given Scintilla view is the active buffer and is managed by this plugin's lexer
       bool isCurrentBufferManaged(HWND scintillaHandle);

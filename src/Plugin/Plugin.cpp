@@ -456,26 +456,44 @@ namespace papyrus {
     if (scriptLangID == 0) {
       std::wstring lexerName = string2wstring(LEXER_NAME, SC_CP_UTF8);
       for (npp_lang_type_t i = L_EXTERNAL; i < L_EXTERNAL + NB_MAX_EXTERNAL_LANG; ++i) {
-        // Get language name of the given langID.
-        npp_size_t langNameLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETLANGUAGENAME, i, 0));
-        if (langNameLength > 0) {
-          wchar_t* langNameCharArray = new wchar_t[langNameLength + 1];
-          auto autoCleanup = gsl::finally([&] { delete[] langNameCharArray; });
-          ::SendMessage(nppData._nppHandle, NPPM_GETLANGUAGENAME, i, reinterpret_cast<LPARAM>(langNameCharArray));
-          std::wstring langName(langNameCharArray);
+        if (checkLangName(i, lexerName)) {
+          scriptLangID = i;
+          break;
+        }
+      }
 
-          if (langName == lexerName) {
+      // In the rare case when built-in languages were removed from Notepad++
+      if (scriptLangID == 0) {
+        for (npp_lang_type_t i = L_EXTERNAL - 1; i >= 0; --i) {
+          if (checkLangName(i, lexerName)) {
             scriptLangID = i;
-
-            // Update lexer's data as it needs to know if current file is lexed by it.
-            if (lexerData) {
-              lexerData->scriptLangID = scriptLangID;
-            }
             break;
           }
         }
       }
+
+      if (scriptLangID != 0) {
+        // Update lexer's data as it needs to know if current file is lexed by it.
+        if (lexerData) {
+          lexerData->scriptLangID = scriptLangID;
+        }
+      }
     }
+  }
+
+  bool Plugin::checkLangName(npp_lang_type_t langID, std::wstring lexerName) {
+    // Get language name of the given langID.
+    npp_size_t langNameLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETLANGUAGENAME, langID, 0));
+    if (langNameLength > 0) {
+      wchar_t* langNameCharArray = new wchar_t[langNameLength + 1];
+      auto autoCleanup = gsl::finally([&] { delete[] langNameCharArray; });
+      ::SendMessage(nppData._nppHandle, NPPM_GETLANGUAGENAME, langID, reinterpret_cast<LPARAM>(langNameCharArray));
+      std::wstring langName(langNameCharArray);
+
+      return (langName == lexerName);
+    }
+
+    return false;
   }
 
   bool Plugin::isCurrentBufferManaged(HWND scintillaHandle) {
