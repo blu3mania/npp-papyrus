@@ -42,6 +42,8 @@ namespace papyrus {
   // Static shared helper and other lexer data
   namespace {
     std::unique_ptr<Helper> helper;
+    std::mutex lexerListMutex;
+    std::vector<Lexer*> lexerList;
   }
 
   Lexer::Lexer()
@@ -55,10 +57,7 @@ namespace papyrus {
 
     hoverEventSubscription = lexerData->hoverEventData.subscribe([&](auto eventData) {
       if (isUsable()) {
-        if (bufferID == 0) {
-          detectBufferId();
-        }
-
+        detectBufferId();
         if (bufferID == eventData.bufferID) {
           // Mouse hovering over a word in current file.
           handleMouseHover(eventData.scintillaHandle, eventData.hovering, eventData.position);
@@ -68,28 +67,46 @@ namespace papyrus {
 
     changeEventSubscription = lexerData->changeEventData.subscribe([&](auto eventData) {
       if (isUsable()) {
-        if (bufferID == 0) {
-          detectBufferId();
-        }
-
+        detectBufferId();
         if (bufferID == eventData.bufferID) {
           // Change happened on current file.
           handleContentChange(eventData.scintillaHandle, eventData.position, eventData.linesAdded);
         }
       }
     });
+
+    // Add this instance to lexer list
+    Lock lock(lexerListMutex);
+    lexerList.push_back(this);
   }
 
   Lexer::~Lexer() {
     hoverEventSubscription->unsubscribe();
     changeEventSubscription->unsubscribe();
+
+    // Remove this instance from lexer list
+    Lock lock(lexerListMutex);
+    auto iter = std::find(lexerList.begin(), lexerList.end(), this);
+    if (iter != lexerList.end()) {
+      lexerList.erase(iter);
+    }
+  }
+
+  void Lexer::assignBufferID(npp_buffer_t bufferID) {
+    Lock lock(lexerListMutex);
+    if (!lexerList.empty()) {
+      // Since NPPN_EXTERNALLEXERBUFFER always happens right after a lexer is instantiated, we only need to check the last instance in lexer list.
+      // Though, since this message can be received when another plugin's lexer is instantiated, we should prevent overwriting an already assigned buffer ID.
+      Lexer* pLexer = lexerList.back();
+      if (pLexer->bufferID == 0) {
+        pLexer->bufferID = bufferID;
+      }
+    }
   }
 
   void SCI_METHOD Lexer::Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int, IDocument* pAccess) {
     if (isUsable()) {
-      if (bufferID == 0) {
-        detectBufferId();
-      }
+      detectBufferId();
 
       Accessor accessor(pAccess, nullptr);
       StyleContext styleContext(startPos, lengthDoc, accessor.StyleAt(startPos - 1), accessor);
@@ -506,9 +523,10 @@ namespace papyrus {
     }
   }
 
+  // For Notepad++ 8.4.9 or older releases, before NPPN_EXTERNALLEXERBUFFER message was introduced
   void Lexer::detectBufferId() {
     // Can only detect buffer ID if script name is known
-    if (!scriptName.empty()) {
+    if (bufferID == 0 && !scriptName.empty()) {
       // Check if the file name of the active document on current view matches detected script name
       npp_view_t currentView = static_cast<npp_view_t>(::SendMessage(lexerData->nppData._nppHandle, NPPM_GETCURRENTVIEW, 0, 0));
       npp_buffer_t candidateBufferID = utility::getActiveBufferIdOnView(lexerData->nppData._nppHandle, currentView);

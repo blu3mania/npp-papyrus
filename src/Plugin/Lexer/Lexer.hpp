@@ -108,6 +108,9 @@ namespace papyrus {
       inline static TCHAR* statusText() { return const_cast<TCHAR*>(LEXER_STATUS_TEXT); }  // Not required anymore, but kept for compatibility with Notepad++ 8.3 - 8.3.3
       inline static ILexer* factory() { return new Lexer(); }
 
+      // Assign buffer ID to the latest instantiated lexer instance. This is triggered by NPPN_EXTERNALLEXERBUFFER message from Notepad++.
+      static void assignBufferID(npp_buffer_t bufferID);
+
       // Lexer functions
       void SCI_METHOD Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
       void SCI_METHOD Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;

@@ -147,6 +147,11 @@ namespace papyrus {
           break;
         }
 
+        case NPPN_EXTERNALLEXERBUFFER: {
+          Lexer::assignBufferID(notification->nmhdr.idFrom);
+          break;
+        }
+
         case NPPN_BUFFERACTIVATED: {
           if (!isShuttingDown) {
             handleBufferActivation(notification->nmhdr.idFrom, false);
@@ -308,7 +313,7 @@ namespace papyrus {
       HWND scintillaHandle = (currentView == MAIN_VIEW) ? nppData._scintillaMainHandle : nppData._scintillaSecondHandle;
       if (!activatedErrorsTrackingList.empty() && !fromLangChange) {
         // Check if activated file is in the tracking list.
-        auto iter = std::find_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
+        auto iter = std::remove_if(activatedErrorsTrackingList.begin(), activatedErrorsTrackingList.end(),
           [&](const auto& error) {
             return utility::compare(error.file, filePath);
           }
@@ -325,15 +330,8 @@ namespace papyrus {
             }
           });
 
-          // Get rid of other errors in the list for the same file.
-          while (iter != activatedErrorsTrackingList.end()) {
-            activatedErrorsTrackingList.erase(iter++);
-            iter = std::find_if(iter, activatedErrorsTrackingList.end(),
-              [&](const auto& error) {
-                return utility::compare(error.file, filePath);
-              }
-            );
-          }
+          // Get rid of all tracked errors in the list for the same file.
+          activatedErrorsTrackingList.erase(iter, activatedErrorsTrackingList.end());
         }
       }
 
