@@ -195,7 +195,6 @@
     <ClInclude Include="Plugin\CompilationErrorHandling\ErrorsWindow.hpp" />
     <ClInclude Include="Plugin\Compiler\CompilationRequest.hpp" />
     <ClInclude Include="Plugin\Compiler\Compiler.hpp" />
-    <ClInclude Include="Plugin\Compiler\CompilerMessages.hpp" />
     <ClInclude Include="Plugin\Compiler\CompilerSettings.hpp" />
     <ClInclude Include="Plugin\Lexer\Lexer.hpp" />
     <ClInclude Include="Plugin\Lexer\LexerData.hpp" />

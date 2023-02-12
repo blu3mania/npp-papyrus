@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Compiler.hpp"
 
 #include "..\Common\Logger.hpp"
+#include "..\Common\Resources.hpp"
 #include "..\Common\StringUtil.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
@@ -34,8 +35,8 @@ namespace papyrus {
   constexpr DWORD STDOUT_PIPE_SIZE = 10 * 1024 * 1024;  // Allow up to 10 MiB data to be returned from stdout
   constexpr DWORD STDERR_PIPE_SIZE = 500 * 1024 * 1024; // Allow up to 500 MiB data to be returned from stderr
 
-  Compiler::Compiler(HWND messageWindow, const CompilerMessages compilerMessages, const CompilerSettings& settings)
-   : messageWindow(messageWindow), messages(compilerMessages), settings(settings) {
+  Compiler::Compiler(HWND messageWindow, const CompilerSettings& settings)
+   : messageWindow(messageWindow), settings(settings) {
   }
 
   void Compiler::start(const CompilationRequest& request) {
@@ -43,10 +44,10 @@ namespace papyrus {
       if (!compilationThread.joinable()) {
         compilationThread = std::thread([=]() { compile(request); }); // Capture the request by value due to asynchronous nature of thread
       } else {
-        ::SendMessage(messageWindow, messages.otherErrordMessage, reinterpret_cast<WPARAM>(L"Compilation thread unusable."), reinterpret_cast<LPARAM>(L"Compilation aborted."));
+        ::SendMessage(messageWindow, PPM_OTHER_ERROR, reinterpret_cast<WPARAM>(L"Compilation thread unusable."), reinterpret_cast<LPARAM>(L"Compilation aborted."));
       }
     } catch (const std::system_error&) {
-      ::SendMessage(messageWindow, messages.otherErrordMessage, reinterpret_cast<WPARAM>(L"Starting compiler in thread failed."), reinterpret_cast<LPARAM>(L"Compilation stopped."));
+      ::SendMessage(messageWindow, PPM_OTHER_ERROR, reinterpret_cast<WPARAM>(L"Starting compiler in thread failed."), reinterpret_cast<LPARAM>(L"Compilation stopped."));
     }
   }
 
@@ -129,12 +130,12 @@ namespace papyrus {
                         std::wstring outputFile = std::filesystem::path(outputDirectory) / std::filesystem::path(request.filePath).replace_extension(L".pex").filename();
                         std::wstring errorMsg;
                         if (anonymizeOutput(outputFile, errorMsg)) {
-                          ::SendMessage(messageWindow, messages.compilationDoneMessage, messages.withAnonymization, 0);
+                          ::SendMessage(messageWindow, PPM_COMPILATION_DONE, PARAM_COMPILATION_WITH_ANONYMIZATION, 0);
                         } else {
-                          ::SendMessage(messageWindow, messages.anonymizationFailureMessage, reinterpret_cast<WPARAM>(&errorMsg), 0);
+                          ::SendMessage(messageWindow, PPM_ANONYMIZATION_FAILED, reinterpret_cast<WPARAM>(&errorMsg), 0);
                         }
                       } else {
-                        ::SendMessage(messageWindow, messages.compilationDoneMessage, messages.compilationOnly, 0);
+                        ::SendMessage(messageWindow, PPM_COMPILATION_DONE, PARAM_COMPILATION_ONLY, 0);
                       }
                     }
                   } else {
@@ -163,11 +164,11 @@ namespace papyrus {
           return;
         }
       } else {
-        ::SendMessage(messageWindow, messages.compilerNotFoundMessage, 0, 0);
+        ::SendMessage(messageWindow, PPM_COMPILER_NOT_FOUND, 0, 0);
       }
     } catch (...) {
       // In case of any exception
-      ::SendMessage(messageWindow, messages.otherErrordMessage, reinterpret_cast<WPARAM>(L"Running compiler in thread failed."), reinterpret_cast<LPARAM>(L"Compilation stopped."));
+      ::SendMessage(messageWindow, PPM_OTHER_ERROR, reinterpret_cast<WPARAM>(L"Running compiler in thread failed."), reinterpret_cast<LPARAM>(L"Compilation stopped."));
     }
     compilationThread.detach();
   }
@@ -320,7 +321,7 @@ namespace papyrus {
         .message = errorText
       });
     }
-    ::SendMessage(messageWindow, messages.compilationFailureMessage, reinterpret_cast<WPARAM>(&errors), hasUnparsableLines);
+    ::SendMessage(messageWindow, PPM_COMPILATION_FAILED, reinterpret_cast<WPARAM>(&errors), hasUnparsableLines);
   }
 
   void Compiler::closeProcess(const PROCESS_INFORMATION& processInfo) {
@@ -330,7 +331,7 @@ namespace papyrus {
 
   void Compiler::sendOtherErrorMessage(const wchar_t* msg) {
     std::wstring errorMsg(L"Error code: " + std::to_wstring(::GetLastError()));
-    ::SendMessage(messageWindow, messages.otherErrordMessage, reinterpret_cast<WPARAM>(errorMsg.c_str()), reinterpret_cast<LPARAM>(msg));
+    ::SendMessage(messageWindow, PPM_OTHER_ERROR, reinterpret_cast<WPARAM>(errorMsg.c_str()), reinterpret_cast<LPARAM>(msg));
   }
 
 } // namespace

@@ -534,7 +534,7 @@ namespace papyrus {
       if (utility::compare(scriptName + ".psc", filePath.filename().string())) {
         bufferID = candidateBufferID;
       } else {
-        // Does not match. CHeck the other view
+        // Does not match. Check the other view
         candidateBufferID = utility::getActiveBufferIdOnView(lexerData->nppData._nppHandle, currentView == MAIN_VIEW ? SUB_VIEW : MAIN_VIEW);
         filePath = utility::getFilePathFromBuffer(lexerData->nppData._nppHandle, candidateBufferID);
         if (utility::compare(scriptName + ".psc", filePath.filename().string())) {
@@ -726,7 +726,7 @@ namespace papyrus {
   }
 
   void Helper::restyleDocument(npp_view_t view) const {
-    // Ask Scintilla to restyle urrent document on the given view, but only when it is using this lexer.
+    // Ask Scintilla to restyle current document on the given view, but only when it is using this lexer.
     if (getApplicableBufferIdOnView(view) != 0) {
       HWND handle = (view == MAIN_VIEW ? lexerData->nppData._scintillaMainHandle : lexerData->nppData._scintillaSecondHandle);
       ::SendMessage(handle, SCI_COLOURISE, 0, -1);

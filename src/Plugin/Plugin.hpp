@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Common\Game.hpp"
 #include "Common\NotepadPlusPlus.hpp"
-#include "Common\Resources.hpp"
 #include "Common\Timer.hpp"
 #include "CompilationErrorHandling\ErrorAnnotator.hpp"
 #include "CompilationErrorHandling\ErrorsWindow.hpp"
@@ -168,7 +167,7 @@ namespace papyrus {
 
       std::unique_ptr<Compiler> compiler;
       CompilationRequest activeCompilationRequest;
-      bool isComplingCurrentFile {false};
+      bool isCompilingCurrentFile {false};
 
       std::unique_ptr<ErrorAnnotator> errorAnnotator;
       std::unique_ptr<ErrorsWindow> errorsWindow;

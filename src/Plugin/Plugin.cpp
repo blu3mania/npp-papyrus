@@ -32,6 +32,7 @@ https://www.creationkit.com/fallout4/index.php?title=Category:Papyrus
 
 #include "Common\FileSystemUtil.hpp"
 #include "Common\Logger.hpp"
+#include "Common\Resources.hpp"
 #include "Common\StringUtil.hpp"
 #include "Common\Version.hpp"
 #include "Compiler\CompilationRequest.hpp"
@@ -230,16 +231,7 @@ namespace papyrus {
       }
 
       // Only initialize compiler when settings are ready.
-      CompilerMessages compilerMessages {
-        .compilationDoneMessage = PPM_COMPILATION_DONE,
-        .compilationFailureMessage = PPM_COMPILATION_FAILED,
-        .anonymizationFailureMessage = PPM_ANONYMIZATION_FAILED,
-        .compilerNotFoundMessage = PPM_COMPILER_NOT_FOUND,
-        .otherErrordMessage = PPM_OTHER_ERROR,
-        .withAnonymization = PARAM_COMPILATION_WITH_ANONYMIZATION,
-        .compilationOnly = PARAM_COMPILATION_ONLY
-      };
-      compiler = std::make_unique<Compiler>(messageWindow, compilerMessages, settings.compilerSettings);
+      compiler = std::make_unique<Compiler>(messageWindow, settings.compilerSettings);
     }
 
     NppDarkMode::initDarkMode();
@@ -303,8 +295,8 @@ namespace papyrus {
 
       // Check if active compilation file is still the current one on either view.
       if (activeCompilationRequest.bufferID != 0) {
-        isComplingCurrentFile = utility::compare(activeCompilationRequest.filePath, filePath);
-        if (isComplingCurrentFile && !fromLangChange) {
+        isCompilingCurrentFile = utility::compare(activeCompilationRequest.filePath, filePath);
+        if (isCompilingCurrentFile && !fromLangChange) {
           ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(L"Compiling..."));
         }
       }
@@ -346,7 +338,7 @@ namespace papyrus {
         isManagedBuffer = true;
 
         // If not compiling current file, check its game type and update status message (if applicable).
-        if (!isComplingCurrentFile && detectedGame != Game::Auto) {
+        if (!isCompilingCurrentFile && detectedGame != Game::Auto) {
           std::wstring gameSpecificStatus(L"[" + game::gameNames[std::to_underlying(detectedGame)].second + L"] " + Lexer::statusText());
           ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
         }
@@ -541,7 +533,7 @@ namespace papyrus {
       .game = Game::Auto,
       .bufferID = 0
     };
-    isComplingCurrentFile = false;
+    isCompilingCurrentFile = false;
   }
 
   LRESULT CALLBACK Plugin::messageHandleProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -561,7 +553,7 @@ namespace papyrus {
           msg += L"and anonymization ";
         }
         msg += L"succeeded";
-        if (!isComplingCurrentFile) {
+        if (!isCompilingCurrentFile) {
           msg += L": " + activeCompilationRequest.filePath;
         }
         ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(msg.c_str()));
@@ -584,7 +576,7 @@ namespace papyrus {
         }
 
         std::wstring msg(L"Compilation failed");
-        if (!isComplingCurrentFile) {
+        if (!isCompilingCurrentFile) {
           msg += L": " + activeCompilationRequest.filePath;
         }
         ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(msg.c_str()));
@@ -609,7 +601,7 @@ namespace papyrus {
 
         std::wstring msg(L"Compilation succeeded but anonymization failed: ");
         msg += *reinterpret_cast<std::wstring*>(wParam);
-        if (!isComplingCurrentFile) {
+        if (!isCompilingCurrentFile) {
           msg += L" File: " + activeCompilationRequest.filePath;
         }
         ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(msg.c_str()));
@@ -848,7 +840,7 @@ namespace papyrus {
                 .filePath { currentFile },
                 .useAutoModeOutputDirectory = useAutoModeOutputDirectory
               };
-              isComplingCurrentFile = true;
+              isCompilingCurrentFile = true;
               ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(L"Compiling..."));
               ::SendMessage(nppData._nppHandle, NPPM_SAVECURRENTFILE, 0, 0);
 

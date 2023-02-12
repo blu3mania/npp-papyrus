@@ -90,9 +90,6 @@
     <ClInclude Include="Plugin\Compiler\Compiler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Plugin\Compiler\CompilerMessages.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Plugin\Compiler\CompilerSettings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

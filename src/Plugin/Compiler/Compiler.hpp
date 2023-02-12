@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include "CompilationRequest.hpp"
-#include "CompilerMessages.hpp"
 #include "CompilerSettings.hpp"
 
 #include "..\CompilationErrorHandling\Error.hpp"
@@ -35,7 +34,7 @@ namespace papyrus {
 
   class Compiler {
     public:
-      Compiler(HWND messageWindow, const CompilerMessages compilerMessages, const CompilerSettings& settings);
+      Compiler(HWND messageWindow, const CompilerSettings& settings);
 
       void start(const CompilationRequest& request);
 
@@ -64,7 +63,6 @@ namespace papyrus {
       // Private members
       //
       const HWND messageWindow;
-      const CompilerMessages messages;
       const CompilerSettings& settings;
       std::thread compilationThread;
   };
