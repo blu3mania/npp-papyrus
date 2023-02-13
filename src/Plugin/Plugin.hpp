@@ -130,6 +130,7 @@ namespace papyrus {
       // elevation is needed. In that case, "waitFor" will be used to determien how long the process is going
       // to wait for the execution. By default it only waits for up to 3 seconds.
       bool copyFile(const std::wstring& sourceFile, const std::wstring& destinationFile, int waitFor = 3000);
+      bool copyFile(const std::wstring& sourceFile, const std::wstring& destinationFile, HWND ownerWindow, int waitFor = 3000);
 
       // Menu functions
       //

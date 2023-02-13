@@ -209,6 +209,9 @@ namespace papyrus {
     settingsDialog.init(myInstance, nppData._nppHandle);
     aboutDialog.init(myInstance, nppData._nppHandle);
 
+    NppDarkMode::initDarkMode();
+    updateNppUIParameters();
+
     // Get Notepad++'s plugins config folder.
     npp_size_t configPathLength = static_cast<npp_size_t>(::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, 0, 0));
     if (configPathLength > 0) {
@@ -233,9 +236,6 @@ namespace papyrus {
       // Only initialize compiler when settings are ready.
       compiler = std::make_unique<Compiler>(messageWindow, settings.compilerSettings);
     }
-
-    NppDarkMode::initDarkMode();
-    updateNppUIParameters();
   }
 
   void Plugin::checkLexerConfigFile(const std::wstring& configPath) {
@@ -248,16 +248,18 @@ namespace papyrus {
         wchar_t* homePathCharArray = new wchar_t[homePathLength + 1];
         auto autoCleanupHomePath = gsl::finally([&] { delete[] homePathCharArray; });
         ::SendMessage(nppData._nppHandle, NPPM_GETPLUGINHOMEPATH, homePathLength + 1, reinterpret_cast<LPARAM>(homePathCharArray));
-        std::wstring pluginHomePath(homePathCharArray);
+        std::wstring currentThemeConfigFile = NppDarkMode::isEnabled()
+         ? std::filesystem::path(homePathCharArray) / PLUGIN_NAME / L"themes" / L"DarkModeDefault" / PLUGIN_NAME L".xml"
+         : std::filesystem::path(homePathCharArray) / PLUGIN_NAME / PLUGIN_NAME L".xml";
 
-        if (!copyFile(std::filesystem::path(pluginHomePath) / PLUGIN_NAME / PLUGIN_NAME L".xml", lexerConfigFile)) {
+        if (!copyFile(currentThemeConfigFile, lexerConfigFile, static_cast<HWND>(NULL))) {  // Notepad++ UI is not initialized yet, so don't use an owner window for MessageBox
           // Can't generate lexer configuration file. Mark lexer as unusable.
           lexerData->usable = false;
-          std::wstring msg(PLUGIN_NAME L".xml is missing and cannot be autmatically generated.\r\n");
+          std::wstring msg(PLUGIN_NAME L".xml is missing and cannot be automatically generated.\r\n");
           msg += L"Please manually copy it to " + configPath + L".\r\n";
           msg += L"Close and restart Notepad++ afterwards.\r\n";
-          msg += L"If Notepad++ asks if you want to remove " PLUGIN_NAME L".dll, please answer No.";
-          ::MessageBox(nppData._nppHandle, msg.c_str(), PLUGIN_NAME L" plugin", MB_ICONEXCLAMATION | MB_OK);
+          msg += L"If Notepad++ asks whether you want to remove " PLUGIN_NAME L".dll, please answer No.";
+          ::MessageBox(NULL, msg.c_str(), PLUGIN_NAME L" plugin", MB_ICONEXCLAMATION | MB_OK);
         }
       }
     }
@@ -643,6 +645,10 @@ namespace papyrus {
   }
 
   bool Plugin::copyFile(const std::wstring& sourceFile, const std::wstring& destinationFile, int waitFor) {
+    return copyFile(sourceFile, destinationFile, nppData._nppHandle, waitFor);
+  }
+
+  bool Plugin::copyFile(const std::wstring& sourceFile, const std::wstring& destinationFile, HWND ownerWindow, int waitFor) {
     if (utility::fileExists(sourceFile)) {
       std::ofstream dest(destinationFile, std::ios::binary);
       auto autoCleanupDestStream = gsl::finally([&] { dest.close(); });
@@ -650,7 +656,7 @@ namespace papyrus {
       if (dest.fail()) {
         // Likely a UAC issue since by default Notepad++ is installed under %PROGRAMFILES%. Try to execute copy command with administrator privilege.
         std::wstring infoMessage(L"Cannot write to " + destinationFile + L". Will run COPY command with elevated privilege. Please accept UAC prompt if any.");
-        ::MessageBox(nppData._nppHandle, infoMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONINFORMATION | MB_OK);
+        ::MessageBox(ownerWindow, infoMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONINFORMATION | MB_OK);
         std::wstring parameter(L"/c copy /y \"" + sourceFile + L"\" \"" + destinationFile + L"\"");
         SHELLEXECUTEINFO shellExecutionInfo {
           .cbSize = sizeof(SHELLEXECUTEINFO),
@@ -667,7 +673,7 @@ namespace papyrus {
 
         if (!utility::fileExists(destinationFile)) {
           std::wstring errorMessage(L"Fail to copy to " + destinationFile + L". Please manually copy " + sourceFile + L" to it.");
-          ::MessageBox(nppData._nppHandle, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
+          ::MessageBox(ownerWindow, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
           return false;
         }
       } else {
@@ -678,13 +684,13 @@ namespace papyrus {
           dest << source.rdbuf();
         } else {
           std::wstring errorMessage(L"Cannot read " + sourceFile + L". Please check permission.");
-          ::MessageBox(nppData._nppHandle, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
+          ::MessageBox(ownerWindow, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
           return false;
         }
       }
     } else {
       std::wstring errorMessage(L"Cannot find " + sourceFile + L". Please make sure the full package is extracted in plugin folder.");
-      ::MessageBox(nppData._nppHandle, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
+      ::MessageBox(ownerWindow, errorMessage.c_str(), PLUGIN_NAME L" Plugin", MB_ICONEXCLAMATION | MB_OK);
       return false;
     }
 

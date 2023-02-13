@@ -584,6 +584,8 @@ int XMessageBox(HWND hwnd,
   TRACE(_T("in XMessageBox\n"));
   _ASSERTE(lpszMessage);
 
+// PapyrusPlugin modification -- honor owner window passed in, instead of making assumptions
+/*
   if (hwnd == NULL)
   {
     hwnd = ::GetActiveWindow() ;
@@ -592,6 +594,8 @@ int XMessageBox(HWND hwnd,
       hwnd = ::GetLastActivePopup(hwnd) ;
     }
   };
+*/
+// End of PapyrusPlugin modification
 
   if ((nStyle & MB_ICONHAND) && (nStyle & MB_SYSTEMMODAL))
   {
@@ -600,7 +604,7 @@ int XMessageBox(HWND hwnd,
     // the system displays the resulting message box regardless of
     // available memory.
 
-    return ::MessageBox(hwnd, lpszMessage, lpszCaption, nStyle);
+    return ::MessageBoxW(hwnd, lpszMessage, lpszCaption, nStyle);  // PapyrusPlugin modification -- use MessageBoxW since MessageBox is already redefined
   }
 
 

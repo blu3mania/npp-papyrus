@@ -99,7 +99,7 @@ enhancements, and made to work with the latest Notepad++ release.
     *SKSE*, and even *SkyUI*.
   - *Install function list support* - allows using *View -> Function List* menu to show all defined functions
     in a Papyrus script file.
-- **[UI]** Dark mode support (partial, only dialog UIs are handled automatically for now).
+- **[UI]** Dark mode support.
 
 ### Future plan
 - **[Lexer/Compiler]** [Papyrus Projects (PPJ)](https://www.creationkit.com/fallout4/index.php?title=Papyrus_Projects)
