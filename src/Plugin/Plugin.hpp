@@ -73,6 +73,7 @@ namespace papyrus {
       };
 
       enum class AdvancedMenu {
+        ResetLexerStyles,
         ShowLangID,
         InstallAutoCompletion,
         InstallFunctionList
@@ -80,8 +81,8 @@ namespace papyrus {
 
       void initializeComponents();
 
-      // Check if lexer's config file exists, and attempt to fix it if not
-      void checkLexerConfigFile(const std::wstring& configPath);
+      // Check/copy lexer's config file
+      void copyLexerConfigFile(bool isStartupCheck = false);
 
       // Update Notepad++ UI parameters, such as dark mode and default fore/background colors
       void updateNppUIParameters();
@@ -136,6 +137,7 @@ namespace papyrus {
       //
       void setupAdvancedMenu();
       static void advancedMenuFunc() {}; // Still need an empty func so NPP won't render the menu item as a separator
+      void resetLexerStyles();
       void showLangID();
       void installAutoCompletion();
       void installFunctionList();

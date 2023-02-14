@@ -666,14 +666,14 @@ namespace papyrus {
     if (isTabDialogCreated(lexerTab)) {
       std::wstring hoverDelayStr = getText(lexerTab, IDC_SETTINGS_LEXER_HOVER_DELAY);
       if (!utility::isNumber(hoverDelayStr)) {
-        ::MessageBox(getHSelf(), L"Hover delay needs to be a positive number (in millisecond)", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        ::MessageBox(getHSelf(), L"Hover delay needs to be a positive number (in millisecond)", L"Invalid setting", MB_ICONERROR | MB_OK);
         return false;
       }
 
       int hoverDelay {};
       std::wistringstream(hoverDelayStr) >> hoverDelay;
       if (hoverDelay <= 0) {
-        ::MessageBox(getHSelf(), L"Hover delay needs to be a positive number (in millisecond)", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        ::MessageBox(getHSelf(), L"Hover delay needs to be a positive number (in millisecond)", L"Invalid setting", MB_ICONERROR | MB_OK);
         return false;
       }
 
@@ -693,14 +693,14 @@ namespace papyrus {
     if (isTabDialogCreated(keywordMatcherTab)) {
       std::wstring matcherIndicatorIDStr = getText(keywordMatcherTab, IDC_SETTINGS_MATCHER_INDICATOR_ID);
       if (!utility::isNumber(matcherIndicatorIDStr)) {
-        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONERROR | MB_OK);
         return false;
       }
 
       int matcherIndicatorID {};
       std::wistringstream(matcherIndicatorIDStr) >> matcherIndicatorID;
       if (matcherIndicatorID < 9 || matcherIndicatorID > 20) {
-        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONERROR | MB_OK);
         return false;
       }
 
@@ -711,14 +711,14 @@ namespace papyrus {
     if (isTabDialogCreated(errorAnnotatorTab)) {
       std::wstring errorIndicatorIDStr = getText(errorAnnotatorTab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID);
       if (!utility::isNumber(errorIndicatorIDStr)) {
-        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONERROR | MB_OK);
         return false;
       }
 
       int errorIndicatorID {};
       std::wistringstream(errorIndicatorIDStr) >> errorIndicatorID;
       if (errorIndicatorID < 9 || errorIndicatorID > 20) {
-        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONEXCLAMATION | MB_OK);
+        ::MessageBox(getHSelf(), L"Indicator ID needs to be a number between 9 and 20", L"Invalid setting", MB_ICONERROR | MB_OK);
         return false;
       }
 
