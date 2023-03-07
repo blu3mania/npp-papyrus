@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "StringUtil.hpp"
 
-#include <algorithm>
-
 namespace utility {
 
   // String utilities
