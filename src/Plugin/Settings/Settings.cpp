@@ -204,11 +204,11 @@ namespace papyrus {
     if (storage.getString(L"keywordMatcher.matchedIndicatorStyle", value)) {
       keywordMatcherSettings.matchedIndicatorStyle = std::stoi(value);
       if (keywordMatcherSettings.matchedIndicatorStyle > INDIC_GRADIENTCENTRE) {
-        keywordMatcherSettings.matchedIndicatorStyle = INDIC_ROUNDBOX;
+        keywordMatcherSettings.matchedIndicatorStyle = INDIC_TEXTFORE;
         updated = true;
       }
     } else {
-      keywordMatcherSettings.matchedIndicatorStyle = INDIC_ROUNDBOX;
+      keywordMatcherSettings.matchedIndicatorStyle = INDIC_TEXTFORE;
       updated = true;
     }
 

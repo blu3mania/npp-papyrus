@@ -250,6 +250,7 @@ namespace papyrus {
   void ErrorAnnotator::updateIndicatorStyle(HWND handle) const {
     ::SendMessage(handle, SCI_INDICSETFORE, settings.indicatorID, settings.indicatorForegroundColor);
     ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
+    ::SendMessage(handle, SCI_INDICSETOUTLINEALPHA, settings.indicatorID, 255); // Always make indicator's outline opaque
 
     settings.enableIndication ? showIndications(handle) : hideIndications(handle);
   }

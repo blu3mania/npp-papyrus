@@ -342,6 +342,7 @@ namespace papyrus {
   void KeywordMatcher::setupIndicator() {
     ::SendMessage(handle, SCI_INDICSETFORE, settings.indicatorID, matched ? settings.matchedIndicatorForegroundColor : settings.unmatchedIndicatorForegroundColor);
     ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
+    ::SendMessage(handle, SCI_INDICSETOUTLINEALPHA, settings.indicatorID, 255); // Always make indicator's outline opaque
     settings.enableKeywordMatching ? showIndicator() : hideIndicator();
   }
 
