@@ -89,6 +89,24 @@ namespace papyrus {
     MultiTabbedDialog::doDialog();
   }
 
+  void SettingsDialog::updateThemedSettings() {
+    if (isTabDialogCreated(std::to_underlying(Tab::Lexer))) {
+        classLinkFgColorPicker.setColour(settings.lexerSettings.classLinkForegroundColor);
+        classLinkBgColorPicker.setColour(settings.lexerSettings.classLinkBackgroundColor);
+    }
+
+    if (isTabDialogCreated(std::to_underlying(Tab::KeywordMatcher))) {
+        matchedIndicatorFgColorPicker.setColour(settings.keywordMatcherSettings.matchedIndicatorForegroundColor);
+        unmatchedIndicatorFgColorPicker.setColour(settings.keywordMatcherSettings.unmatchedIndicatorForegroundColor);
+    }
+
+    if (isTabDialogCreated(std::to_underlying(Tab::ErrorAnnotator))) {
+        annotationFgColorPicker.setColour(settings.errorAnnotatorSettings.annotationForegroundColor);
+        annotationBgColorPicker.setColour(settings.errorAnnotatorSettings.annotationBackgroundColor);
+        errorIndicatorFgColorPicker.setColour(settings.errorAnnotatorSettings.indicatorForegroundColor);
+    }
+  }
+
   // Protected methods
   //
 

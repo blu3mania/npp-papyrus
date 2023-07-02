@@ -73,7 +73,7 @@ namespace papyrus {
     }
   }
 
-  bool SettingsStorage::getString(std::wstring key, std::wstring& value) const {
+  bool SettingsStorage::getString(const std::wstring& key, std::wstring& value) const {
     for (const auto& p : data) {
       if (p.first == key) {
         value = p.second;
@@ -83,7 +83,7 @@ namespace papyrus {
     return false;
   }
 
-  void SettingsStorage::putString(std::wstring key, std::wstring value) {
+  void SettingsStorage::putString(const std::wstring& key, const std::wstring& value) {
     for (auto& p : data) {
       if (p.first == key) {
         p.second = value;
@@ -91,6 +91,16 @@ namespace papyrus {
       }
     }
     data.push_back(key_value_t(key, value));
+  }
+
+  bool SettingsStorage::renameKey(const std::wstring& oldKey, const std::wstring& newKey) {
+    for (auto& p : data) {
+      if (p.first == oldKey) {
+        p.first = newKey;
+        return true;
+      }
+    }
+    return false;
   }
 
 } // namespace

@@ -22,33 +22,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\Common\StringUtil.hpp"
 #include "..\CompilationErrorHandling\ErrorAnnotator.hpp"
 
+#include "..\..\external\npp\NppDarkMode.h"
+
 #include <fstream>
 
 namespace papyrus {
 
-  bool Settings::loadSettings(SettingsStorage& storage, utility::Version currentVersion) {
+  void Settings::loadSettings(SettingsStorage& storage, utility::Version currentVersion) {
     if (!storage.load()) {
       // This will initialize settings to current version's default
       readSettings(storage);
       storage.setVersion(currentVersion);
-      return false;
+      saveSettings(storage);
     } else {
       // If settings are changed upon loading, or the stored settings are from an older version (in this case they should have been migrated by readSettings()), save the updated settings.
       if (readSettings(storage) || storage.getVersion() < currentVersion) {
         storage.setVersion(currentVersion);
         saveSettings(storage);
       }
-      return true;
     }
+
+    loaded = true;
   }
 
   void Settings::saveSettings(SettingsStorage& storage) {
+    std::wstring themeSuffix = NppDarkMode::isEnabled() ? L".dark" : L".light";
+
     storage.putString(L"lexer.enableFoldMiddle", utility::boolToStr(lexerSettings.enableFoldMiddle));
     storage.putString(L"lexer.enableClassNameCache", utility::boolToStr(lexerSettings.enableClassNameCache));
     storage.putString(L"lexer.enableClassLink", utility::boolToStr(lexerSettings.enableClassLink));
     storage.putString(L"lexer.classLinkUnderline", utility::boolToStr(lexerSettings.classLinkUnderline));
-    storage.putString(L"lexer.classLinkForegroundColor", utility::colorToHexStr(lexerSettings.classLinkForegroundColor));
-    storage.putString(L"lexer.classLinkBackgroundColor", utility::colorToHexStr(lexerSettings.classLinkBackgroundColor));
+    storage.putString(L"lexer.classLinkForegroundColor" + themeSuffix, utility::colorToHexStr(lexerSettings.classLinkForegroundColor));
+    storage.putString(L"lexer.classLinkBackgroundColor" + themeSuffix, utility::colorToHexStr(lexerSettings.classLinkBackgroundColor));
     storage.putString(L"lexer.classLinkRequiresDoubleClick", utility::boolToStr(lexerSettings.classLinkRequiresDoubleClick));
     storage.putString(L"lexer.classLinkClickModifier", std::to_wstring(lexerSettings.classLinkClickModifier));
     storage.putString(L"lexer.enableHover", utility::boolToStr(lexerSettings.enableHover));
@@ -59,19 +64,19 @@ namespace papyrus {
     storage.putString(L"keywordMatcher.enabledKeywords", std::to_wstring(keywordMatcherSettings.enabledKeywords));
     storage.putString(L"keywordMatcher.indicatorID", std::to_wstring(keywordMatcherSettings.indicatorID));
     storage.putString(L"keywordMatcher.matchedIndicatorStyle", std::to_wstring(keywordMatcherSettings.matchedIndicatorStyle));
-    storage.putString(L"keywordMatcher.matchedIndicatorForegroundColor", utility::colorToHexStr(keywordMatcherSettings.matchedIndicatorForegroundColor));
+    storage.putString(L"keywordMatcher.matchedIndicatorForegroundColor" + themeSuffix, utility::colorToHexStr(keywordMatcherSettings.matchedIndicatorForegroundColor));
     storage.putString(L"keywordMatcher.unmatchedIndicatorStyle", std::to_wstring(keywordMatcherSettings.unmatchedIndicatorStyle));
-    storage.putString(L"keywordMatcher.unmatchedIndicatorForegroundColor", utility::colorToHexStr(keywordMatcherSettings.unmatchedIndicatorForegroundColor));
+    storage.putString(L"keywordMatcher.unmatchedIndicatorForegroundColor" + themeSuffix, utility::colorToHexStr(keywordMatcherSettings.unmatchedIndicatorForegroundColor));
 
     storage.putString(L"errorAnnotator.enableAnnotation", utility::boolToStr(errorAnnotatorSettings.enableAnnotation));
-    storage.putString(L"errorAnnotator.annotationForegroundColor", utility::colorToHexStr(errorAnnotatorSettings.annotationForegroundColor));
-    storage.putString(L"errorAnnotator.annotationBackgroundColor", utility::colorToHexStr(errorAnnotatorSettings.annotationBackgroundColor));
+    storage.putString(L"errorAnnotator.annotationForegroundColor" + themeSuffix, utility::colorToHexStr(errorAnnotatorSettings.annotationForegroundColor));
+    storage.putString(L"errorAnnotator.annotationBackgroundColor" + themeSuffix, utility::colorToHexStr(errorAnnotatorSettings.annotationBackgroundColor));
     storage.putString(L"errorAnnotator.isAnnotationItalic", utility::boolToStr(errorAnnotatorSettings.isAnnotationItalic));
     storage.putString(L"errorAnnotator.isAnnotationBold", utility::boolToStr(errorAnnotatorSettings.isAnnotationBold));
     storage.putString(L"errorAnnotator.enableIndication", utility::boolToStr(errorAnnotatorSettings.enableIndication));
     storage.putString(L"errorAnnotator.indicatorID", std::to_wstring(errorAnnotatorSettings.indicatorID));
     storage.putString(L"errorAnnotator.indicatorStyle", std::to_wstring(errorAnnotatorSettings.indicatorStyle));
-    storage.putString(L"errorAnnotator.indicatorForegroundColor", utility::colorToHexStr(errorAnnotatorSettings.indicatorForegroundColor));
+    storage.putString(L"errorAnnotator.indicatorForegroundColor" + themeSuffix, utility::colorToHexStr(errorAnnotatorSettings.indicatorForegroundColor));
 
     storage.putString(L"compiler.common.allowUnmanagedSource", utility::boolToStr(compilerSettings.allowUnmanagedSource));
     storage.putString(L"compiler.common.gameMode", game::gameNames[std::to_underlying(compilerSettings.gameMode)].first);
@@ -84,10 +89,16 @@ namespace papyrus {
     storage.save();
   }
 
+  void Settings::loadThemedSettings(SettingsStorage& storage) {
+    if (readThemedSettings(storage)) {
+        saveSettings(storage);
+    }
+  }
+
   // Private methods
   //
 
-  bool Settings::readSettings(const SettingsStorage& storage) {
+  bool Settings::readSettings(SettingsStorage& storage) {
     bool updated = false;
     std::wstring value;
 
@@ -118,20 +129,6 @@ namespace papyrus {
       lexerSettings.classLinkUnderline = utility::strToBool(value);
     } else {
       lexerSettings.classLinkUnderline = true;
-      updated = true;
-    }
-
-    if (storage.getString(L"lexer.classLinkForegroundColor", value)) {
-      lexerSettings.classLinkForegroundColor = utility::hexStrToColor(value);
-    } else {
-      lexerSettings.classLinkForegroundColor = 0xFF0000; // BGR
-      updated = true;
-    }
-
-    if (storage.getString(L"lexer.classLinkBackgroundColor", value)) {
-      lexerSettings.classLinkBackgroundColor = utility::hexStrToColor(value);
-    } else {
-      lexerSettings.classLinkBackgroundColor = 0xFFFFFF; // BGR
       updated = true;
     }
 
@@ -212,13 +209,6 @@ namespace papyrus {
       updated = true;
     }
 
-    if (storage.getString(L"keywordMatcher.matchedIndicatorForegroundColor", value)) {
-      keywordMatcherSettings.matchedIndicatorForegroundColor = utility::hexStrToColor(value);
-    } else {
-      keywordMatcherSettings.matchedIndicatorForegroundColor = 0xFF0080; // BGR
-      updated = true;
-    }
-
     if (storage.getString(L"keywordMatcher.unmatchedIndicatorStyle", value)) {
       keywordMatcherSettings.unmatchedIndicatorStyle = std::stoi(value);
       if (keywordMatcherSettings.unmatchedIndicatorStyle > INDIC_GRADIENTCENTRE) {
@@ -230,33 +220,12 @@ namespace papyrus {
       updated = true;
     }
 
-    if (storage.getString(L"keywordMatcher.unmatchedIndicatorForegroundColor", value)) {
-      keywordMatcherSettings.unmatchedIndicatorForegroundColor = utility::hexStrToColor(value);
-    } else {
-      keywordMatcherSettings.unmatchedIndicatorForegroundColor = 0x0000FF; // BGR
-      updated = true;
-    }
-
     // Error annotator settings
     //
     if (storage.getString(L"errorAnnotator.enableAnnotation", value)) {
       errorAnnotatorSettings.enableAnnotation = utility::strToBool(value);
     } else {
       errorAnnotatorSettings.enableAnnotation = true;
-      updated = true;
-    }
-
-    if (storage.getString(L"errorAnnotator.annotationForegroundColor", value)) {
-      errorAnnotatorSettings.annotationForegroundColor = utility::hexStrToColor(value);
-    } else {
-      errorAnnotatorSettings.annotationForegroundColor = 0x0000C0; // BGR
-      updated = true;
-    }
-
-    if (storage.getString(L"errorAnnotator.annotationBackgroundColor", value)) {
-      errorAnnotatorSettings.annotationBackgroundColor = utility::hexStrToColor(value);
-    } else {
-      errorAnnotatorSettings.annotationBackgroundColor = 0xF0F0F0; // BGR
       updated = true;
     }
 
@@ -300,13 +269,6 @@ namespace papyrus {
       }
     } else {
       errorAnnotatorSettings.indicatorStyle = INDIC_SQUIGGLEPIXMAP;
-      updated = true;
-    }
-
-    if (storage.getString(L"errorAnnotator.indicatorForegroundColor", value)) {
-      errorAnnotatorSettings.indicatorForegroundColor = utility::hexStrToColor(value);
-    } else {
-      errorAnnotatorSettings.indicatorForegroundColor = 0x0000FF; // BGR
       updated = true;
     }
 
@@ -389,6 +351,101 @@ namespace papyrus {
       compilerSettings.autoModeOutputDirectory = value;
     } else {
       compilerSettings.autoModeOutputDirectory = L"Scripts";
+      updated = true;
+    }
+
+    // Read themed settings
+    updated = readThemedSettings(storage) || updated;
+
+    return updated;
+  }
+
+  bool Settings::readThemedSettings(SettingsStorage& storage) {
+    bool updated = false;
+    std::wstring themeSuffix = NppDarkMode::isEnabled() ? L".dark" : L".light";
+    std::wstring value;
+
+    std::wstring baseKey = L"lexer.classLinkForegroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      lexerSettings.classLinkForegroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      lexerSettings.classLinkForegroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      lexerSettings.classLinkForegroundColor = NppDarkMode::isEnabled() ? 0x00FFFF : 0xFF0000; // BGR
+      updated = true;
+    }
+
+    baseKey = L"lexer.classLinkBackgroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      lexerSettings.classLinkBackgroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      lexerSettings.classLinkBackgroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      lexerSettings.classLinkBackgroundColor = NppDarkMode::isEnabled() ? 0x3F3F3F : 0xFFFFFF; // BGR
+      updated = true;
+    }
+
+    baseKey = L"keywordMatcher.matchedIndicatorForegroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      keywordMatcherSettings.matchedIndicatorForegroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      keywordMatcherSettings.matchedIndicatorForegroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      keywordMatcherSettings.matchedIndicatorForegroundColor = NppDarkMode::isEnabled() ? 0x80FFFF : 0xFF0080; // BGR
+      updated = true;
+    }
+
+    baseKey = L"keywordMatcher.unmatchedIndicatorForegroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      keywordMatcherSettings.unmatchedIndicatorForegroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      keywordMatcherSettings.unmatchedIndicatorForegroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      keywordMatcherSettings.unmatchedIndicatorForegroundColor = NppDarkMode::isEnabled() ? 0x0000FF : 0x0000FF; // BGR
+      updated = true;
+    }
+
+    baseKey = L"errorAnnotator.annotationForegroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      errorAnnotatorSettings.annotationForegroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      errorAnnotatorSettings.annotationForegroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      errorAnnotatorSettings.annotationForegroundColor = NppDarkMode::isEnabled() ? 0x000080 : 0x0000C0; // BGR
+      updated = true;
+    }
+
+    baseKey = L"errorAnnotator.annotationBackgroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      errorAnnotatorSettings.annotationBackgroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      errorAnnotatorSettings.annotationBackgroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      errorAnnotatorSettings.annotationBackgroundColor = NppDarkMode::isEnabled() ? 0x7F7F7F : 0xF0F0F0; // BGR
+      updated = true;
+    }
+
+    baseKey = L"errorAnnotator.indicatorForegroundColor";
+    if (storage.getString(baseKey + themeSuffix, value)) {
+      errorAnnotatorSettings.indicatorForegroundColor = utility::hexStrToColor(value);
+    } else if (storage.getString(baseKey, value)) {
+      errorAnnotatorSettings.indicatorForegroundColor = utility::hexStrToColor(value);
+      storage.renameKey(baseKey, baseKey + themeSuffix);
+      updated = true;
+    } else {
+      errorAnnotatorSettings.indicatorForegroundColor = NppDarkMode::isEnabled() ? 0x0000FF : 0x0000FF; // BGR
       updated = true;
     }
 

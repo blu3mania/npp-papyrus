@@ -103,7 +103,7 @@ namespace papyrus {
 
       static INT_PTR CALLBACK tabDialogProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-      inline HWND getTabHandle(tab_id_t tab) const { return tabItems.at(tab).handle; }
+      inline HWND getTabHandle(tab_id_t tab) const { return tabItems.contains(tab) ? tabItems.at(tab).handle : nullptr; }
 
       inline void createTabDialog(tab_id_t tab);
 

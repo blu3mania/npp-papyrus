@@ -36,8 +36,10 @@ namespace papyrus {
       bool load();
       void save() const;
 
-      bool getString(std::wstring key, std::wstring& value) const;
-      void putString(std::wstring key, std::wstring value);
+      bool getString(const std::wstring& key, std::wstring& value) const;
+      void putString(const std::wstring& key, const std::wstring& value);
+
+      bool renameKey(const std::wstring& oldKey, const std::wstring& newKey);
 
       // Setting file is marked with a version, which can be compared with current plugin version
       inline utility::Version getVersion() const { return version; }

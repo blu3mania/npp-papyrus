@@ -230,13 +230,8 @@ namespace papyrus {
 
       // Load settings
       settingsStorage.init(std::filesystem::path(configPath) / PLUGIN_NAME L".ini");
-      if (!settings.loadSettings(settingsStorage, utility::Version(PLUGIN_VERSION))) {
-        // Settings didn't exist. Default settings initialized.
-        settings.saveSettings(settingsStorage);
-        onSettingsUpdated();
-      } else {
-        onSettingsUpdated();
-      }
+      settings.loadSettings(settingsStorage, utility::Version(PLUGIN_VERSION));
+      onSettingsUpdated();
 
       // Only initialize compiler when settings are ready.
       compiler = std::make_unique<Compiler>(messageWindow, settings.compilerSettings);
@@ -308,7 +303,15 @@ namespace papyrus {
       NppDarkMode::setNppUIColors(nppDarkModeColors, nppDefaultFgColor, nppDefaultBgColor);
     }
 
-    uiParameters.darkModeEnabled = darkModeEnabled;
+    if (uiParameters.darkModeEnabled != darkModeEnabled) {
+      uiParameters.darkModeEnabled = darkModeEnabled;
+
+      // Reload themed settings only if settings is already loaded
+      if (settings.loaded) {
+        settings.loadThemedSettings(settingsStorage);
+        settingsDialog.updateThemedSettings();
+      }
+    }
   }
 
   void Plugin::handleBufferActivation(npp_buffer_t bufferID, bool fromLangChange) {

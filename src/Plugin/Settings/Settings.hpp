@@ -37,12 +37,21 @@ namespace papyrus {
     LexerSettings           lexerSettings;
     KeywordMatcherSettings  keywordMatcherSettings;
 
-    bool loadSettings(SettingsStorage& storage, utility::Version currentVersion);
+    bool loaded {false};
+
+    // Load/save settings from/to storage
+    void loadSettings(SettingsStorage& storage, utility::Version currentVersion);
     void saveSettings(SettingsStorage& storage);
+
+    // Load settings that are themed from storage
+    void loadThemedSettings(SettingsStorage& storage);
 
     private:
       // Read settings from storage. Returns true if some settings are updated (due to missing or invalid value, etc.)
-      bool readSettings(const SettingsStorage& storage);
+      bool readSettings(SettingsStorage& storage);
+
+      // Read settings that are themed from storage. Returns true if some settings are updated (due to missing/invalid value, or a base kye is converted to a themed key, etc.)
+      bool readThemedSettings(SettingsStorage& storage);
 
       // Read game settings from storage. Returns a pair of booleans. The first indicates whether the game is configured;
       // The 2nd indicates if some settings are updated (due to missing or invalid value, etc.)

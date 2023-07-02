@@ -41,6 +41,9 @@ namespace papyrus {
 
       void doDialog(callback_t callback);
 
+      // Update themed settings, if applicable
+      void updateThemedSettings();
+
     protected:
       void initControls() override;
       INT_PTR handleCloseMessage(WPARAM wParam, LPARAM lParam) override;

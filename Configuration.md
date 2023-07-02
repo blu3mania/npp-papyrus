@@ -4,7 +4,10 @@ to change the settings file *Papyrus.ini* directly, it can be found in *"plugins
 Notepad++'s data folder, which by default is *"%APPDATA%\Notepad++"*. Also, this plugin's menu shortcuts
 can be remapped from Notepad++'s *Shortcut Mapper* dialog under *Settings* menu.
 
-The following are settings that can be changed in this plugin's *Settings* dialog.
+The following are settings that can be changed in this plugin's *Settings* dialog. Note, color settings are
+themed, i.e. depending on whether light or dark mode is used, they may be set to different values, and when
+switching between light and dark mode, these settings are automatically updated to reflect the settings for
+the new mode.
 
 ## Lexer tab
 
