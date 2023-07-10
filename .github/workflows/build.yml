@@ -6,6 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [main]
+  release:
+    types: [created]
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -41,3 +43,44 @@ jobs:
 
       - name: Build plugin DLL
         run: msbuild /m /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} ${{ env.solution_file }}
+
+      - name: Create packages
+        if: github.event_name == 'release' && matrix.configuration == 'Release'
+        working-directory: ${{ github.workspace }}\dist
+        run: |
+          copy bin\${{ matrix.platform }}\Papyrus.dll .
+          & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}.zip Papyrus.dll Papyrus.xml extras themes
+          & "C:\Program Files\7-Zip\7z.exe" a PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}-with-manuals.zip Papyrus.dll Papyrus.xml extras themes ..\*.md
+
+      - name: Upload release package
+        if: github.event_name == 'release' && matrix.configuration == 'Release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}.zip
+          asset_name: PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload release package with manuals included
+        if: github.event_name == 'release' && matrix.configuration == 'Release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}-with-manuals.zip
+          asset_name: PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}-with-manuals.zip
+          asset_content_type: application/zip
+
+      - name: VirusTotal scan
+        if: github.event_name == 'release' && matrix.configuration == 'Release'
+        uses: crazy-max/ghaction-virustotal@v3
+        with:
+          vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          github_token: ${{ github.token }}
+          update_release_body: true
+          files: |
+            PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}.zip
+            PapyrusPlugin-${{ github.event.release.tag_name }}-${{ matrix.platform }}-with-manuals.zip
