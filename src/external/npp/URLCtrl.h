@@ -23,27 +23,26 @@
 class URLCtrl : public Window {
 public:
   void create(HWND itemHandle, const TCHAR * link = nullptr, COLORREF linkColor = RGB(0,0,255)); // PapyrusPlugin modification -- add nullptr as default value for link
-  void create(HWND itemHandle, int cmd, HWND msgDest = NULL);
-  void destroy();
+	void create(HWND itemHandle, int cmd, HWND msgDest = NULL);
+	void destroy() override;
 private:
 	HCURSOR& loadHandCursor();
 	void action();
 protected :
-  generic_string _URL;
-  HFONT _hfUnderlined = nullptr;
-  HCURSOR _hCursor = nullptr;
+    generic_string _URL;
+    HFONT _hfUnderlined = nullptr;
+    HCURSOR _hCursor = nullptr;
 
-  HWND _msgDest = nullptr;
-  unsigned long _cmdID = 0;
+	HWND _msgDest = nullptr;
+	unsigned long _cmdID = 0;
 
-  WNDPROC  _oldproc = nullptr;
-  COLORREF _linkColor = RGB(0xFF, 0xFF, 0xFF);			
-  COLORREF _visitedColor = RGB(0xFF, 0xFF, 0xFF);
-  bool  _clicking = false;
+    WNDPROC  _oldproc = nullptr;
+    COLORREF _linkColor = RGB(0xFF, 0xFF, 0xFF);
+    COLORREF _visitedColor = RGB(0xFF, 0xFF, 0xFF);
+    bool  _clicking = false;
 
-  static LRESULT CALLBACK URLCtrlProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam){
-      return ((URLCtrl *)(::GetWindowLongPtr(hwnd, GWLP_USERDATA)))->runProc(hwnd, Message, wParam, lParam);
-  };
-  LRESULT runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK URLCtrlProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam){
+        return ((URLCtrl *)(::GetWindowLongPtr(hwnd, GWLP_USERDATA)))->runProc(hwnd, Message, wParam, lParam);
+    };
+    LRESULT runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 };
-

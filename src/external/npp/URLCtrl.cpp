@@ -17,6 +17,7 @@
 
 #include "URLCtrl.h"
 #include "NppDarkMode.h"
+//#include "Parameters.h"  // PapyrusPlugin modification -- not used
 
 // PapyrusPlugin modification -- for OCR_HAND definition
 #ifndef OCR_HAND
@@ -176,11 +177,16 @@ LRESULT URLCtrl::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 		    if (_hfUnderlined == nullptr)
 		    {
 			    // Get the default GUI font
+    // PapyrusPlugin modification -- use old logic instead of getting it from NppParameters
+    //
+				//LOGFONT lf{ NppParameters::getDefaultGUIFont() };
 				LOGFONT lf{};
                 HFONT hf = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 
 			    // Add UNDERLINE attribute
 			    GetObject(hf, sizeof lf, &lf);
+    //
+    // PapyrusPlugin modification ends
                 lf.lfUnderline = TRUE;
 
 			    // Create a new font
