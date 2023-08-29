@@ -44,7 +44,8 @@ namespace papyrus {
   struct KeywordMatcherSettings {
     utility::PrimitiveTypeValueMonitor<bool>     enableKeywordMatching;
     utility::PrimitiveTypeValueMonitor<int>      enabledKeywords;
-    utility::PrimitiveTypeValueMonitor<int>      indicatorID;
+    utility::PrimitiveTypeValueMonitor<bool>     autoAllocateIndicatorID;
+    utility::PrimitiveTypeValueMonitor<int>      defaultIndicatorID;
     utility::PrimitiveTypeValueMonitor<int>      matchedIndicatorStyle;
     utility::PrimitiveTypeValueMonitor<COLORREF> matchedIndicatorForegroundColor;
     utility::PrimitiveTypeValueMonitor<int>      unmatchedIndicatorStyle;

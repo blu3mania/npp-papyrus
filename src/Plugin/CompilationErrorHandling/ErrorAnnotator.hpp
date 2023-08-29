@@ -53,15 +53,11 @@ namespace papyrus {
 
       using FileErrors = std::list<LineError>;
 
-      // Get current file path on the given view, if it's a applicable
-      std::wstring getApplicableFilePathOnView(npp_view_t view) const;
-
       // Annotate current buffer on a given view, if it has errors
       void annotate(npp_view_t view);
 
       void clearAnnotations(HWND handle) const;
       void clearIndications(HWND handle) const;
-      void clearIndications(HWND handle, int indicator) const;
 
       void showAnnotations(HWND handle) const;
       void hideAnnotations(HWND handle) const;
@@ -73,11 +69,10 @@ namespace papyrus {
 
       void drawAnnotations(HWND handle, const LineError& lineError) const;
 
-      // Change indiator ID.
-      // Scintilla reserves indicator 8-31 for containers. Notepad++ itself uses 8, and SciLexher.h defines most
-      // of IDs above 20, which NPP uses.
-      // By default 18 is used ny this plugin, but other plugins could cause conflicts, e.g. DSpellCheck uses 19.
-      void changeIndicator(int oldIndicator);
+      // Change indicator ID.
+      // Scintilla reserves indicator 8-31 for containers. Notepad++ itself uses 8, and SciLexher.h defines most of IDs above 20, which NPP uses.
+      // By default 18 is used for error annotation, but other plugins could cause conflicts, e.g. DSpellCheck uses 19. It is recommended to auto allocate.
+      void changeIndicator();
 
       void updateIndicatorStyle();
       void updateIndicatorStyle(HWND handle) const;
@@ -90,6 +85,9 @@ namespace papyrus {
       const NppData& nppData;
       const ErrorAnnotatorSettings& settings;
       std::map<std::wstring, FileErrors> errors;
+
+      int indicatorID {0};
+      int allocatedIndicatorID {0};
 
       int mainViewStyleAssigned {0};
       int secondViewStyleAssigned {0};

@@ -172,14 +172,13 @@ namespace papyrus {
       CompilationRequest activeCompilationRequest;
       bool isCompilingCurrentFile {false};
 
-      std::unique_ptr<ErrorAnnotator> errorAnnotator;
       std::unique_ptr<ErrorsWindow> errorsWindow;
+      std::unique_ptr<ErrorAnnotator> errorAnnotator;
+      std::unique_ptr<KeywordMatcher> keywordMatcher;
       std::list<Error> activatedErrorsTrackingList;
       std::unique_ptr<utility::Timer> jumpToErrorLineTimer;
 
       npp_lang_type_t scriptLangID {0};
-
-      KeywordMatcher keywordMatcher;
 
       AboutDialog aboutDialog;
 

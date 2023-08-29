@@ -45,7 +45,7 @@ namespace papyrus {
         int flags;
       };
 
-      KeywordMatcher(const KeywordMatcherSettings& settings);
+      KeywordMatcher(const NppData& nppData, const KeywordMatcherSettings& settings);
 
       bool match(HWND scintillaHandle);
       inline void goToMatchedPos() const {
@@ -71,13 +71,22 @@ namespace papyrus {
       void setupIndicator();
       void showIndicator();
       void hideIndicator();
-      void changeIndicator(int oldIndicator);
+
+      // Change indicator ID.
+      // Scintilla reserves indicator 8-31 for containers. Notepad++ itself uses 8, and SciLexher.h defines most of IDs above 20, which NPP uses.
+      // By default 17 is used for keyword matcher, but other plugins could cause conflicts, e.g. DSpellCheck uses 19. It is recommended to auto allocate.
+      void changeIndicator();
 
       // Private members
       //
+      const NppData& nppData;
       const KeywordMatcherSettings& settings;
       HWND handle {0};
       Sci_PositionCR docLength {0};
+
+      int indicatorID {0};
+      int allocatedIndicatorID {0};
+
       bool matched {false};
       Sci_PositionCR matchedPos {0};
   };

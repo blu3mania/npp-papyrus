@@ -143,6 +143,7 @@ FONT 8, "MS Shell Dlg", FW_DONTCARE, FALSE, DEFAULT_CHARSET
   CONTROL       "While/EndWhile", IDC_SETTINGS_MATCHER_KEYWORD_WHILE, "Button", BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP, 228, SETTINGS_TAB_BASE_Y + 60, 88, 12, WS_EX_TRANSPARENT
   LTEXT         "Indicator ID:", IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, 24, SETTINGS_TAB_BASE_Y + 80, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   EDITTEXT      IDC_SETTINGS_MATCHER_INDICATOR_ID, 96, SETTINGS_TAB_BASE_Y + 78, 24, 12, ES_LEFT | ES_AUTOHSCROLL
+  CONTROL       "Try auto allocation first", IDC_SETTINGS_MATCHER_INDICATOR_ID_AUTO_ALLOCATE, "Button", BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP, 132, SETTINGS_TAB_BASE_Y + 78, 120, 12, WS_EX_TRANSPARENT
   LTEXT         "Matched Style:", IDC_SETTINGS_MATCHER_MATCHED_STYLE_LABEL, 24, SETTINGS_TAB_BASE_Y + 100, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   COMBOBOX      IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, 96, SETTINGS_TAB_BASE_Y + 98, 112, 16, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
   LTEXT         "Foreground color:", IDC_SETTINGS_MATCHER_MATCHED_FGCOLOR_LABEL, 216, SETTINGS_TAB_BASE_Y + 100, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
@@ -170,6 +171,7 @@ FONT 8, "MS Shell Dlg", FW_DONTCARE, FALSE, DEFAULT_CHARSET
   CONTROL       "Enable error indication", IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, "Button", BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP, 20, SETTINGS_TAB_BASE_Y + 76, 120, 12, WS_EX_TRANSPARENT
   LTEXT         "Indicator ID:", IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, 32, SETTINGS_TAB_BASE_Y + 94, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   EDITTEXT      IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, 104, SETTINGS_TAB_BASE_Y + 92, 24, 12, ES_LEFT | ES_AUTOHSCROLL
+  CONTROL       "Try auto allocation first", IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_AUTO_ALLOCATE, "Button", BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP, 136, SETTINGS_TAB_BASE_Y + 92, 120, 12, WS_EX_TRANSPARENT
   LTEXT         "Indicator Style:", IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_LABEL, 32, SETTINGS_TAB_BASE_Y + 114, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
   COMBOBOX      IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, 104, SETTINGS_TAB_BASE_Y + 112, 112, 16, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
   LTEXT         "Foreground color:", IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL, 224, SETTINGS_TAB_BASE_Y + 114, 64, 12, SS_NOTIFY, WS_EX_TRANSPARENT
@@ -259,13 +261,15 @@ When this happens, simply disable the option to force the lexer to re-check for 
 
   IDS_SETTINGS_MATCHER_TOOLTIP, L"Highlight matching keyword pair when cursor is at one of the words in the pair. When matching If/EndIf pair, Else/ElseIf can also be optionally included in the match."
 
-  IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indicator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number."
+  IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. It is recommended to try auto allocation first. However, since there are only 12 possible indicator IDs, the auto allocation may fail, in which case the assigned ID here will be used.\r\n
+Of course it means there will be conflicts, but there is no way to workaround it. Also, keep in mind other plugins may use hardcoded indicator IDs, so even with an auto allocated ID there is no guarantee there won't be conflicts. Try to remove unused plugins if it's a concern."
 
   IDS_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION_TOOLTIP, L"Show annotations under error lines. They are inside a round box. When there are multiple errors on the same line, they are grouped in the same annotation box."
 
   IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP, L"Show indications where errors happen."
 
-  IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. Keep in mind other plugins may use indicator IDs as well, e.g. DSpellCheck uses 19, so if there are conflicts, just choose a different number.\r\n\
+  IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP, L"Choose a number between 9 and 20. It is recommended to try auto allocation first. However, since there are only 12 possible indicator IDs, the auto allocation may fail, in which case the assigned ID here will be used.\r\n
+Of course it means there will be conflicts, but there is no way to workaround it. Also, keep in mind other plugins may use hardcoded indicator IDs, so even with an auto allocated ID there is no guarantee there won't be conflicts. Try to remove unused plugins if it's a concern.\r\n
 Note, if changes have been made after indications were shown, changing ID again may cause indications to be rendered incorrectly. Trigger recompilation to fix them if needed."
 
   IDS_SETTINGS_COMPILER_RADIO_AUTO_TOOLTIP, L"In this mode, Papyrus compiler to be used is determined by the path of source script file. If it's under a detected game's directory, that game's settings will be used. Otherwise, \

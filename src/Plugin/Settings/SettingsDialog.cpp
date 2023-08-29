@@ -173,7 +173,8 @@ namespace papyrus {
         setChecked(tab, IDC_SETTINGS_MATCHER_KEYWORD_WHILE, settings.keywordMatcherSettings.enabledKeywords & KEYWORD_WHILE);
 
         createToolTip(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID_LABEL, IDS_SETTINGS_MATCHER_INDICATOR_ID_TOOLTIP);
-        setText(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID, std::to_wstring(settings.keywordMatcherSettings.indicatorID));
+        setText(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID, std::to_wstring(settings.keywordMatcherSettings.defaultIndicatorID));
+        setChecked(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID_AUTO_ALLOCATE, settings.keywordMatcherSettings.autoAllocateIndicatorID);
 
         initDropdownList(tab, IDC_SETTINGS_MATCHER_MATCHED_STYLE_DROPDOWN, indicatorStyles, settings.keywordMatcherSettings.matchedIndicatorStyle);
         initColorPicker(tab, matchedIndicatorFgColorPicker, IDC_SETTINGS_MATCHER_MATCHED_FGCOLOR_LABEL);
@@ -199,7 +200,8 @@ namespace papyrus {
         setChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, settings.errorAnnotatorSettings.enableIndication);
         createToolTip(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION, IDS_SETTINGS_ANNOTATOR_ENABLE_INDICATION_TOOLTIP);
         createToolTip(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_LABEL, IDS_SETTINGS_ANNOTATOR_INDICATOR_ID_TOOLTIP);
-        setText(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, std::to_wstring(settings.errorAnnotatorSettings.indicatorID));
+        setText(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID, std::to_wstring(settings.errorAnnotatorSettings.defaultIndicatorID));
+        setChecked(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_AUTO_ALLOCATE, settings.errorAnnotatorSettings.autoAllocateIndicatorID);
         initDropdownList(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_STYLE_DROPDOWN, indicatorStyles, settings.errorAnnotatorSettings.indicatorStyle);
         initColorPicker(tab, errorIndicatorFgColorPicker, IDC_SETTINGS_ANNOTATOR_INDICATOR_FGCOLOR_LABEL);
         errorIndicatorFgColorPicker.setColour(settings.errorAnnotatorSettings.indicatorForegroundColor);
@@ -312,15 +314,14 @@ namespace papyrus {
           return FALSE;
         }
 
-        case IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION: {
-          settings.errorAnnotatorSettings.enableAnnotation = getChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION);
-          enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
+        case IDC_SETTINGS_MATCHER_INDICATOR_ID_AUTO_ALLOCATE: {
+          settings.keywordMatcherSettings.autoAllocateIndicatorID = getChecked(tab, IDC_SETTINGS_MATCHER_INDICATOR_ID_AUTO_ALLOCATE);
           return FALSE;
         }
 
-        case IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION: {
-          settings.errorAnnotatorSettings.enableIndication = getChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION);
-          enableGroup(Group::Indication, settings.errorAnnotatorSettings.enableIndication);
+        case IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION: {
+          settings.errorAnnotatorSettings.enableAnnotation = getChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_ANNOTATION);
+          enableGroup(Group::Annotation, settings.errorAnnotatorSettings.enableAnnotation);
           return FALSE;
         }
 
@@ -331,6 +332,17 @@ namespace papyrus {
 
         case IDC_SETTINGS_ANNOTATOR_ANNOTATION_BOLD: {
           settings.errorAnnotatorSettings.isAnnotationBold = getChecked(tab, IDC_SETTINGS_ANNOTATOR_ANNOTATION_BOLD);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION: {
+          settings.errorAnnotatorSettings.enableIndication = getChecked(tab, IDC_SETTINGS_ANNOTATOR_ENABLE_INDICATION);
+          enableGroup(Group::Indication, settings.errorAnnotatorSettings.enableIndication);
+          return FALSE;
+        }
+
+        case IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_AUTO_ALLOCATE: {
+          settings.errorAnnotatorSettings.autoAllocateIndicatorID = getChecked(tab, IDC_SETTINGS_ANNOTATOR_INDICATOR_ID_AUTO_ALLOCATE);
           return FALSE;
         }
 
@@ -722,7 +734,7 @@ namespace papyrus {
         return false;
       }
 
-      settings.keywordMatcherSettings.indicatorID = matcherIndicatorID;
+      settings.keywordMatcherSettings.defaultIndicatorID = matcherIndicatorID;
     }
 
     constexpr tab_id_t errorAnnotatorTab = std::to_underlying(Tab::ErrorAnnotator);
@@ -740,7 +752,7 @@ namespace papyrus {
         return false;
       }
 
-      settings.errorAnnotatorSettings.indicatorID = errorIndicatorID;
+      settings.errorAnnotatorSettings.defaultIndicatorID = errorIndicatorID;
     }
 
     constexpr tab_id_t compilerTab = std::to_underlying(Tab::Compiler);

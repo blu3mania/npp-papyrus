@@ -77,7 +77,7 @@ namespace papyrus {
       FuncItem{ L"Advanced", advancedMenuFunc, 0, false, nullptr },
       FuncItem{}, // Separator2
       FuncItem{ L"About...", aboutMenuFunc, 0, false, nullptr }
-    }, keywordMatcher(settings.keywordMatcherSettings) {
+    } {
   }
 
   void Plugin::onInit(HINSTANCE instance) {
@@ -212,6 +212,7 @@ namespace papyrus {
     lexerData = std::make_unique<LexerData>(nppData, settings.lexerSettings);
     errorsWindow = std::make_unique<ErrorsWindow>(myInstance, nppData._nppHandle, messageWindow);
     errorAnnotator = std::make_unique<ErrorAnnotator>(nppData, settings.errorAnnotatorSettings);
+    keywordMatcher = std::make_unique<KeywordMatcher>(nppData, settings.keywordMatcherSettings);
     settingsDialog.init(myInstance, nppData._nppHandle);
     aboutDialog.init(myInstance, nppData._nppHandle);
 
@@ -377,17 +378,19 @@ namespace papyrus {
           ::SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(gameSpecificStatus.c_str()));
         }
 
-        keywordMatched = keywordMatcher.match(scintillaHandle);
-      } else if (isPapyrusScriptFile && fromLangChange) {
+        if (keywordMatcher) {
+          keywordMatched = keywordMatcher->match(scintillaHandle);
+        }
+      } else if (isPapyrusScriptFile && fromLangChange && keywordMatcher) {
         // Papyrus script file changed to other language, clear keyword matching.
-        keywordMatcher.clear();
+        keywordMatcher->clear();
       }
 
       HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
       ::EnableMenuItem(menu, funcs[std::to_underlying(Menu::GoToMatch)]._cmdID, MF_BYCOMMAND | (keywordMatched ? MF_ENABLED : MF_DISABLED));
 
       // Only Papyrus script and assembly files can be annotated.
-      if (errorAnnotator && (isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange) {
+      if ((isPapyrusScriptFile || utility::endsWith(filePath, L".pas")) && !fromLangChange && errorAnnotator) {
         errorAnnotator->annotate(currentView, filePath);
       }
 
@@ -449,8 +452,8 @@ namespace papyrus {
   void Plugin::handleSelectionChange(SCNotification* notification) {
     // Only handle selection change if it's from a document buffer shown on current view and is managed by this plugin's lexer.
     bool keywordMatched = false;
-    if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom))) {
-      keywordMatched = keywordMatcher.match(static_cast<HWND>(notification->nmhdr.hwndFrom));
+    if (isCurrentBufferManaged(static_cast<HWND>(notification->nmhdr.hwndFrom)) && keywordMatcher) {
+      keywordMatched = keywordMatcher->match(static_cast<HWND>(notification->nmhdr.hwndFrom));
     }
 
     HMENU menu = reinterpret_cast<HMENU>(::SendMessage(nppData._nppHandle, NPPM_GETMENUHANDLE, 0, 0));
@@ -912,7 +915,9 @@ namespace papyrus {
   }
 
   void Plugin::goToMatch() {
-    keywordMatcher.goToMatchedPos();
+    if (keywordMatcher) {
+        keywordMatcher->goToMatchedPos();
+    }
   }
 
   void Plugin::settingsMenuFunc() {

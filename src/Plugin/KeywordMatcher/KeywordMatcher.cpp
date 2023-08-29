@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "KeywordMatcher.hpp"
 
+#include "..\Common\Logger.hpp"
 #include "..\Common\StringUtil.hpp"
 #include "..\Lexer\Lexer.hpp"
 
@@ -51,13 +52,14 @@ namespace papyrus {
     ::SendMessage(handle, SCI_SETSEARCHFLAGS, flags, 0);
   }
 
-  KeywordMatcher::KeywordMatcher(const KeywordMatcherSettings& settings)
-   : settings(settings) {
+  KeywordMatcher::KeywordMatcher(const NppData& nppData, const KeywordMatcherSettings& settings)
+   : nppData(nppData), settings(settings) {
     // Subscribe to settings changes
     KeywordMatcherSettings& subscribableSettings = const_cast<KeywordMatcherSettings&>(settings);
     subscribableSettings.enableKeywordMatching.subscribe([&](auto) { match(); });
     subscribableSettings.enabledKeywords.subscribe([&](auto) { match(); });
-    subscribableSettings.indicatorID.subscribe([&](auto eventData) { changeIndicator(eventData.oldValue); });
+    subscribableSettings.autoAllocateIndicatorID.subscribe([&](auto) { changeIndicator(); });
+    subscribableSettings.defaultIndicatorID.subscribe([&](auto) { changeIndicator(); });
     subscribableSettings.matchedIndicatorStyle.subscribe([&](auto) { if (handle != 0 && matched) { setupIndicator(); } });
     subscribableSettings.matchedIndicatorForegroundColor.subscribe([&](auto) { if (handle != 0 && matched) { setupIndicator(); } });
     subscribableSettings.unmatchedIndicatorStyle.subscribe([&](auto) { if (handle != 0 && !matched) { setupIndicator(); } });
@@ -73,7 +75,7 @@ namespace papyrus {
   void KeywordMatcher::clear() {
     if (handle != 0) {
       docLength = static_cast<Sci_PositionCR>(::SendMessage(handle, SCI_GETLENGTH, 0, 0));
-      ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
+      ::SendMessage(handle, SCI_SETINDICATORCURRENT, indicatorID, 0);
       ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
 
       matched = false;
@@ -340,25 +342,57 @@ namespace papyrus {
   }
 
   void KeywordMatcher::setupIndicator() {
-    ::SendMessage(handle, SCI_INDICSETFORE, settings.indicatorID, matched ? settings.matchedIndicatorForegroundColor : settings.unmatchedIndicatorForegroundColor);
-    ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
-    ::SendMessage(handle, SCI_INDICSETOUTLINEALPHA, settings.indicatorID, 255); // Always make indicator's outline opaque
+    ::SendMessage(handle, SCI_INDICSETFORE, indicatorID, matched ? settings.matchedIndicatorForegroundColor : settings.unmatchedIndicatorForegroundColor);
+    ::SendMessage(handle, SCI_SETINDICATORCURRENT, indicatorID, 0);
+    ::SendMessage(handle, SCI_INDICSETOUTLINEALPHA, indicatorID, 255); // Always make indicator's outline opaque
     settings.enableKeywordMatching ? showIndicator() : hideIndicator();
   }
 
   void KeywordMatcher::showIndicator() {
-    ::SendMessage(handle, SCI_INDICSETSTYLE, settings.indicatorID, matched ? settings.matchedIndicatorStyle : settings.unmatchedIndicatorStyle);
+    ::SendMessage(handle, SCI_INDICSETSTYLE, indicatorID, matched ? settings.matchedIndicatorStyle : settings.unmatchedIndicatorStyle);
   }
 
   void KeywordMatcher::hideIndicator() {
-    ::SendMessage(handle, SCI_INDICSETSTYLE, settings.indicatorID, INDIC_HIDDEN);
+    ::SendMessage(handle, SCI_INDICSETSTYLE, indicatorID, INDIC_HIDDEN);
   }
 
-  void KeywordMatcher::changeIndicator(int oldIndicator) {
-    if (handle != 0) {
-      ::SendMessage(handle, SCI_SETINDICATORCURRENT, oldIndicator, 0);
-      ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
-      match();
+  void KeywordMatcher::changeIndicator() {
+    int oldIndicatorID = indicatorID;
+    if (settings.autoAllocateIndicatorID) {
+      if (allocatedIndicatorID == 0) {
+        if (!static_cast<bool>(::SendMessage(nppData._nppHandle, NPPM_ALLOCATEINDICATOR, 1, reinterpret_cast<LPARAM>(&allocatedIndicatorID)))) {
+          // Likely no available indicator ID left.
+          allocatedIndicatorID = -1;
+        }
+        //utility::logger.log(L"Allocated keyword matcher indicator ID: " + std::to_wstring(allocatedIndicatorID));
+      }
+
+      if (allocatedIndicatorID > 0) {
+        indicatorID = allocatedIndicatorID;
+      } else if (settings.defaultIndicatorID > 0) {
+        indicatorID = settings.defaultIndicatorID;
+      }
+    } else if (settings.defaultIndicatorID > 0) {
+      indicatorID = settings.defaultIndicatorID;
+    }
+    //utility::logger.log(L"Keyword matcher uses indicator ID: " + std::to_wstring(indicatorID));
+
+    if (indicatorID != oldIndicatorID) {
+      // Clear indications from both views if they are Papyrus scripts.
+      std::wstring mainViewFilePath = utility::getApplicableFilePathOnView(nppData._nppHandle, MAIN_VIEW);
+      if (!mainViewFilePath.empty()) {
+        utility::clearIndications(nppData._scintillaMainHandle, oldIndicatorID);
+      }
+      std::wstring secondViewFilePath = utility::getApplicableFilePathOnView(nppData._nppHandle, SUB_VIEW);
+      if (!secondViewFilePath.empty()) {
+        utility::clearIndications(nppData._scintillaSecondHandle, oldIndicatorID);
+      }
+
+      if (handle != 0) {
+        ::SendMessage(handle, SCI_SETINDICATORCURRENT, indicatorID, 0);
+        ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
+        match();
+      }
     }
   }
 

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ErrorAnnotator.hpp"
 
+#include "..\Common\Logger.hpp"
 #include "..\Common\StringUtil.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
@@ -43,7 +44,8 @@ namespace papyrus {
     subscribableSettings.isAnnotationBold.subscribe([&](auto) { updateAnnotationStyle(); });
 
     subscribableSettings.enableIndication.subscribe([&](auto) { updateIndicatorStyle(); });
-    subscribableSettings.indicatorID.subscribe([&](auto eventData) { changeIndicator(eventData.oldValue); });
+    subscribableSettings.autoAllocateIndicatorID.subscribe([&](auto) { changeIndicator(); });
+    subscribableSettings.defaultIndicatorID.subscribe([&](auto) { changeIndicator(); });
     subscribableSettings.indicatorStyle.subscribe([&](auto) { updateIndicatorStyle(); });
     subscribableSettings.indicatorForegroundColor.subscribe([&](auto) { updateIndicatorStyle(); });
   }
@@ -62,11 +64,11 @@ namespace papyrus {
     errors.clear();
 
     // Check and clear all annotations from both views.
-    if (!getApplicableFilePathOnView(MAIN_VIEW).empty()) {
+    if (!utility::getApplicableFilePathOnView(nppData._nppHandle, MAIN_VIEW).empty()) {
       clearAnnotations(nppData._scintillaMainHandle);
       clearIndications(nppData._scintillaMainHandle);
     }
-    if (!getApplicableFilePathOnView(SUB_VIEW).empty()) {
+    if (!utility::getApplicableFilePathOnView(nppData._nppHandle, SUB_VIEW).empty()) {
       clearAnnotations(nppData._scintillaSecondHandle);
       clearIndications(nppData._scintillaSecondHandle);
     }
@@ -131,19 +133,9 @@ namespace papyrus {
   // Private methods
   //
 
-  std::wstring ErrorAnnotator::getApplicableFilePathOnView(npp_view_t view) const {
-    // Make sure it is a Papyrus script
-    std::wstring filePath = utility::getActiveFilePathOnView(nppData._nppHandle, view);
-    if (utility::endsWith(filePath, L".psc") || utility::endsWith(filePath, L".pas")) {
-      return filePath;
-    }
-
-    return std::wstring();
-  }
-
   void ErrorAnnotator::annotate(npp_view_t view) {
     // Annotate current file on the given view if it's Papyrus script.
-    std::wstring filePath = getApplicableFilePathOnView(view);
+    std::wstring filePath = utility::getApplicableFilePathOnView(nppData._nppHandle, view);
     if (!filePath.empty()) {
       annotate(view, filePath);
     } else {
@@ -158,14 +150,7 @@ namespace papyrus {
   }
 
   void ErrorAnnotator::clearIndications(HWND handle) const {
-    clearIndications(handle, settings.indicatorID);
-  }
-
-  void ErrorAnnotator::clearIndications(HWND handle, int indicator) const {
-    // Need to specify which indicator to be cleared.
-    ::SendMessage(handle, SCI_SETINDICATORCURRENT, indicator, 0);
-    npp_length_t docLength = ::SendMessage(handle, SCI_GETLENGTH, 0, 0);
-    ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
+    utility::clearIndications(handle, indicatorID);
   }
 
   void ErrorAnnotator::showAnnotations(HWND handle) const {
@@ -177,19 +162,19 @@ namespace papyrus {
   }
 
   void ErrorAnnotator::showIndications(HWND handle) const {
-    ::SendMessage(handle, SCI_INDICSETSTYLE, settings.indicatorID, settings.indicatorStyle);
+    ::SendMessage(handle, SCI_INDICSETSTYLE, indicatorID, settings.indicatorStyle);
   }
 
   void ErrorAnnotator::hideIndications(HWND handle) const {
-    ::SendMessage(handle, SCI_INDICSETSTYLE, settings.indicatorID, INDIC_HIDDEN);
+    ::SendMessage(handle, SCI_INDICSETSTYLE, indicatorID, INDIC_HIDDEN);
   }
 
   void ErrorAnnotator::updateAnnotationStyle() {
     // Update annotation style of the current file on the given view if it's Papyrus script.
-    if (!getApplicableFilePathOnView(MAIN_VIEW).empty()) {
+    if (!utility::getApplicableFilePathOnView(nppData._nppHandle, MAIN_VIEW).empty()) {
       updateAnnotationStyle(MAIN_VIEW, nppData._scintillaMainHandle);
     }
-    if (!getApplicableFilePathOnView(SUB_VIEW).empty()) {
+    if (!utility::getApplicableFilePathOnView(nppData._nppHandle, SUB_VIEW).empty()) {
       updateAnnotationStyle(SUB_VIEW, nppData._scintillaSecondHandle);
     }
   }
@@ -217,40 +202,62 @@ namespace papyrus {
   }
 
   // Since indication locations are not tracked after they were draw, calling this method could cause newly rendered indications to be off.
-  void ErrorAnnotator::changeIndicator(int oldIndicator) {
-    // Clear indications from both views if they are Papyrus scripts.
-    std::wstring mainViewFilePath = getApplicableFilePathOnView(MAIN_VIEW);
-    if (!mainViewFilePath.empty()) {
-      clearIndications(nppData._scintillaMainHandle, oldIndicator);
-    }
-    std::wstring secondViewFilePath = getApplicableFilePathOnView(SUB_VIEW);
-    if (!secondViewFilePath.empty()) {
-      clearIndications(nppData._scintillaSecondHandle, oldIndicator);
-    }
+  void ErrorAnnotator::changeIndicator() {
+    int oldIndicatorID = indicatorID;
+    if (settings.autoAllocateIndicatorID) {
+      if (allocatedIndicatorID == 0) {
+        if (!static_cast<bool>(::SendMessage(nppData._nppHandle, NPPM_ALLOCATEINDICATOR, 1, reinterpret_cast<LPARAM>(&allocatedIndicatorID)))) {
+          // Likely no available indicator ID left.
+          allocatedIndicatorID = -1;
+        }
+        //utility::logger.log(L"Allocated error annotator indicator ID: " + std::to_wstring(allocatedIndicatorID));
+      }
 
-    // Draw new indications if needed.
-    if (!mainViewFilePath.empty()) {
-      updateIndicatorStyleOnFile(nppData._scintillaMainHandle, mainViewFilePath);
+      if (allocatedIndicatorID > 0) {
+        indicatorID = allocatedIndicatorID;
+      } else if (settings.defaultIndicatorID > 0) {
+        indicatorID = settings.defaultIndicatorID;
+      }
+    } else if (settings.defaultIndicatorID > 0) {
+      indicatorID = settings.defaultIndicatorID;
     }
-    if (!secondViewFilePath.empty()) {
-      updateIndicatorStyleOnFile(nppData._scintillaSecondHandle, secondViewFilePath);
+    //utility::logger.log(L"Error annotator uses indicator ID: " + std::to_wstring(indicatorID));
+
+    if (indicatorID != oldIndicatorID) {
+      // Clear indications from both views if they are Papyrus scripts.
+      std::wstring mainViewFilePath = utility::getApplicableFilePathOnView(nppData._nppHandle, MAIN_VIEW);
+      if (!mainViewFilePath.empty()) {
+        utility::clearIndications(nppData._scintillaMainHandle, oldIndicatorID);
+      }
+      std::wstring secondViewFilePath = utility::getApplicableFilePathOnView(nppData._nppHandle, SUB_VIEW);
+      if (!secondViewFilePath.empty()) {
+        utility::clearIndications(nppData._scintillaSecondHandle, oldIndicatorID);
+      }
+
+      // Draw new indications if needed.
+      if (!mainViewFilePath.empty()) {
+        updateIndicatorStyleOnFile(nppData._scintillaMainHandle, mainViewFilePath);
+      }
+      if (!secondViewFilePath.empty()) {
+        updateIndicatorStyleOnFile(nppData._scintillaSecondHandle, secondViewFilePath);
+      }
     }
   }
 
   void ErrorAnnotator::updateIndicatorStyle() {
     // Update indicator style of the current file on the given view if it's Papyrus script.
-    if (!getApplicableFilePathOnView(MAIN_VIEW).empty()) {
+    if (!utility::getApplicableFilePathOnView(nppData._nppHandle, MAIN_VIEW).empty()) {
       updateIndicatorStyle(nppData._scintillaMainHandle);
     }
-    if (!getApplicableFilePathOnView(SUB_VIEW).empty()) {
+    if (!utility::getApplicableFilePathOnView(nppData._nppHandle, SUB_VIEW).empty()) {
       updateIndicatorStyle(nppData._scintillaSecondHandle);
     }
   }
 
   void ErrorAnnotator::updateIndicatorStyle(HWND handle) const {
-    ::SendMessage(handle, SCI_INDICSETFORE, settings.indicatorID, settings.indicatorForegroundColor);
-    ::SendMessage(handle, SCI_SETINDICATORCURRENT, settings.indicatorID, 0);
-    ::SendMessage(handle, SCI_INDICSETOUTLINEALPHA, settings.indicatorID, 255); // Always make indicator's outline opaque
+    ::SendMessage(handle, SCI_INDICSETFORE, indicatorID, settings.indicatorForegroundColor);
+    ::SendMessage(handle, SCI_SETINDICATORCURRENT, indicatorID, 0);
+    ::SendMessage(handle, SCI_INDICSETOUTLINEALPHA, indicatorID, 255); // Always make indicator's outline opaque
 
     settings.enableIndication ? showIndications(handle) : hideIndications(handle);
   }

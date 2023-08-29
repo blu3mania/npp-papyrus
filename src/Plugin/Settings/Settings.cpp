@@ -62,7 +62,8 @@ namespace papyrus {
 
     storage.putString(L"keywordMatcher.enableKeywordMatching", utility::boolToStr(keywordMatcherSettings.enableKeywordMatching));
     storage.putString(L"keywordMatcher.enabledKeywords", std::to_wstring(keywordMatcherSettings.enabledKeywords));
-    storage.putString(L"keywordMatcher.indicatorID", std::to_wstring(keywordMatcherSettings.indicatorID));
+    storage.putString(L"keywordMatcher.autoAllocateIndicatorID", utility::boolToStr(keywordMatcherSettings.autoAllocateIndicatorID));
+    storage.putString(L"keywordMatcher.defaultIndicatorID", std::to_wstring(keywordMatcherSettings.defaultIndicatorID));
     storage.putString(L"keywordMatcher.matchedIndicatorStyle", std::to_wstring(keywordMatcherSettings.matchedIndicatorStyle));
     storage.putString(L"keywordMatcher.matchedIndicatorForegroundColor" + themeSuffix, utility::colorToHexStr(keywordMatcherSettings.matchedIndicatorForegroundColor));
     storage.putString(L"keywordMatcher.unmatchedIndicatorStyle", std::to_wstring(keywordMatcherSettings.unmatchedIndicatorStyle));
@@ -74,7 +75,8 @@ namespace papyrus {
     storage.putString(L"errorAnnotator.isAnnotationItalic", utility::boolToStr(errorAnnotatorSettings.isAnnotationItalic));
     storage.putString(L"errorAnnotator.isAnnotationBold", utility::boolToStr(errorAnnotatorSettings.isAnnotationBold));
     storage.putString(L"errorAnnotator.enableIndication", utility::boolToStr(errorAnnotatorSettings.enableIndication));
-    storage.putString(L"errorAnnotator.indicatorID", std::to_wstring(errorAnnotatorSettings.indicatorID));
+    storage.putString(L"errorAnnotator.autoAllocateIndicatorID", utility::boolToStr(errorAnnotatorSettings.autoAllocateIndicatorID));
+    storage.putString(L"errorAnnotator.defaultIndicatorID", std::to_wstring(errorAnnotatorSettings.defaultIndicatorID));
     storage.putString(L"errorAnnotator.indicatorStyle", std::to_wstring(errorAnnotatorSettings.indicatorStyle));
     storage.putString(L"errorAnnotator.indicatorForegroundColor" + themeSuffix, utility::colorToHexStr(errorAnnotatorSettings.indicatorForegroundColor));
 
@@ -187,14 +189,25 @@ namespace papyrus {
       updated = true;
     }
 
-    if (storage.getString(L"keywordMatcher.indicatorID", value)) {
-      keywordMatcherSettings.indicatorID = std::stoi(value);
-      if (keywordMatcherSettings.indicatorID < 9 || keywordMatcherSettings.indicatorID > 20) {
-        keywordMatcherSettings.indicatorID = DEFAULT_MATCHER_INDICATOR;
-        updated = true;
-      }
+    if (storage.getString(L"keywordMatcher.autoAllocateIndicatorID", value)) {
+      keywordMatcherSettings.autoAllocateIndicatorID = utility::strToBool(value);
     } else {
-      keywordMatcherSettings.indicatorID = DEFAULT_MATCHER_INDICATOR;
+      keywordMatcherSettings.autoAllocateIndicatorID = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"keywordMatcher.defaultIndicatorID", value)) {
+      keywordMatcherSettings.defaultIndicatorID = std::stoi(value);
+    } else if (storage.getString(L"keywordMatcher.indicatorID", value)) {
+      keywordMatcherSettings.defaultIndicatorID = std::stoi(value);
+      storage.renameKey(L"keywordMatcher.indicatorID", L"keywordMatcher.defaultIndicatorID");
+      updated = true;
+    } else {
+      keywordMatcherSettings.defaultIndicatorID = DEFAULT_MATCHER_INDICATOR;
+      updated = true;
+    }
+    if (keywordMatcherSettings.defaultIndicatorID < 9 || keywordMatcherSettings.defaultIndicatorID > 20) {
+      keywordMatcherSettings.defaultIndicatorID = DEFAULT_MATCHER_INDICATOR;
       updated = true;
     }
 
@@ -250,14 +263,25 @@ namespace papyrus {
       updated = true;
     }
 
-    if (storage.getString(L"errorAnnotator.indicatorID", value)) {
-      errorAnnotatorSettings.indicatorID = std::stoi(value);
-      if (errorAnnotatorSettings.indicatorID < 9 || errorAnnotatorSettings.indicatorID > 20) {
-        errorAnnotatorSettings.indicatorID = DEFAULT_ERROR_INDICATOR;
-        updated = true;
-      }
+    if (storage.getString(L"errorAnnotator.autoAllocateIndicatorID", value)) {
+      errorAnnotatorSettings.autoAllocateIndicatorID = utility::strToBool(value);
     } else {
-      errorAnnotatorSettings.indicatorID = DEFAULT_ERROR_INDICATOR;
+      errorAnnotatorSettings.autoAllocateIndicatorID = true;
+      updated = true;
+    }
+
+    if (storage.getString(L"errorAnnotator.defaultIndicatorID", value)) {
+      errorAnnotatorSettings.defaultIndicatorID = std::stoi(value);
+    } else if (storage.getString(L"errorAnnotator.indicatorID", value)) {
+      errorAnnotatorSettings.defaultIndicatorID = std::stoi(value);
+      storage.renameKey(L"errorAnnotator.indicatorID", L"errorAnnotator.defaultIndicatorID");
+      updated = true;
+    } else {
+      errorAnnotatorSettings.defaultIndicatorID = DEFAULT_ERROR_INDICATOR;
+      updated = true;
+    }
+    if (errorAnnotatorSettings.defaultIndicatorID < 9 || errorAnnotatorSettings.defaultIndicatorID > 20) {
+      errorAnnotatorSettings.defaultIndicatorID = DEFAULT_ERROR_INDICATOR;
       updated = true;
     }
 

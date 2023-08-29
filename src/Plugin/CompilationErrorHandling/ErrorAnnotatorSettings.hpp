@@ -36,7 +36,8 @@ namespace papyrus {
     utility::PrimitiveTypeValueMonitor<bool>     isAnnotationItalic;
     utility::PrimitiveTypeValueMonitor<bool>     isAnnotationBold;
     utility::PrimitiveTypeValueMonitor<bool>     enableIndication;
-    utility::PrimitiveTypeValueMonitor<int>      indicatorID;
+    utility::PrimitiveTypeValueMonitor<bool>     autoAllocateIndicatorID;
+    utility::PrimitiveTypeValueMonitor<int>      defaultIndicatorID;
     utility::PrimitiveTypeValueMonitor<int>      indicatorStyle;
     utility::PrimitiveTypeValueMonitor<COLORREF> indicatorForegroundColor;
   };

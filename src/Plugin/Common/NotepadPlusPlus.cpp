@@ -19,8 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "NotepadPlusPlus.hpp"
 
+#include "StringUtil.hpp"
+
 #include "..\..\external\gsl\include\gsl\util"
 #include "..\..\external\npp\Notepad_plus_msgs.h"
+#include "..\..\external\npp\PluginInterface.h"
 
 namespace utility {
 
@@ -49,6 +52,23 @@ namespace utility {
     }
 
     return bufferID;
+  }
+
+  std::wstring getApplicableFilePathOnView(HWND nppHandle, npp_view_t view) {
+    // Make sure it is a Papyrus script
+    std::wstring filePath = getActiveFilePathOnView(nppHandle, view);
+    if (endsWith(filePath, L".psc") || endsWith(filePath, L".pas")) {
+      return filePath;
+    }
+
+    return std::wstring();
+  }
+
+  void clearIndications(HWND handle, int indicatorID) {
+    // Need to specify which indicator to be cleared.
+    ::SendMessage(handle, SCI_SETINDICATORCURRENT, indicatorID, 0);
+    npp_length_t docLength = ::SendMessage(handle, SCI_GETLENGTH, 0, 0);
+    ::SendMessage(handle, SCI_INDICATORCLEARRANGE, 0, docLength);
   }
 
 } // namespace

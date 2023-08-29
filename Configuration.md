@@ -74,10 +74,17 @@ In the rare case when a keyword cannot be matched, like when there is a typo, or
 definition, unmatched style will be used to highlight. It is configurable as well and by default it is a
 red rectangle.
 
-Usually the default indicator ID (17) won't conflict with other plugins. However, there is no guarantee that
-will never happen, so this plugin allows you to choose a different indicator if there is a conflict. The
-valid numbers are between 9 and 20. Keep in mind other plugins may use indicator IDs as well, for example,
-DSpellCheck uses 19. Make sure you **do not** change this ID if everything works fine.
+For the indicator ID, it is recommended to ask Notepad++ to auto allocate indicator ID. If all plugins are
+doing it this way then there will not be conflicts. Though, due to the limited number of indicator IDs (only
+between 9 and 20), if many plugins are using indicators then the pool could be drained by the time this plugin
+asks for an allocation. In such a case this plugin will fall back to the configured default indicator ID (by
+default 17). Of course it means there will be conflicts but there really isn't a good solution. Try to remove
+some unused plugins, and see if the issue is solved. Also, there might be plugins that are still using
+hardcoded indicator IDs, and in that case there is no guarantee that the indicator ID allocated by Notepad++
+won't conflict with those plugins. In either case, this plugin allows you to choose a default indicator ID
+for fallback, or to avoid conflict with plugins using hardcoded indicator IDs. The valid numbers are between
+9 and 20. Keep in mind other plugins may use indicator IDs as well, for example, DSpellCheck uses 19. Make
+sure you **do not** turn off auto allocation or change this ID if default settings work fine.
 
 
 ## Error Annotator tab
@@ -94,11 +101,11 @@ in the same annotation box.
 Show indications where errors happen. By default, the indicator is a red squiggly line under the word or
 operator where error is, similar to what a spell checker does. There are many styles to choose from.
 
-Similar to Keyword Matcher's indicator ID, Error Annotator's indicator ID can be changed as well. The
-default ID (18) should not cause conflict usually, but if it does, follow the same instructions provided
-in [Keyword Matcher tab](#keyword-matcher-tab) section. *Note*, after changing it, existing indications
-may be rendered incorrectly if edits have been made. You can recompile the script to make them show
-correctly again, or simply fix all bugs reported against your script. 😀
+Similar to Keyword Matcher's indicator ID, Error Annotator's indicator ID can be changed as well. Follow
+the same instructions provided in [Keyword Matcher tab](#keyword-matcher-tab) section. *Note*, after
+changing indicator ID, existing indications may be rendered incorrectly if edits have been made. You can
+recompile the script to make them show correctly again, or simply fix all bugs reported against your
+script. 😀
 
 
 ## Compiler tab

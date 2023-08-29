@@ -59,4 +59,10 @@ namespace utility {
     return (bufferID != 0 ? getFilePathFromBuffer(nppHandle, bufferID) : std::wstring());
   }
 
+  // Retrieve the full file path of the active document on a given view, if it is a Papyrus script
+  std::wstring getApplicableFilePathOnView(HWND nppHandle, npp_view_t view);
+
+  // Clear existing indications drawn with a given indicator
+  void clearIndications(HWND handle, int indicatorID);
+
 } // namespace
