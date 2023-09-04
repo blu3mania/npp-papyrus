@@ -29,9 +29,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
+          show-progress: false
 
       - name: Configure CMake
         run: cmake -S src -B ${{ env.build_dir }} -DCMAKE_BUILD_TYPE=${{ env.configuration }}
