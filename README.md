@@ -101,10 +101,6 @@ enhancements, and made to work with the latest Notepad++ release.
     in a Papyrus script file.
 - **[UI]** Dark mode support.
 
-### Future plan
-- **[Lexer/Compiler]** [Papyrus Projects (PPJ)](https://www.creationkit.com/fallout4/index.php?title=Papyrus_Projects)
-  support.
-
 
 ## Download
 Get the latest release from [here](https://github.com/blu3mania/npp-papyrus/releases/latest).
@@ -129,7 +125,7 @@ which means if you clone the repository, you should specify *--recurse-submodule
 in your local repository.
 
 - To build the project in *Visual Studio 2022*, just open the solution file in VS2022 and build.
-- For those who use *Visual Studio Code*, a *.vscode* folder is provided at src level, with tasks defined and
+- For those who use *Visual Studio Code*, a *.vscode* folder is provided at top level, with tasks defined and
   the default build task uses MSBuild to generate the *Release|x64* output. **Note**, you need to download and
   install *Build Tools for Visual Studio 2022* from [this page](https://visualstudio.microsoft.com/downloads/).
   Make sure to include *Desktop development with C++* workload during installation.
