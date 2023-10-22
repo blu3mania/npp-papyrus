@@ -757,6 +757,11 @@ namespace papyrus {
 
     constexpr tab_id_t compilerTab = std::to_underlying(Tab::Compiler);
     if (isTabDialogCreated(compilerTab)) {
+      settings.compilerSettings.gameMode =
+        getChecked(compilerTab, IDC_SETTINGS_COMPILER_RADIO_SKYRIM) ? Game::Skyrim :
+        getChecked(compilerTab, IDC_SETTINGS_COMPILER_RADIO_SSE) ? Game::SkyrimSE :
+        getChecked(compilerTab, IDC_SETTINGS_COMPILER_RADIO_FO4) ? Game::Fallout4 :
+        Game::Auto;
       settings.compilerSettings.allowUnmanagedSource = getChecked(compilerTab, IDC_SETTINGS_COMPILER_ALLOW_UNMANAGED_SOURCE);
       settings.compilerSettings.autoModeOutputDirectory = getText(compilerTab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_OUTPUT);
       settings.compilerSettings.autoModeDefaultGame = game::games[getText(compilerTab, IDC_SETTINGS_COMPILER_AUTO_DEFAULT_GAME_DROPDOWN)];
