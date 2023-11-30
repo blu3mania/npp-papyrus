@@ -77,7 +77,7 @@ jobs:
 
       - name: VirusTotal scan
         if: github.event_name == 'release' && matrix.configuration == 'Release'
-        uses: crazy-max/ghaction-virustotal@v3
+        uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
           github_token: ${{ github.token }}
