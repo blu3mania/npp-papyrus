@@ -44,6 +44,8 @@ namespace papyrus {
     std::unique_ptr<Helper> helper;
     std::mutex lexerListMutex;
     std::vector<Lexer*> lexerList;
+    std::mutex scriptNameMapMutex;
+    std::map<npp_buffer_t, std::string> scriptNameMap;
   }
 
   Lexer::Lexer()
@@ -101,6 +103,17 @@ namespace papyrus {
       if (pLexer->bufferID == 0) {
         pLexer->bufferID = bufferID;
       }
+    }
+  }
+
+  std::string Lexer::getScriptName(npp_buffer_t bufferID) {
+    Lock lock(scriptNameMapMutex);
+    utility::logger.log(L"[Retrieve] Buffer ID: " +  std::to_wstring(bufferID));
+    if (scriptNameMap.contains(bufferID)) {
+      utility::logger.log(L"[Retrieve] Script name: " + string2wstring(scriptNameMap[bufferID], SC_CP_UTF8));
+      return scriptNameMap[bufferID];
+    } else {
+      return std::string();
     }
   }
 
@@ -177,10 +190,15 @@ namespace papyrus {
               } else if (wordListKeywords.InList(tokenString.c_str())) {
                 // Check if a new property needs to be added, and update existing property list
                 if (tokenString == "scriptname" && std::next(iterTokens) != tokens.end()) {
-                  auto detectedScriptName = utility::split(std::next(iterTokens)->content, ":").back();
+                  const auto& fullScriptName = std::next(iterTokens)->content;
+                  auto detectedScriptName = utility::split(fullScriptName, ":").back();
                   if (!utility::compare(scriptName, detectedScriptName)) {
                     scriptName = detectedScriptName;
                     detectBufferId();
+
+                    // Add full script name to map
+                    Lock lock(scriptNameMapMutex);
+                    scriptNameMap[bufferID] = fullScriptName;
                   }
                 } else if (tokenString == "property" && std::next(iterTokens) != tokens.end() && std::next(iterTokens)->content != ";") {
                   std::string propertyName = std::next(iterTokens)->content;

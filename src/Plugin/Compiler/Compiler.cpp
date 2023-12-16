@@ -23,8 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "..\Common\Logger.hpp"
 #include "..\Common\Resources.hpp"
 #include "..\Common\StringUtil.hpp"
+#include "..\Lexer\Lexer.hpp"
 
 #include "..\..\external\gsl\include\gsl\util"
+#include "..\..\external\npp\Common.h"
 
 #include <filesystem>
 #include <fstream>
@@ -59,7 +61,7 @@ namespace papyrus {
       const CompilerSettings::GameSettings& gameSettings = settings.gameSettings(request.game);
       std::wstring path = gameSettings.compilerPath;
       if (std::ifstream(path).good()) {
-        // Input file path
+        // Determine output file directory
         std::wstring outputDirectory = gameSettings.outputDirectory;
         if (request.useAutoModeOutputDirectory) {
           if (std::filesystem::path(settings.autoModeOutputDirectory).is_absolute()) {
@@ -68,6 +70,15 @@ namespace papyrus {
             outputDirectory = std::filesystem::path(request.filePath).parent_path() / settings.autoModeOutputDirectory;
           }
         }
+
+        // Determine PapyrusCompiler's working directory
+        std::filesystem::path filePath = std::filesystem::path(request.filePath);
+        auto scriptName = Lexer::getScriptName(request.bufferID);
+        auto scriptNameComponents = utility::split(scriptName, ":");
+        for (size_t i = 0; i < scriptNameComponents.size(); ++i) {
+          filePath = filePath.parent_path();
+        }
+        LPCWSTR workingDirectory {filePath.c_str()};
 
         // Define compiler process.
         std::wstring commandLine =
@@ -92,7 +103,7 @@ namespace papyrus {
         if (::CreatePipe(&outputReadHandle, &startupInfo.hStdOutput, &attr, STDOUT_PIPE_SIZE) && ::CreatePipe(&errorReadHandle, &startupInfo.hStdError, &attr, STDERR_PIPE_SIZE)) {
           // Run the process.
           PROCESS_INFORMATION compilationProcess {};
-          if (::CreateProcess(nullptr, const_cast<LPWSTR>(commandLine.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, std::filesystem::path(request.filePath).parent_path().c_str(), &startupInfo, &compilationProcess)) {
+          if (::CreateProcess(nullptr, const_cast<LPWSTR>(commandLine.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, nullptr, workingDirectory, &startupInfo, &compilationProcess)) {
             if (::WaitForSingleObject(compilationProcess.hProcess, INFINITE) != WAIT_FAILED) {
               DWORD size {};
               if (::PeekNamedPipe(errorReadHandle, nullptr, 0, nullptr, &size, nullptr)) {
@@ -126,8 +137,13 @@ namespace papyrus {
                     if (!hasError) {
                       // No error, check if anonymization is needed.
                       if (gameSettings.anonynmizeFlag) {
-                        // Output file has the same name as input file, with file extension set as ".pex".
-                        std::wstring outputFile = std::filesystem::path(outputDirectory) / std::filesystem::path(request.filePath).replace_extension(L".pex").filename();
+                        // Output file has the same name as script name (relative path is determined by namepsace), with file extension set as ".pex".
+                        std::filesystem::path outputFile = std::filesystem::path(outputDirectory);
+                        for (const auto& scriptNameComponent : scriptNameComponents) {
+                          outputFile /= scriptNameComponent;
+                        }
+                        outputFile += ".pex";
+
                         std::wstring errorMsg;
                         if (anonymizeOutput(outputFile, errorMsg)) {
                           ::SendMessage(messageWindow, PPM_COMPILATION_DONE, PARAM_COMPILATION_WITH_ANONYMIZATION, 0);

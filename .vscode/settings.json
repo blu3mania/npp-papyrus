@@ -70,6 +70,7 @@
       "unordered_set": "cpp",
       "util": "cpp",
       "utility": "cpp",
+      "variant": "cpp",
       "xstring": "cpp",
       "xfacet": "cpp",
       "xhash": "cpp",

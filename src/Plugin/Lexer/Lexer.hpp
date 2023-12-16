@@ -111,6 +111,9 @@ namespace papyrus {
       // Assign buffer ID to the latest instantiated lexer instance. This is triggered by NPPN_EXTERNALLEXERBUFFER message from Notepad++.
       static void assignBufferID(npp_buffer_t bufferID);
 
+      // Utility method to retrieve script name for a given buffer.
+      static std::string getScriptName(npp_buffer_t bufferID);
+
       // Lexer functions
       void SCI_METHOD Lex(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
       void SCI_METHOD Fold(Sci_PositionU startPos, Sci_Position lengthDoc, int initStyle, IDocument* pAccess) override;
