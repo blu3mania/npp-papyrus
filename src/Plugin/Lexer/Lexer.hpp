@@ -54,10 +54,10 @@ namespace papyrus {
         public:
           struct SavedScintillaSettings {
             bool saved {false};
-            int hotspotActiveForegroundColor;
-            int hotspotActiveBackgroundColor;
-            bool hotspotActiveUnderline;
-            int mouseDwellTime;
+            int hotspotActiveForegroundColor {0};
+            int hotspotActiveBackgroundColor {0};
+            bool hotspotActiveUnderline {false};
+            int mouseDwellTime {0};
           };
 
           Helper();

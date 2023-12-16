@@ -116,7 +116,7 @@ namespace papyrus {
                     parseErrors(errorOutput, gameSettings, outputDirectory);
                   } else {
                     sendOtherErrorMessage(L"ReadFile failed. Compilation stopped.");
-                    closeProcess(compilationProcess);
+                    closeProcess(compilationProcess, startupInfo);
                     return;
                   }
                 } else {
@@ -156,21 +156,23 @@ namespace papyrus {
                     }
                   } else {
                     sendOtherErrorMessage(L"PeekNamedPipe failed on stdout. Compilation stopped.");
-                    closeProcess(compilationProcess);
+                    closeProcess(compilationProcess, startupInfo);
                     return;
                   }
                 }
               } else {
                 sendOtherErrorMessage(L"PeekNamedPipe failed on stderr. Compilation stopped.");
-                closeProcess(compilationProcess);
+                closeProcess(compilationProcess, startupInfo);
                 return;
               }
             } else {
               sendOtherErrorMessage(L"WaitForSingleObject failed. Compilation stopped.");
-              closeProcess(compilationProcess);
+              closeProcess(compilationProcess, startupInfo);
               return;
             }
-            closeProcess(compilationProcess);
+
+            // Always close child process handles.
+            closeProcess(compilationProcess, startupInfo);
           } else {
             sendOtherErrorMessage(L"CreateProcess failed. Compilation stopped.");
             return;
@@ -340,9 +342,14 @@ namespace papyrus {
     ::SendMessage(messageWindow, PPM_COMPILATION_FAILED, reinterpret_cast<WPARAM>(&errors), hasUnparsableLines);
   }
 
-  void Compiler::closeProcess(const PROCESS_INFORMATION& processInfo) {
+  void Compiler::closeProcess(const PROCESS_INFORMATION& processInfo, const STARTUPINFO& startupInfo) {
+    // Properly close child process handles, i.e. hProcess and hThread
     CloseHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread);
+
+    // Close pipes assigned to child process.
+    CloseHandle(startupInfo.hStdOutput);
+    CloseHandle(startupInfo.hStdError);
   }
 
   void Compiler::sendOtherErrorMessage(const wchar_t* msg) {
