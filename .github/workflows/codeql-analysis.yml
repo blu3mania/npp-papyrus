@@ -28,7 +28,7 @@ jobs:
           show-progress: false
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: cpp
 
@@ -39,4 +39,4 @@ jobs:
         run: msbuild /m /p:Configuration=${{ env.configuration }} /p:Platform=${{ env.platform }} ${{ env.solution_file }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
