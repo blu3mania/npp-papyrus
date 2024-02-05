@@ -33,7 +33,7 @@ jobs:
           languages: cpp
 
       - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Build debuggable x64 plugin DLL
         run: msbuild /m /p:Configuration=${{ env.configuration }} /p:Platform=${{ env.platform }} ${{ env.solution_file }}
